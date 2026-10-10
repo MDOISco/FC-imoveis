@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Home } from "lucide-react";
 import { NavLinks } from "./nav-links";
 import { Toaster } from "@/components/ui/toast";
+import { authEnabled } from "@/lib/auth";
 
 /** Moldura do dashboard: cabeçalho com navegação grande e área de conteúdo. */
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -18,7 +19,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </span>
             FC Imóveis
           </Link>
-          <NavLinks />
+          <NavLinks showLogout={authEnabled()} />
         </div>
       </header>
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">{children}</main>

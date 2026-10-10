@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Building2, KeyRound, Settings } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Building2, KeyRound, LogOut, Settings } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 const links = [
@@ -11,8 +11,16 @@ const links = [
   { href: "/configuracoes", label: "Configurações", icon: Settings },
 ];
 
-export function NavLinks() {
+export function NavLinks({ showLogout = false }: { showLogout?: boolean }) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  async function sair() {
+    await fetch("/api/sair", { method: "POST" }).catch(() => {});
+    router.push("/entrar");
+    router.refresh();
+  }
+
   return (
     <nav className="flex items-center gap-1 sm:gap-2" aria-label="Principal">
       {links.map(({ href, label, icon: Icon }) => {
@@ -37,6 +45,17 @@ export function NavLinks() {
           </Link>
         );
       })}
+      {showLogout && (
+        <button
+          type="button"
+          onClick={sair}
+          title="Sair do painel neste aparelho"
+          className="inline-flex min-h-12 items-center gap-2 rounded-xl px-3 font-semibold text-brand-200 transition-colors hover:bg-brand-800/60 hover:text-white sm:px-4"
+        >
+          <LogOut className="size-5 shrink-0" />
+          <span className="hidden sm:inline">Sair</span>
+        </button>
+      )}
     </nav>
   );
 }

@@ -88,6 +88,7 @@ curl -fsSL https://raw.githubusercontent.com/MDOISco/FC-imoveis/claude/happy-mei
 |---|---|
 | `sudo fc-atualizar` | Instala a versão mais nova do sistema (GitHub) |
 | `sudo fc-dominio NOVO.DOMINIO` | Troca o domínio |
+| `sudo fc-senha "NOVA SENHA"` | Troca a senha da equipe (todos entram de novo) |
 | `sudo systemctl status fc-imoveis` | Vê se o sistema está rodando |
 | `sudo journalctl -u fc-imoveis -f` | Acompanha os logs ao vivo |
 
@@ -102,6 +103,10 @@ Backups automáticos diários (banco + fotos) ficam em
   porém mais apertado).
 - **Site não abre**: confira as regras de porta 80/443 (Passo 2) e se o
   IP no DuckDNS está igual ao da VM.
-- **Esqueci a senha da equipe**: no servidor, edite
-  `/etc/systemd/system/fc-imoveis.service` (linha `DASHBOARD_SENHA`),
-  depois `sudo systemctl daemon-reload && sudo systemctl restart fc-imoveis`.
+- **Esqueci a senha da equipe**: no servidor, rode
+  `sudo fc-senha "NOVA-SENHA"` (ou veja a atual em `/etc/fc-imoveis.env`,
+  que só o administrador consegue ler).
+- **O link de instalação deu erro 404**: o endereço do script aponta para a
+  branch principal do repositório no GitHub; se ela for renomeada (ex.: para
+  `main`), ajuste o nome da branch no endereço. O próprio instalador detecta
+  a branch principal automaticamente para as atualizações.

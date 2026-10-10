@@ -9,6 +9,18 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { apiFetch, ApiError } from "@/lib/client-api";
 
+/** Só aceita caminhos internos (evita redirecionar para outro site após o login). */
+function safeDestination(raw: string | null): string {
+  if (!raw || !raw.startsWith("/") || raw.startsWith("//")) return "/";
+  try {
+    const url = new URL(raw, window.location.origin);
+    if (url.origin !== window.location.origin) return "/";
+    return url.pathname + url.search;
+  } catch {
+    return "/";
+  }
+}
+
 export function FormEntrar() {
   const router = useRouter();
   const params = useSearchParams();
@@ -26,8 +38,7 @@ export function FormEntrar() {
     setErro(null);
     try {
       await apiFetch("/api/entrar", { method: "POST", body: { senha } });
-      const destino = params.get("de") || "/";
-      router.push(destino.startsWith("/") ? destino : "/");
+      router.push(safeDestination(params.get("de")));
       router.refresh();
     } catch (err) {
       setErro(

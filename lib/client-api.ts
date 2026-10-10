@@ -44,6 +44,13 @@ export async function apiFetch<T = unknown>(
     const message =
       (data as { error?: string } | null)?.error ??
       "Algo deu errado. Tente novamente.";
+    // Sessão expirada ou senha trocada: leva de volta à tela de entrada
+    if (res.status === 401 && typeof window !== "undefined") {
+      const de = encodeURIComponent(
+        window.location.pathname + window.location.search,
+      );
+      window.location.assign(`/entrar?de=${de}`);
+    }
     throw new ApiError(message, res.status, data);
   }
   return data as T;

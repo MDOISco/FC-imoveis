@@ -10,6 +10,8 @@
 #   SENHA-DA-EQUIPE   senha única que os corretores usarão para entrar
 #   --demo            (opcional) carrega os dados de demonstração
 #
+# Variáveis opcionais: FC_BRANCH=nome-da-branch (padrão: branch principal
+# do repositório no GitHub).
 # O script é idempotente: pode rodar de novo para atualizar.
 # =============================================================================
 set -euo pipefail
@@ -18,8 +20,8 @@ DOMINIO="${1:-}"
 SENHA="${2:-}"
 DEMO="${3:-}"
 REPO="https://github.com/MDOISco/FC-imoveis.git"
-BRANCH="claude/happy-meitner-2lkcyr"
 DIR="/opt/fc-imoveis"
+ENV_FILE="/etc/fc-imoveis.env"
 
 if [[ -z "$DOMINIO" || -z "$SENHA" ]]; then
   echo "Uso: instalar.sh SEU.DOMINIO.COM \"SENHA-DA-EQUIPE\" [--demo]" >&2
@@ -33,8 +35,14 @@ fi
 echo "==> [1/8] Pacotes básicos"
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
-apt-get install -y curl git ca-certificates gnupg fontconfig fonts-dejavu-core \
-  debian-keyring debian-archive-keyring apt-transport-https
+apt-get install -y curl git ca-certificates gnupg sqlite3 fontconfig \
+  fonts-dejavu-core debian-keyring debian-archive-keyring apt-transport-https
+
+# Branch: a informada em FC_BRANCH ou a principal do repositório
+BRANCH="${FC_BRANCH:-$(git ls-remote --symref "$REPO" HEAD 2>/dev/null \
+  | awk '/^ref:/ { sub("refs/heads/", "", $2); print $2 }')}"
+BRANCH="${BRANCH:-main}"
+echo "    branch: $BRANCH"
 
 echo "==> [2/8] Liberando portas 80/443 no firewall da VM (padrão Oracle)"
 if command -v iptables >/dev/null; then
@@ -78,7 +86,23 @@ if [[ "$DEMO" == "--demo" ]]; then
 fi
 npm run build
 
-echo "==> [6/8] Serviço do sistema (systemd)"
+echo "==> [6/8] Variáveis e serviço do sistema (systemd)"
+# Arquivo de ambiente com permissão 600 (só root lê). Valores entre aspas
+# duplas com \ e " escapados — aceita qualquer senha (espaços, %, etc.).
+esc() { printf '%s' "$1" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g'; }
+SEGREDO="$(grep -E '^DASHBOARD_SEGREDO=' "$ENV_FILE" 2>/dev/null | cut -d= -f2- | tr -d '"' || true)"
+[[ -z "$SEGREDO" ]] && SEGREDO="$(openssl rand -hex 32 2>/dev/null || head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \n')"
+umask 077
+cat > "$ENV_FILE" <<EOF
+NODE_ENV=production
+PORT=3000
+APP_URL="https://$(esc "$DOMINIO")"
+DASHBOARD_SENHA="$(esc "$SENHA")"
+DASHBOARD_SEGREDO="$SEGREDO"
+EOF
+chmod 600 "$ENV_FILE"
+umask 022
+
 cat > /etc/systemd/system/fc-imoveis.service <<EOF
 [Unit]
 Description=FC Imoveis (Next.js)
@@ -86,10 +110,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=$DIR
-Environment=NODE_ENV=production
-Environment=PORT=3000
-Environment=APP_URL=https://$DOMINIO
-Environment=DASHBOARD_SENHA=$SENHA
+EnvironmentFile=$ENV_FILE
 ExecStart=/usr/bin/npm start
 Restart=always
 RestartSec=5
@@ -114,13 +135,17 @@ EOF
 systemctl restart caddy
 
 echo "==> [8/8] Backup diário (banco + fotos) e utilitários"
+# Backup consistente do SQLite (modo WAL) com .backup, depois as fotos.
 cat > /etc/cron.daily/fc-imoveis-backup <<'EOF'
 #!/usr/bin/env bash
 set -e
 DIR=/opt/fc-imoveis
 DEST=/var/backups/fc-imoveis
+TMP=$(mktemp -d)
 mkdir -p "$DEST"
-tar -czf "$DEST/backup-$(date +%F).tar.gz" -C "$DIR" prisma/dev.db storage 2>/dev/null || true
+sqlite3 "$DIR/prisma/dev.db" ".backup '$TMP/dev.db'"
+tar -czf "$DEST/backup-$(date +%F).tar.gz" -C "$TMP" dev.db -C "$DIR" storage 2>/dev/null || true
+rm -rf "$TMP"
 ls -1t "$DEST"/backup-*.tar.gz 2>/dev/null | tail -n +15 | xargs -r rm -f
 EOF
 chmod +x /etc/cron.daily/fc-imoveis-backup
@@ -146,23 +171,36 @@ set -e
 NOVO="$1"
 if [[ -z "$NOVO" ]]; then echo "Uso: fc-dominio novo.dominio.com.br"; exit 1; fi
 sed -i "1s/.*/$NOVO {/" /etc/caddy/Caddyfile
-sed -i "s|^Environment=APP_URL=.*|Environment=APP_URL=https://$NOVO|" /etc/systemd/system/fc-imoveis.service
-systemctl daemon-reload
+sed -i "s|^APP_URL=.*|APP_URL=\"https://$NOVO\"|" /etc/fc-imoveis.env
 systemctl restart fc-imoveis caddy
 echo "Domínio trocado para https://$NOVO (lembre de apontar o DNS para este servidor)."
 EOF
 chmod +x /usr/local/bin/fc-dominio
 
+# fc-senha: troca a senha da equipe
+cat > /usr/local/bin/fc-senha <<'EOF'
+#!/usr/bin/env bash
+set -e
+NOVA="$1"
+if [[ -z "$NOVA" ]]; then echo "Uso: fc-senha \"NOVA-SENHA\""; exit 1; fi
+ESC=$(printf '%s' "$NOVA" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
+sed -i "s|^DASHBOARD_SENHA=.*|DASHBOARD_SENHA=\"$ESC\"|" /etc/fc-imoveis.env
+systemctl restart fc-imoveis
+echo "Senha da equipe trocada. Todos precisarão entrar de novo."
+EOF
+chmod +x /usr/local/bin/fc-senha
+
 echo ""
 echo "============================================================"
 echo "  ✅ FC Imóveis instalado!"
 echo ""
-echo "  Painel da equipe:  https://$DOMINIO  (senha configurada)"
+echo "  Painel da equipe:   https://$DOMINIO  (senha configurada)"
 echo "  Permutas (público): https://$DOMINIO/permutas"
 echo ""
 echo "  Comandos úteis:"
-echo "    sudo fc-atualizar              # instala a versão mais nova"
-echo "    sudo fc-dominio novo.dominio   # troca o domínio depois"
+echo "    sudo fc-atualizar               # instala a versão mais nova"
+echo "    sudo fc-dominio novo.dominio    # troca o domínio depois"
+echo "    sudo fc-senha \"nova senha\"      # troca a senha da equipe"
 echo "    sudo systemctl status fc-imoveis"
 echo ""
 echo "  Backups diários em /var/backups/fc-imoveis"

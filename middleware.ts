@@ -1,19 +1,18 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { ACCESS_COOKIE, tokenForPassword } from "@/lib/auth";
+import { ACCESS_COOKIE, expectedToken, safeEqual } from "@/lib/auth";
 
 /**
  * Proteção do dashboard por senha de equipe (DASHBOARD_SENHA).
  * - Sem a variável definida: tudo aberto (desenvolvimento local).
  * - Páginas/APIs PÚBLICAS (fora do matcher): /permutas*, /api/permutas (lead),
- *   /api/feeds (portais), /api/arquivos (fotos) e /entrar.
+ *   /api/feeds (portais), /api/arquivos (fotos), /entrar e /api/entrar.
  */
 export async function middleware(request: NextRequest) {
-  const senha = process.env.DASHBOARD_SENHA;
-  if (!senha) return NextResponse.next();
+  const expected = await expectedToken();
+  if (!expected) return NextResponse.next();
 
   const cookie = request.cookies.get(ACCESS_COOKIE)?.value;
-  const expected = await tokenForPassword(senha);
-  if (cookie === expected) return NextResponse.next();
+  if (safeEqual(cookie, expected)) return NextResponse.next();
 
   const { pathname, search } = request.nextUrl;
   if (pathname.startsWith("/api/")) {

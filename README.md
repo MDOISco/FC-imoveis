@@ -97,9 +97,11 @@ funciona offline. A chave fica mascarada e nunca aparece por inteiro.
 ## Acesso da equipe (senha)
 
 Defina a variável `DASHBOARD_SENHA` (no `.env` ou no ambiente) e o painel
-passa a pedir uma senha única da equipe em `/entrar`. As páginas públicas
-(`/permutas`), os feeds dos portais e as fotos continuam abertos. Sem a
-variável, o sistema fica aberto (modo desenvolvimento).
+passa a pedir uma senha única da equipe em `/entrar` (com freio contra
+tentativas repetidas e botão "Sair"). Defina também `DASHBOARD_SEGREDO`
+com um texto aleatório longo — o instalador faz isso sozinho. As páginas
+públicas (`/permutas`), os feeds dos portais e as fotos continuam abertos.
+Sem `DASHBOARD_SENHA`, o sistema fica aberto (modo desenvolvimento).
 
 ## Colocar no ar de graça (Oracle Cloud)
 
