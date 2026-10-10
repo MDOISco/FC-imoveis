@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { Camera, Pencil, Repeat } from "lucide-react";
-import type { Photo, PortalPublication, Property } from "@prisma/client";
+import { Camera, Pencil, Repeat, UserRound } from "lucide-react";
+import type { Broker, Photo, PortalPublication, Property } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
 import { buttonClasses } from "@/components/ui/button";
 import {
@@ -19,6 +19,7 @@ import {
 export type PropertyWithRelations = Property & {
   photos: Photo[];
   publications: PortalPublication[];
+  broker?: Broker | null;
 };
 
 export function PropertyCard({ property }: { property: PropertyWithRelations }) {
@@ -76,6 +77,11 @@ export function PropertyCard({ property }: { property: PropertyWithRelations }) 
             ? `${property.neighborhood}, ${property.city}`
             : property.city}
         </p>
+        {property.broker && (
+          <p className="inline-flex items-center gap-1.5 text-sm font-semibold text-stone-500">
+            <UserRound className="size-4" /> {property.broker.name}
+          </p>
+        )}
         {specsSummary(property) && (
           <p className="text-base text-stone-600">{specsSummary(property)}</p>
         )}

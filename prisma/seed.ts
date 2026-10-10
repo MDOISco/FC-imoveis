@@ -109,6 +109,12 @@ async function main() {
     if (!exists) await db.broker.create({ data: b });
   }
   const broker = await db.broker.findFirst({ where: { name: "Fátima Costa" } });
+  const brokerCarlos = await db.broker.findFirst({
+    where: { name: "Carlos Oliveira" },
+  });
+  const brokerRegina = await db.broker.findFirst({
+    where: { name: "Regina Martins" },
+  });
 
   // FC-0001 — rascunho (demonstra o "Continuar cadastro")
   if (!(await db.property.findUnique({ where: { refCode: "FC-0001" } }))) {
@@ -148,7 +154,7 @@ async function main() {
         purpose: "VENDA",
         propertyType: "APARTAMENTO",
         title: "Apartamento com varanda no Centro",
-        brokerId: broker?.id,
+        brokerId: brokerCarlos?.id,
         capturedAt: new Date(),
         street: "Rua Coronel João Leme",
         streetNumber: "45",
@@ -328,6 +334,67 @@ async function main() {
       },
     });
     await addPhotos(chacara.id, [{ hue: [70, 130, 70], label: "Chácara" }]);
+  }
+
+  // FC-0006 — casa da Regina (venda e locação), para a visão por corretor
+  if (!(await db.property.findUnique({ where: { refCode: "FC-0006" } }))) {
+    const p = await db.property.create({
+      data: {
+        refCode: "FC-0006",
+        status: "ATIVO",
+        wizardStep: 8,
+        purpose: "VENDA_LOCACAO",
+        propertyType: "SOBRADO",
+        title: "Sobrado amplo no Jardim do Lago",
+        brokerId: brokerRegina?.id,
+        capturedAt: new Date(),
+        neighborhood: "Jardim do Lago",
+        city: "Bragança Paulista",
+        bedrooms: 4,
+        suites: 2,
+        bathrooms: 3,
+        parkingCovered: 2,
+        parkingUncovered: 2,
+        usableArea: 240,
+        totalArea: 360,
+        yearBuilt: 2012,
+        amenities: JSON.stringify([
+          "churrasqueira",
+          "quintal",
+          "portao-eletronico",
+          "cameras",
+        ]),
+        salePrice: 780000,
+        rentPrice: 4200,
+        iptuValue: 2600,
+        acceptsFinancing: true,
+        ownerName: "Dona Helena",
+        ownerPhone: "(11) 97777-8888",
+        description:
+          "Sobrado amplo no Jardim do Lago, à venda e para locação. São 4 quartos (2 suítes), 3 banheiros e 4 vagas de garagem, com 240 m² de área construída em um terreno de 360 m².\n\nÁrea externa com churrasqueira e quintal; segurança com portão eletrônico e câmeras.\n\nAgende sua visita com a FC Imóveis. Referência FC-0006.",
+        descriptionStyle: "OBJETIVA",
+        publications: { create: [{ portal: "ZAP", enabled: true }] },
+      },
+    });
+    await addPhotos(p.id, [
+      { hue: [110, 85, 95], label: "Fachada" },
+      { hue: [85, 115, 75], label: "Quintal" },
+    ]);
+  }
+
+  // Garante que o próximo código de referência não colide com os do seed
+  const last = await db.property.findMany({
+    select: { refCode: true },
+    orderBy: { refCode: "desc" },
+    take: 1,
+  });
+  const maxSeq = Number(last[0]?.refCode.replace(/\D/g, "") ?? 0);
+  const settings = await db.settings.findUnique({ where: { id: 1 } });
+  if (settings && settings.nextRefSeq <= maxSeq) {
+    await db.settings.update({
+      where: { id: 1 },
+      data: { nextRefSeq: maxSeq + 1 },
+    });
   }
 
   const leads = await db.lead.findMany({ select: { name: true, accessToken: true } });

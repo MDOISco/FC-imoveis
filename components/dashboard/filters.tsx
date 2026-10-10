@@ -8,6 +8,7 @@ import {
   PROPERTY_TYPES,
   PURPOSES,
   SORT_OPTIONS,
+  type Option,
 } from "@/lib/constants";
 
 /** Filtros via formulário GET — funcionam sem JavaScript e ficam na URL. */
@@ -16,21 +17,28 @@ export function Filters({
   status,
   tipo,
   finalidade,
+  corretor,
   ordem,
+  visao,
+  brokers,
 }: {
   busca: string;
   status: string;
   tipo: string;
   finalidade: string;
+  corretor: string;
   ordem: string;
+  visao: string;
+  brokers: Option[];
 }) {
-  const hasFilters = busca || status || tipo || finalidade || ordem;
+  const hasFilters = busca || status || tipo || finalidade || corretor;
   return (
     <form
       method="GET"
       action="/"
       className="grid grid-cols-1 items-end gap-3 rounded-2xl border border-stone-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-6"
     >
+      {visao && <input type="hidden" name="visao" value={visao} />}
       <div className="lg:col-span-2">
         <label
           htmlFor="busca"
@@ -94,20 +102,35 @@ export function Filters({
       </div>
       <div>
         <label
-          htmlFor="f-ordem"
+          htmlFor="f-corretor"
           className="mb-1.5 block text-sm font-semibold text-stone-600"
         >
-          Ordenar por
+          Corretor
         </label>
         <Select
-          id="f-ordem"
-          name="ordem"
-          defaultValue={ordem}
-          options={SORT_OPTIONS}
+          id="f-corretor"
+          name="corretor"
+          defaultValue={corretor}
+          options={brokers}
+          placeholder="Todos"
         />
       </div>
-      <div className="flex gap-2 lg:col-span-6">
-        <Button type="submit" className="flex-1 sm:flex-none sm:px-10">
+      <div className="flex items-end gap-2 lg:col-span-6">
+        <div className="min-w-44">
+          <label
+            htmlFor="f-ordem"
+            className="mb-1.5 block text-sm font-semibold text-stone-600"
+          >
+            Ordenar por
+          </label>
+          <Select
+            id="f-ordem"
+            name="ordem"
+            defaultValue={ordem}
+            options={SORT_OPTIONS}
+          />
+        </div>
+        <Button type="submit" className="px-8">
           <Search className="size-5" /> Filtrar
         </Button>
         {hasFilters && (

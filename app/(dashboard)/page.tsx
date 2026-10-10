@@ -1,14 +1,17 @@
 import Link from "next/link";
-import { Building2, Plus } from "lucide-react";
+import { Building2, LayoutGrid, Plus, Rows3 } from "lucide-react";
 import type { Prisma } from "@prisma/client";
+import { BrokerChips } from "@/components/dashboard/broker-chips";
 import { Filters } from "@/components/dashboard/filters";
 import {
   PropertyCard,
   type PropertyWithRelations,
 } from "@/components/dashboard/property-card";
+import { PropertyTable } from "@/components/dashboard/property-table";
 import { StatsCards } from "@/components/dashboard/stats-cards";
 import { buttonClasses } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { cn } from "@/lib/cn";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -27,7 +30,9 @@ export default async function DashboardPage({
   const status = first(params.status);
   const tipo = first(params.tipo);
   const finalidade = first(params.finalidade);
+  const corretor = first(params.corretor);
   const ordem = first(params.ordem) || "recentes";
+  const visao = first(params.visao) === "lista" ? "lista" : "cards";
 
   const where: Prisma.PropertyWhereInput = { source: "CORRETOR" };
   if (status === "VENDIDO") {
@@ -37,6 +42,7 @@ export default async function DashboardPage({
   }
   if (tipo) where.propertyType = tipo;
   if (finalidade) where.purpose = finalidade;
+  if (corretor) where.brokerId = corretor;
   if (busca) {
     where.OR = [
       { refCode: { contains: busca } },
@@ -61,6 +67,10 @@ export default async function DashboardPage({
             ]
           : [{ createdAt: "desc" }];
 
+  // Stats respeitam o corretor selecionado (visão "meus imóveis")
+  const statsBase: Prisma.PropertyWhereInput = { source: "CORRETOR" };
+  if (corretor) statsBase.brokerId = corretor;
+
   const [
     properties,
     total,
@@ -70,6 +80,9 @@ export default async function DashboardPage({
     permutasPendentes,
     matchesNovos,
     pedidosEndereco,
+    brokers,
+    countsByBroker,
+    totalCarteira,
   ] = await Promise.all([
     db.property.findMany({
       where,
@@ -77,29 +90,71 @@ export default async function DashboardPage({
       include: {
         photos: { orderBy: { position: "asc" } },
         publications: true,
+        broker: true,
       },
-      take: 60,
+      take: 100,
     }),
-    db.property.count({ where: { source: "CORRETOR" } }),
-    db.property.count({ where: { source: "CORRETOR", status: "ATIVO" } }),
-    db.property.count({ where: { source: "CORRETOR", status: "RASCUNHO" } }),
+    db.property.count({ where: statsBase }),
+    db.property.count({ where: { ...statsBase, status: "ATIVO" } }),
+    db.property.count({ where: { ...statsBase, status: "RASCUNHO" } }),
     db.property.count({
-      where: { source: "CORRETOR", status: { in: ["VENDIDO", "ALUGADO"] } },
+      where: { ...statsBase, status: { in: ["VENDIDO", "ALUGADO"] } },
     }),
     db.property.count({ where: { source: "LEAD", status: "EM_APROVACAO" } }),
     db.tradeMatch.count({ where: { status: "NOVO" } }),
     db.addressRequest.count({ where: { status: "NOVO" } }),
+    db.broker.findMany({
+      where: { active: true },
+      orderBy: { name: "asc" },
+      select: { id: true, name: true },
+    }),
+    db.property.groupBy({
+      by: ["brokerId"],
+      where: { source: "CORRETOR" },
+      _count: { _all: true },
+    }),
+    db.property.count({ where: { source: "CORRETOR" } }),
   ]);
+
+  const countByBrokerId = new Map(
+    countsByBroker.map((c) => [c.brokerId, c._count._all]),
+  );
+  const selectedBroker = brokers.find((b) => b.id === corretor);
+
+  // Monta URLs preservando os filtros atuais
+  function buildHref(overrides: Record<string, string>): string {
+    const q = new URLSearchParams();
+    const current: Record<string, string> = {
+      busca,
+      status,
+      tipo,
+      finalidade,
+      corretor,
+      ordem: ordem === "recentes" ? "" : ordem,
+      visao: visao === "cards" ? "" : visao,
+    };
+    for (const [key, value] of Object.entries({ ...current, ...overrides })) {
+      if (value) q.set(key, value);
+    }
+    const s = q.toString();
+    return s ? `/?${s}` : "/";
+  }
+
+  const hasFilters = busca || status || tipo || finalidade || corretor;
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-3xl font-extrabold text-stone-900">
-            Meus imóveis
+            {selectedBroker
+              ? `Imóveis de ${selectedBroker.name.split(" ")[0]}`
+              : "Meus imóveis"}
           </h1>
           <p className="mt-1 text-base text-stone-500">
-            Cadastre, publique nos portais e acompanhe as permutas.
+            {selectedBroker
+              ? `Carteira do corretor ${selectedBroker.name}.`
+              : "Cadastre, publique nos portais e acompanhe as permutas."}
           </p>
         </div>
         <Link href="/imoveis/novo" className={buttonClasses("primary", "lg")}>
@@ -117,24 +172,74 @@ export default async function DashboardPage({
         pedidosEndereco={pedidosEndereco}
       />
 
+      <BrokerChips
+        brokers={brokers.map((b) => ({
+          id: b.id,
+          name: b.name,
+          count: countByBrokerId.get(b.id) ?? 0,
+        }))}
+        total={totalCarteira}
+        selected={corretor}
+        buildHref={(id) => buildHref({ corretor: id })}
+      />
+
       <Filters
         busca={busca}
         status={status}
         tipo={tipo}
         finalidade={finalidade}
+        corretor={corretor}
         ordem={ordem}
+        visao={visao === "lista" ? "lista" : ""}
+        brokers={brokers.map((b) => ({ value: b.id, label: b.name }))}
       />
+
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-base font-semibold text-stone-600">
+          {properties.length} imóvel(is){hasFilters ? " com esses filtros" : ""}
+        </p>
+        <div
+          className="flex rounded-xl border-2 border-stone-200 bg-white p-1"
+          role="group"
+          aria-label="Modo de visualização"
+        >
+          <Link
+            href={buildHref({ visao: "" })}
+            aria-current={visao === "cards" ? "true" : undefined}
+            className={cn(
+              "inline-flex min-h-10 items-center gap-1.5 rounded-lg px-3.5 font-semibold",
+              visao === "cards"
+                ? "bg-brand-700 text-white"
+                : "text-stone-600 hover:bg-stone-100",
+            )}
+          >
+            <LayoutGrid className="size-5" /> Cards
+          </Link>
+          <Link
+            href={buildHref({ visao: "lista" })}
+            aria-current={visao === "lista" ? "true" : undefined}
+            className={cn(
+              "inline-flex min-h-10 items-center gap-1.5 rounded-lg px-3.5 font-semibold",
+              visao === "lista"
+                ? "bg-brand-700 text-white"
+                : "text-stone-600 hover:bg-stone-100",
+            )}
+          >
+            <Rows3 className="size-5" /> Lista
+          </Link>
+        </div>
+      </div>
 
       {properties.length === 0 ? (
         <EmptyState
           icon={<Building2 className="size-14" />}
           title={
-            busca || status || tipo || finalidade
+            hasFilters
               ? "Nenhum imóvel encontrado com esses filtros"
               : "Nenhum imóvel cadastrado ainda"
           }
           description={
-            busca || status || tipo || finalidade
+            hasFilters
               ? "Tente mudar ou limpar os filtros acima."
               : "Clique no botão abaixo para cadastrar o primeiro imóvel. É um passo a passo simples."
           }
@@ -147,13 +252,14 @@ export default async function DashboardPage({
             </Link>
           }
         />
+      ) : visao === "lista" ? (
+        <PropertyTable
+          properties={properties as Parameters<typeof PropertyTable>[0]["properties"]}
+        />
       ) : (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {properties.map((p) => (
-            <PropertyCard
-              key={p.id}
-              property={p as PropertyWithRelations}
-            />
+            <PropertyCard key={p.id} property={p as PropertyWithRelations} />
           ))}
         </div>
       )}
