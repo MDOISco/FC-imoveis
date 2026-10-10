@@ -100,20 +100,15 @@ async function main() {
     },
   });
 
-  for (const b of [
-    { name: "Fátima Costa", phone: "(11) 99999-1111", creci: "123456-F" },
-    { name: "Carlos Oliveira", phone: "(11) 99999-2222", creci: "234567-F" },
-    { name: "Regina Martins", phone: "(11) 99999-3333", creci: "345678-F" },
-  ]) {
+  // Corretores da FC Imóveis (telefone e CRECI podem ser completados em
+  // Configurações → Corretores)
+  for (const b of [{ name: "Cátia" }, { name: "Francisco" }]) {
     const exists = await db.broker.findFirst({ where: { name: b.name } });
     if (!exists) await db.broker.create({ data: b });
   }
-  const broker = await db.broker.findFirst({ where: { name: "Fátima Costa" } });
-  const brokerCarlos = await db.broker.findFirst({
-    where: { name: "Carlos Oliveira" },
-  });
-  const brokerRegina = await db.broker.findFirst({
-    where: { name: "Regina Martins" },
+  const brokerCatia = await db.broker.findFirst({ where: { name: "Cátia" } });
+  const brokerFrancisco = await db.broker.findFirst({
+    where: { name: "Francisco" },
   });
 
   // FC-0001 — rascunho (demonstra o "Continuar cadastro")
@@ -126,7 +121,7 @@ async function main() {
         purpose: "VENDA",
         propertyType: "CASA_CONDOMINIO",
         title: "Casa em condomínio no Jardim das Palmeiras",
-        brokerId: broker?.id,
+        brokerId: brokerCatia?.id,
         capturedAt: new Date(),
         cep: "12916-000",
         street: "Rua das Palmeiras",
@@ -154,7 +149,7 @@ async function main() {
         purpose: "VENDA",
         propertyType: "APARTAMENTO",
         title: "Apartamento com varanda no Centro",
-        brokerId: brokerCarlos?.id,
+        brokerId: brokerFrancisco?.id,
         capturedAt: new Date(),
         street: "Rua Coronel João Leme",
         streetNumber: "45",
@@ -346,7 +341,7 @@ async function main() {
         purpose: "VENDA_LOCACAO",
         propertyType: "SOBRADO",
         title: "Sobrado amplo no Jardim do Lago",
-        brokerId: brokerRegina?.id,
+        brokerId: brokerCatia?.id,
         capturedAt: new Date(),
         neighborhood: "Jardim do Lago",
         city: "Bragança Paulista",
