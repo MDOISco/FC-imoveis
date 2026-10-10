@@ -1,0 +1,254 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Configurações da imobiliária (linha única, id = 1)
+model Settings {
+  id                Int      @id @default(1)
+  agencyName        String   @default("FC Imóveis")
+  creci             String?
+  phone             String?
+  whatsapp          String?
+  email             String?
+  publicBaseUrl     String? // base para URLs absolutas nos feeds (default: APP_URL)
+  logoPath          String? // relativo a storage/
+  watermarkDefault  Boolean  @default(true)
+  watermarkPosition String   @default("CANTO") // CANTO | CENTRO
+  watermarkOpacity  Float    @default(0.45)
+  anthropicApiKey   String?
+  nextRefSeq        Int      @default(1)
+  updatedAt         DateTime @updatedAt
+}
+
+model Broker {
+  id         String     @id @default(cuid())
+  name       String
+  phone      String?
+  creci      String?
+  email      String?
+  active     Boolean    @default(true)
+  properties Property[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+// Cliente da página de Permutas (acessa por link privado, sem senha)
+model Lead {
+  id          String     @id @default(cuid())
+  name        String
+  whatsapp    String
+  email       String?
+  accessToken String     @unique @default(cuid())
+  properties  Property[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Property {
+  id         String  @id @default(cuid())
+  refCode    String  @unique // "FC-0001"
+  status     String  @default("RASCUNHO") // RASCUNHO|EM_APROVACAO|ATIVO|RESERVADO|VENDIDO|ALUGADO|DESATIVADO|REPROVADO
+  wizardStep Int     @default(1) // última etapa concluída (retomada de rascunho)
+  source     String  @default("CORRETOR") // CORRETOR | LEAD
+  leadId     String?
+  lead       Lead?   @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  // Etapa 1 — básico
+  purpose      String? // VENDA|LOCACAO|VENDA_LOCACAO|TEMPORADA
+  propertyType String? // ver lib/constants.ts
+  title        String?
+  brokerId     String?
+  broker       Broker?   @relation(fields: [brokerId], references: [id], onDelete: SetNull)
+  capturedAt   DateTime?
+  exclusive    Boolean   @default(false)
+
+  // Etapa 2 — endereço
+  cep               String?
+  street            String?
+  streetNumber      String?
+  complement        String?
+  neighborhood      String?
+  city              String  @default("Bragança Paulista")
+  state             String  @default("SP")
+  condoName         String?
+  addressVisibility String  @default("BAIRRO") // COMPLETO|BAIRRO|OCULTO — padrão: só cidade/bairro ao público
+
+  // Etapa 3 — características
+  bedrooms         Int?
+  suites           Int?
+  bathrooms        Int?
+  parkingCovered   Int?
+  parkingUncovered Int?
+  usableArea       Float? // m²
+  totalArea        Float? // m²
+  floor            Int?
+  totalFloors      Int?
+  yearBuilt        Int?
+  furnished        String? // NAO|SEMI|SIM
+  acceptsPets      Boolean @default(false)
+  solarPosition    String? // NORTE|SUL|LESTE|OESTE
+
+  // Etapa 4 — comodidades (JSON array de chaves do catálogo)
+  amenities String @default("[]")
+
+  // Etapa 5 — valores (REAIS INTEIROS, sem centavos)
+  salePrice        Int?
+  rentPrice        Int?
+  seasonDailyPrice Int?
+  condoFee         Int?
+  iptuValue        Int?
+  iptuPeriod       String  @default("ANUAL") // ANUAL|MENSAL
+  acceptsFinancing Boolean @default(false)
+  acceptsFgts      Boolean @default(false)
+  acceptsTrade     Boolean @default(false) // tag PERMUTA (aparece na página pública)
+  priceOnRequest   Boolean @default(false) // sob consulta
+
+  // Etapa 5 — dados internos (NUNCA publicados, nunca em feed ou descrição)
+  ownerName     String?
+  ownerPhone    String?
+  ownerEmail    String?
+  commissionPct Float?
+  docsStatus    String? // REGULAR|PENDENTE|EM_REGULARIZACAO
+  internalNotes String?
+
+  // Etapa 7 — descrição
+  description      String? // versão publicada/aprovada
+  descriptionStyle String? // OBJETIVA|EMOCIONAL|INVESTIDOR|PROPRIA
+  leadDescription  String? // texto escrito pelo próprio cliente (permuta)
+  rejectionReason  String? // motivo de reprovação (permuta)
+
+  photos          Photo[]
+  video           Video?
+  publications    PortalPublication[]
+  tradePreference TradePreference?
+  swipesGiven     Swipe[]             @relation("SwipeFrom")
+  swipesReceived  Swipe[]             @relation("SwipeTo")
+  matchesAsA      TradeMatch[]        @relation("MatchA")
+  matchesAsB      TradeMatch[]        @relation("MatchB")
+  addressRequests AddressRequest[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([neighborhood])
+  @@index([propertyType])
+  @@index([source, status])
+}
+
+model Photo {
+  id           String   @id @default(cuid())
+  propertyId   String
+  property     Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  position     Int      @default(0)
+  isCover      Boolean  @default(false)
+  caption      String?
+  rotation     Int      @default(0) // 0|90|180|270 (aplicado no reprocesso)
+  enhance      Boolean  @default(false) // "tratamento automático"
+  watermark    Boolean  @default(true)
+  originalPath String // relativo a storage/
+  webPath      String // web.jpg (máx 1920px, q80)
+  thumbPath    String // thumb.webp (400px)
+  width        Int?
+  height       Int?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt // usado como cache-buster ?v=
+
+  @@index([propertyId, position])
+}
+
+model Video {
+  id           String   @id @default(cuid())
+  propertyId   String   @unique
+  property     Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  path         String // relativo a storage/
+  originalName String?
+  mimeType     String // video/mp4 | video/quicktime
+  sizeBytes    Int
+  createdAt    DateTime @default(now())
+}
+
+model PortalPublication {
+  id               String    @id @default(cuid())
+  propertyId       String
+  property         Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  portal           String // ZAP|VIVAREAL|OLX|CHAVES_NA_MAO|IMOVELWEB
+  enabled          Boolean   @default(false)
+  firstPublishedAt DateTime? // carimbado na 1ª vez que o feed é servido com o imóvel
+  updatedAt        DateTime  @updatedAt
+
+  @@unique([propertyId, portal])
+}
+
+model FeedAccess {
+  portalFeed   String    @id // CANALPRO|CHAVES_NA_MAO|IMOVELWEB
+  lastAccessAt DateTime?
+  accessCount  Int       @default(0)
+}
+
+// O que o dono deste imóvel procura na troca (permuta)
+model TradePreference {
+  id            String   @id @default(cuid())
+  propertyId    String   @unique
+  property      Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  types         String   @default("[]") // JSON de tipos desejados
+  cities        String   @default("[\"Bragança Paulista\"]") // JSON
+  neighborhoods String   @default("[]") // JSON
+  minBedrooms   Int?
+  minParking    Int?
+  minUsableArea Float?
+  maxValue      Int? // valor máximo do imóvel desejado (R$)
+  cashTopUp     String   @default("INDIFERENTE") // PODE_PAGAR|QUER_RECEBER|INDIFERENTE
+  notes         String?
+  updatedAt     DateTime @updatedAt
+}
+
+// Curtida (ou recusa) de um imóvel em outro, no deck de permutas
+model Swipe {
+  id             String   @id @default(cuid())
+  fromPropertyId String
+  fromProperty   Property @relation("SwipeFrom", fields: [fromPropertyId], references: [id], onDelete: Cascade)
+  toPropertyId   String
+  toProperty     Property @relation("SwipeTo", fields: [toPropertyId], references: [id], onDelete: Cascade)
+  liked          Boolean
+  createdAt      DateTime @default(now())
+
+  @@unique([fromPropertyId, toPropertyId])
+  @@index([toPropertyId, liked])
+}
+
+// Match de permuta (curtida recíproca) — a chave dourada
+model TradeMatch {
+  id          String   @id @default(cuid())
+  propertyAId String
+  propertyA   Property @relation("MatchA", fields: [propertyAId], references: [id], onDelete: Cascade)
+  propertyBId String
+  propertyB   Property @relation("MatchB", fields: [propertyBId], references: [id], onDelete: Cascade)
+  status      String   @default("NOVO") // NOVO|EM_ATENDIMENTO|CONCLUIDO|CANCELADO
+  seenByA     Boolean  @default(false) // controla a animação da chave (1ª vez)
+  seenByB     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([propertyAId, propertyBId])
+}
+
+// Pedido de endereço exato vindo de página pública (vira contato p/ a equipe)
+model AddressRequest {
+  id         String   @id @default(cuid())
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  name       String
+  email      String
+  phone      String
+  leadId     String?
+  status     String   @default("NOVO") // NOVO|CONTATADO
+  createdAt  DateTime @default(now())
+
+  @@index([status])
+}

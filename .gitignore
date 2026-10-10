@@ -1,0 +1,21 @@
+# Dependências
+node_modules/
+
+# Build do Next.js
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# Banco de dados local
+prisma/dev.db
+prisma/dev.db-journal
+prisma/dev.db-wal
+prisma/dev.db-shm
+
+# Arquivos enviados em runtime (fotos, vídeos, logo)
+storage/
+
+# Diversos
+.DS_Store
+npm-debug.log*

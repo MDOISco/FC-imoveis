@@ -1,0 +1,143 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+
+  /* Verde institucional (confiança) */
+  --color-brand-50: #f0f9f4;
+  --color-brand-100: #dbf0e3;
+  --color-brand-200: #b9e1cb;
+  --color-brand-300: #8bcaa9;
+  --color-brand-400: #57ac82;
+  --color-brand-500: #359066;
+  --color-brand-600: #247351;
+  --color-brand-700: #1d5c42;
+  --color-brand-800: #194a37;
+  --color-brand-900: #153d2e;
+  --color-brand-950: #0a221a;
+
+  /* Dourado (a chave dourada das permutas) */
+  --color-gold-50: #fdf9e9;
+  --color-gold-100: #faf0c6;
+  --color-gold-200: #f5df8f;
+  --color-gold-300: #eec74f;
+  --color-gold-400: #e6ad22;
+  --color-gold-500: #d69414;
+  --color-gold-600: #b8720e;
+  --color-gold-700: #93520f;
+  --color-gold-800: #7a4214;
+  --color-gold-900: #683716;
+  --color-gold-950: #3d1d08;
+}
+
+/* Base 18px: corretores mais velhos — tudo em rem escala junto */
+html {
+  font-size: 112.5%;
+}
+
+body {
+  background-color: var(--color-stone-50);
+  color: var(--color-stone-900);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Foco visível e espesso em todos os controles */
+*:focus-visible {
+  outline: 3px solid var(--color-brand-600);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+}
+
+/* ===== Animação da chave dourada (match de permuta) ===== */
+@keyframes chave-gira {
+  0% {
+    transform: rotate(-70deg) scale(0.6);
+    opacity: 0;
+  }
+  45% {
+    transform: rotate(10deg) scale(1.05);
+    opacity: 1;
+  }
+  65% {
+    transform: rotate(-6deg) scale(1);
+  }
+  100% {
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes cadeado-abre {
+  0%,
+  55% {
+    transform: translateY(0) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-14px) rotate(-18deg);
+  }
+  100% {
+    transform: translateY(-10px) rotate(-14deg);
+  }
+}
+
+@keyframes brilho-dourado {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  60% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+@keyframes match-pop {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.anim-chave {
+  animation: chave-gira 1.1s ease-out forwards;
+  transform-origin: 60% 60%;
+}
+
+.anim-cadeado {
+  animation: cadeado-abre 1.4s ease-in-out forwards;
+  transform-origin: 20% 80%;
+}
+
+.anim-brilho {
+  animation: brilho-dourado 1.6s ease-out 0.7s forwards;
+  opacity: 0;
+}
+
+.anim-match-pop {
+  animation: match-pop 0.5s ease-out forwards;
+}
+
+/* Card do deck sendo arrastado */
+.swipe-card-dragging {
+  transition: none !important;
+}
