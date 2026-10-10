@@ -94,6 +94,21 @@ funciona offline. A chave fica mascarada e nunca aparece por inteiro.
   corretor pode **Aceitar a permuta** em nome do proprietário (a chave abre
   para o cliente) ou recusar.
 
+## Acesso da equipe (senha)
+
+Defina a variável `DASHBOARD_SENHA` (no `.env` ou no ambiente) e o painel
+passa a pedir uma senha única da equipe em `/entrar`. As páginas públicas
+(`/permutas`), os feeds dos portais e as fotos continuam abertos. Sem a
+variável, o sistema fica aberto (modo desenvolvimento).
+
+## Colocar no ar de graça (Oracle Cloud)
+
+Siga o guia **[deploy/LEIA-ME.md](deploy/LEIA-ME.md)**: conta gratuita da
+Oracle (servidor em São Paulo), endereço de teste gratuito (DuckDNS) e
+instalação com um único comando — já com HTTPS, senha da equipe, backups
+diários e os utilitários `fc-atualizar` e `fc-dominio` (para quando chegar
+o domínio oficial).
+
 ## Hospedagem (produção)
 
 O sistema usa SQLite (`prisma/dev.db`) e grava fotos/vídeos em `storage/` —
