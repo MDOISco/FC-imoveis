@@ -28,9 +28,15 @@ export async function POST(
   const action = String(body?.action ?? "");
 
   if (action === "aprovar") {
-    const description = String(body?.description ?? "").trim();
+    let description = String(body?.description ?? "").trim();
     if (!description) {
-      return jsonError("Escolha ou escreva a descrição antes de aprovar");
+      // Venda/locação (não é permuta): aprova direto com o texto do cliente.
+      if (!property.acceptsTrade) {
+        description = (property.leadDescription ?? "").trim();
+      }
+      if (!description) {
+        return jsonError("Escolha ou escreva a descrição antes de aprovar");
+      }
     }
     await db.property.update({
       where: { id },

@@ -30,6 +30,17 @@ export async function POST(
     return jsonError("Ação inválida");
   }
   const liked = action === "aceitar";
+  // Não abrir a chave dourada para imóvel que saiu do ar (dos dois lados).
+  if (liked && swipe.toProperty.status !== "ATIVO") {
+    return jsonError(
+      "Este imóvel da carteira não está mais no ar. Reative-o antes de aceitar, ou recuse o interesse.",
+    );
+  }
+  if (liked && swipe.fromProperty.status !== "ATIVO") {
+    return jsonError(
+      "O imóvel oferecido pelo cliente não está mais no ar (foi reprovado ou pausado). Recuse o interesse.",
+    );
+  }
 
   await db.swipe.upsert({
     where: {

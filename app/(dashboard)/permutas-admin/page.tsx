@@ -24,6 +24,7 @@ import { Tabs } from "@/components/ui/tabs";
 import {
   CASH_TOPUP_OPTIONS,
   labelOf,
+  objetivoDoImovel,
   PROPERTY_TYPE_LABELS,
 } from "@/lib/constants";
 import { db } from "@/lib/db";
@@ -82,7 +83,12 @@ export default async function PermutasAdminPage({
       orderBy: { updatedAt: "desc" },
     }),
     db.swipe.findMany({
-      where: { liked: true, toProperty: { source: "CORRETOR" } },
+      where: {
+        liked: true,
+        // Só interesses que ainda fazem sentido: carteira no ar e oferta válida
+        toProperty: { source: "CORRETOR", status: "ATIVO" },
+        fromProperty: { status: { in: ["ATIVO", "EM_APROVACAO"] } },
+      },
       include: {
         fromProperty: { include: { lead: true } },
         toProperty: { include: { photos: { orderBy: { position: "asc" } } } },
@@ -110,7 +116,7 @@ export default async function PermutasAdminPage({
     }),
     db.addressRequest.findMany({
       include: { property: true },
-      orderBy: [{ status: "asc" }, { createdAt: "desc" }],
+      orderBy: [{ status: "desc" }, { createdAt: "desc" }], // NOVO antes de CONTATADO
       take: 100,
     }),
   ]);
@@ -151,6 +157,7 @@ export default async function PermutasAdminPage({
     return {
       id: p.id,
       refCode: p.refCode,
+      objetivo: objetivoDoImovel(p),
       typeLabel: p.propertyType
         ? PROPERTY_TYPE_LABELS[p.propertyType]
         : "Imóvel",
@@ -158,7 +165,9 @@ export default async function PermutasAdminPage({
       specs: specsSummary(p) || "sem detalhes",
       valueLabel: p.salePrice
         ? `valor estimado ${formatBRL(p.salePrice)}`
-        : "sem valor estimado",
+        : p.rentPrice
+          ? `aluguel desejado ${formatBRL(p.rentPrice)}/mês`
+          : "sem valor estimado",
       leadDescription: p.leadDescription ?? "",
       leadName: p.lead?.name ?? "—",
       leadWhatsapp: p.lead?.whatsapp ?? "—",
@@ -176,6 +185,7 @@ export default async function PermutasAdminPage({
     return {
       id: p.id,
       refCode: p.refCode,
+      objetivo: objetivoDoImovel(p),
       typeLabel: p.propertyType
         ? PROPERTY_TYPE_LABELS[p.propertyType]
         : "Imóvel",
@@ -184,6 +194,7 @@ export default async function PermutasAdminPage({
       status: p.status,
       leadName: p.lead?.name ?? "—",
       leadWhatsapp: p.lead?.whatsapp ?? "—",
+      painelUrl: p.lead ? `/permutas/painel/${p.lead.accessToken}` : null,
       thumbUrl: cover
         ? `/api/arquivos/${cover.thumbPath}?v=${cover.updatedAt.getTime()}`
         : null,

@@ -82,6 +82,32 @@ export default async function PermutasLandingPage() {
         ))}
       </section>
 
+      <section className="rounded-3xl border-2 border-brand-200 bg-brand-50 p-6 sm:flex sm:items-center sm:justify-between sm:gap-8 sm:p-8">
+        <div>
+          <h2 className="font-display text-2xl font-bold text-brand-950">
+            Quer vender ou alugar seu imóvel?
+          </h2>
+          <p className="mt-1 max-w-xl text-base text-brand-900">
+            A FC cuida de tudo: avaliação, fotos, anúncio nos portais e
+            negociação. Cadastre aqui e nossa equipe entra em contato.
+          </p>
+        </div>
+        <div className="mt-4 flex flex-col gap-2 sm:mt-0 sm:shrink-0 sm:items-center">
+          <Link
+            href="/permutas/cadastrar?objetivo=vender"
+            className="inline-flex min-h-14 items-center justify-center rounded-2xl bg-brand-700 px-7 text-lg font-extrabold text-white hover:bg-brand-800"
+          >
+            Quero vender meu imóvel
+          </Link>
+          <Link
+            href="/permutas/cadastrar?objetivo=alugar"
+            className="inline-flex min-h-12 items-center justify-center text-center text-base font-bold text-brand-800 underline hover:text-brand-950"
+          >
+            ou quero alugar meu imóvel
+          </Link>
+        </div>
+      </section>
+
       <section className="rounded-2xl border border-stone-200 bg-white p-6">
         <h2 className="font-display text-2xl font-bold text-stone-900">
           Já tenho cadastro

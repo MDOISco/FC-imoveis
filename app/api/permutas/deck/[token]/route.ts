@@ -17,6 +17,12 @@ export async function GET(
   const lead = await getLeadByToken(token);
   const mine = lead?.properties[0];
   if (!lead || !mine) return jsonError("Link inválido", 404);
+  if (!mine.acceptsTrade || !["ATIVO", "EM_APROVACAO"].includes(mine.status)) {
+    return jsonError(
+      "Seu cadastro não está participando das permutas no momento. Fale com a nossa equipe.",
+      403,
+    );
+  }
 
   const swiped = await db.swipe.findMany({
     where: { fromPropertyId: mine.id },

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { KeyRound } from "lucide-react";
+import { ChatWidget } from "@/components/chat/chat-widget";
 import { Toaster } from "@/components/ui/toast";
 import { getSettings } from "@/lib/settings";
 
@@ -66,6 +67,7 @@ export default async function PermutasLayout({
           </p>
         </div>
       </footer>
+      <ChatWidget />
       <Toaster />
     </div>
   );

@@ -121,7 +121,7 @@ export function GoldenKeyMatch({
 }) {
   return (
     <div
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-gradient-to-b from-brand-950/95 to-black/95 p-5"
+      className="fixed inset-0 z-[70] flex items-center justify-center overflow-y-auto bg-gradient-to-b from-brand-950/95 to-black/95 p-5"
       role="dialog"
       aria-modal="true"
       aria-label="Deu match!"

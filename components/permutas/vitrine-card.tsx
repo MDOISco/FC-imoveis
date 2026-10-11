@@ -65,6 +65,14 @@ export function VitrineCard({ property }: { property: PublicProperty }) {
         >
           🔑 Tenho interesse na troca
         </Link>
+        {property.daCarteira && (
+          <Link
+            href={`/agendar?imovel=${property.id}`}
+            className="mt-2 inline-flex min-h-12 items-center justify-center rounded-xl border-2 border-brand-700 px-4 font-semibold text-brand-800 hover:bg-brand-50"
+          >
+            📅 Agendar visita
+          </Link>
+        )}
       </div>
     </div>
   );

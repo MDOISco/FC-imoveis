@@ -43,7 +43,7 @@ export function PedidoEndereco({
       </Button>
       {open && (
         <div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4"
+          className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto bg-black/60 p-4"
           role="dialog"
           aria-modal="true"
           aria-label="Pedir localização exata"

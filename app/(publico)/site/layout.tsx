@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { Home } from "lucide-react";
+import { ChatWidget } from "@/components/chat/chat-widget";
+import { Toaster } from "@/components/ui/toast";
 import { getSettings } from "@/lib/settings";
 import { waHref } from "@/lib/whatsapp";
 
 export const metadata = {
-  title: "FC Imóveis — Imobiliária em Bragança Paulista/SP",
+  title: { absolute: "FC Imóveis — Imobiliária em Bragança Paulista/SP" },
   description:
     "Casas, apartamentos, chácaras e terrenos em Bragança Paulista e região. Atendimento direto com os corretores Cátia e Francisco.",
   // Preview: tirar o noindex quando o site público for oficializado.
@@ -104,6 +106,8 @@ export default async function SiteLayout({
           </p>
         </div>
       </footer>
+      <ChatWidget />
+      <Toaster />
     </div>
   );
 }

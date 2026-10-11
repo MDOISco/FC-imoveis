@@ -1,5 +1,11 @@
 import Link from "next/link";
-import { Building2, Handshake, KeyRound, MessageCircle } from "lucide-react";
+import {
+  Building2,
+  CalendarDays,
+  Handshake,
+  KeyRound,
+  MessageCircle,
+} from "lucide-react";
 import { ImovelCard, type SiteProperty } from "@/components/site/imovel-card";
 import { cn } from "@/lib/cn";
 import { purposeIncludesRent, purposeIncludesSale } from "@/lib/constants";
@@ -107,6 +113,12 @@ export default async function SiteHomePage({
             >
               <Building2 className="mr-2 size-6" /> Ver imóveis
             </a>
+            <Link
+              href="/agendar"
+              className="inline-flex min-h-14 items-center justify-center rounded-2xl border-2 border-gold-300/80 bg-white/10 px-8 text-lg font-bold text-white transition-colors hover:bg-white/20"
+            >
+              <CalendarDays className="mr-2 size-6" /> Agendar visita
+            </Link>
             {zapGeral && (
               <a
                 href={zapGeral}
@@ -140,7 +152,7 @@ export default async function SiteHomePage({
       </section>
 
       {/* ===== Vitrine ===== */}
-      <section id="imoveis" className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+      <section id="imoveis" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-12 sm:px-6">
         <p className="text-sm font-bold uppercase tracking-[0.22em] text-gold-700">
           Vitrine
         </p>

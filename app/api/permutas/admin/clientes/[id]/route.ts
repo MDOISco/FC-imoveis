@@ -43,9 +43,29 @@ export async function POST(
     return NextResponse.json({ ok: true, status: "ATIVO" });
   }
 
+  if (action === "reanalisar") {
+    if (property.status !== "REPROVADO") {
+      return jsonError("Só um cadastro reprovado pode voltar para análise");
+    }
+    await db.property.update({
+      where: { id },
+      data: { status: "EM_APROVACAO" },
+    });
+    return NextResponse.json({ ok: true, status: "EM_APROVACAO" });
+  }
+
   if (action === "excluir") {
+    const leadId = property.leadId;
     await db.property.delete({ where: { id } });
     await removePath(`properties/${id}`);
+    // Se o cliente ficou sem nenhum imóvel, apaga os dados pessoais também
+    // (nada de contato órfão parado no banco).
+    if (leadId) {
+      const restantes = await db.property.count({ where: { leadId } });
+      if (restantes === 0) {
+        await db.lead.delete({ where: { id: leadId } }).catch(() => {});
+      }
+    }
     return NextResponse.json({ ok: true });
   }
 

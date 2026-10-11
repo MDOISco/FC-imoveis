@@ -77,6 +77,13 @@ export async function PATCH(request: Request, { params }: Params) {
   }
 
   if (body.status !== undefined) {
+    // Imóvel de cliente tem gestão própria (Permutas → Imóveis de clientes);
+    // mudar o status por aqui o faria sumir de todas as telas de gestão.
+    if (existing.source === "LEAD") {
+      return jsonError(
+        "Este é um imóvel de cliente. Gerencie em Permutas → Imóveis de clientes.",
+      );
+    }
     const status = String(body.status);
     if (!CHANGEABLE_STATUSES.includes(status)) {
       return jsonError("Situação inválida");

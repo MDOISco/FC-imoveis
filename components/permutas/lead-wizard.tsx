@@ -19,26 +19,39 @@ import { toast } from "@/components/ui/toast";
 import { apiFetch, ApiError } from "@/lib/client-api";
 import {
   CASH_TOPUP_OPTIONS,
+  labelOf,
+  LEAD_OBJETIVO_OPTIONS,
   PROPERTY_TYPES,
 } from "@/lib/constants";
 import { maskCep, maskPhone, onlyDigits, parseAreaInput } from "@/lib/format";
 import { useViaCep } from "@/lib/hooks/use-viacep";
 
-const STEPS = [
-  "Seus dados",
-  "Seu imóvel",
-  "Fotos",
-  "Sua descrição",
-  "O que procura",
-  "Revisar e enviar",
-];
+export type LeadObjetivo = "PERMUTAR" | "VENDER" | "ALUGAR";
+
+const BASE_STEPS = ["Seus dados", "Seu imóvel", "Fotos", "Sua descrição"];
+const TRADE_STEP = "O que procura";
+const REVIEW_STEP = "Revisar e enviar";
+
+const OBJETIVO_HELP: Record<string, string> = Object.fromEntries(
+  LEAD_OBJETIVO_OPTIONS.map((o) => [o.value, o.help]),
+);
+
+const TITLES: Record<LeadObjetivo, string> = {
+  PERMUTAR: "Cadastre seu imóvel para permuta",
+  VENDER: "Cadastre seu imóvel para vender",
+  ALUGAR: "Cadastre seu imóvel para alugar",
+};
 
 const MAX_PHOTOS = 15;
 const MAX_PHOTO_BYTES = 10 * 1024 * 1024;
 
 type LocalPhoto = { file: File; url: string };
 
-export function LeadWizard() {
+export function LeadWizard({
+  initialObjetivo,
+}: {
+  initialObjetivo?: LeadObjetivo;
+}) {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [error, setError] = useState<string | null>(null);
@@ -48,6 +61,9 @@ export function LeadWizard() {
   const viaCep = useViaCep();
 
   // Passo 1
+  const [objetivo, setObjetivo] = useState<LeadObjetivo | "">(
+    initialObjetivo ?? "",
+  );
   const [name, setName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [email, setEmail] = useState("");
@@ -66,7 +82,7 @@ export function LeadWizard() {
   const [photos, setPhotos] = useState<LocalPhoto[]>([]);
   // Passo 4
   const [leadDescription, setLeadDescription] = useState("");
-  // Passo 5
+  // Passo 5 (só permuta)
   const [wantTypes, setWantTypes] = useState<string[]>([]);
   const [wantNeighborhoods, setWantNeighborhoods] = useState("");
   const [wantMinBedrooms, setWantMinBedrooms] = useState<number | null>(null);
@@ -74,6 +90,14 @@ export function LeadWizard() {
   const [wantMaxValue, setWantMaxValue] = useState<number | null>(null);
   const [cashTopUp, setCashTopUp] = useState("INDIFERENTE");
   const [notes, setNotes] = useState("");
+
+  const isPermuta = objetivo === "PERMUTAR";
+  // Sem objetivo escolhido ainda, mostramos o caminho completo (6 etapas).
+  const steps =
+    isPermuta || objetivo === ""
+      ? [...BASE_STEPS, TRADE_STEP, REVIEW_STEP]
+      : [...BASE_STEPS, REVIEW_STEP];
+  const reviewStep = steps.length;
 
   function addPhotos(files: FileList | File[]) {
     const incoming = Array.from(files).filter((f) =>
@@ -92,6 +116,8 @@ export function LeadWizard() {
 
   function validateStep(s: number): string | null {
     if (s === 1) {
+      if (!objetivo)
+        return "Escolha o que você quer fazer com o seu imóvel.";
       if (name.trim().length < 2) return "Escreva o seu nome.";
       const d = onlyDigits(whatsapp);
       if (d.length < 10 || d.length > 11)
@@ -117,7 +143,7 @@ export function LeadWizard() {
       return;
     }
     setError(null);
-    setStep((s) => Math.min(s + 1, STEPS.length));
+    setStep((s) => Math.min(s + 1, steps.length));
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -127,6 +153,7 @@ export function LeadWizard() {
       const res = await apiFetch<{ token: string }>("/api/permutas/cadastro", {
         method: "POST",
         body: {
+          objetivo,
           lead: { name, whatsapp, email },
           property: {
             propertyType,
@@ -141,19 +168,23 @@ export function LeadWizard() {
             estimatedValue,
             leadDescription,
           },
-          preference: {
-            types: wantTypes,
-            neighborhoods: wantNeighborhoods
-              .split(",")
-              .map((s) => s.trim())
-              .filter(Boolean),
-            minBedrooms: wantMinBedrooms,
-            minParking: wantMinParking,
-            minUsableArea: null,
-            maxValue: wantMaxValue,
-            cashTopUp,
-            notes: notes || undefined,
-          },
+          ...(isPermuta
+            ? {
+                preference: {
+                  types: wantTypes,
+                  neighborhoods: wantNeighborhoods
+                    .split(",")
+                    .map((s) => s.trim())
+                    .filter(Boolean),
+                  minBedrooms: wantMinBedrooms,
+                  minParking: wantMinParking,
+                  minUsableArea: null,
+                  maxValue: wantMaxValue,
+                  cashTopUp,
+                  notes: notes || undefined,
+                },
+              }
+            : {}),
         },
       });
 
@@ -192,7 +223,9 @@ export function LeadWizard() {
   if (done) {
     const link = `${window.location.origin}/permutas/painel/${done.token}`;
     const wa = `https://wa.me/?text=${encodeURIComponent(
-      `Meu painel de permutas na FC Imóveis: ${link}`,
+      isPermuta
+        ? `Meu painel de permutas na FC Imóveis: ${link}`
+        : `Acompanhar meu imóvel na FC Imóveis: ${link}`,
     )}`;
     return (
       <div className="mx-auto max-w-lg space-y-6 rounded-3xl border border-stone-200 bg-white p-7 text-center">
@@ -201,8 +234,9 @@ export function LeadWizard() {
           Imóvel enviado para análise!
         </h1>
         <p className="text-lg text-stone-600">
-          Nossa equipe vai revisar o cadastro. Enquanto isso, você já pode ver
-          os imóveis disponíveis e demonstrar interesse.
+          {isPermuta
+            ? "Nossa equipe vai revisar o cadastro. Enquanto isso, você já pode ver os imóveis disponíveis e demonstrar interesse."
+            : "Nossa equipe vai avaliar seu imóvel e entrar em contato pelo seu WhatsApp. Guarde o link abaixo para acompanhar o andamento."}
         </p>
         <div className="space-y-3 rounded-2xl bg-gold-50 p-5 text-left">
           <p className="font-bold text-gold-900">
@@ -223,8 +257,9 @@ export function LeadWizard() {
             </a>
           </div>
           <p className="text-sm text-gold-900">
-            É com esse link que você volta ao seu painel, de qualquer aparelho.
-            Não compartilhe com estranhos.
+            {isPermuta
+              ? "É com esse link que você volta ao seu painel, de qualquer aparelho. Não compartilhe com estranhos."
+              : "É com esse link que você acompanha o seu cadastro, de qualquer aparelho. Não compartilhe com estranhos."}
           </p>
         </div>
         <Button
@@ -232,7 +267,7 @@ export function LeadWizard() {
           className="w-full"
           onClick={() => router.push(`/permutas/painel/${done.token}`)}
         >
-          🔑 Começar a ver imóveis
+          {isPermuta ? "🔑 Começar a ver imóveis" : "Acompanhar meu cadastro"}
         </Button>
       </div>
     );
@@ -243,7 +278,7 @@ export function LeadWizard() {
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
         <h1 className="font-display text-3xl font-bold text-stone-900 sm:text-4xl">
-          Cadastre seu imóvel para permuta
+          {objetivo ? TITLES[objetivo] : "Cadastre seu imóvel"}
         </h1>
         <p className="mt-1 text-base text-stone-500">
           É rápido e gratuito. Sem senha: no final você recebe um link privado
@@ -251,11 +286,24 @@ export function LeadWizard() {
         </p>
       </div>
 
-      <Stepper steps={STEPS} current={step} />
+      <Stepper steps={steps} current={step} />
 
       <div className="rounded-3xl border border-stone-200 bg-white p-5 sm:p-7">
         {step === 1 && (
           <div className="space-y-5">
+            <Field label="O que você quer fazer com seu imóvel?" required>
+              <RadioCards
+                name="objetivo"
+                options={LEAD_OBJETIVO_OPTIONS}
+                value={objetivo}
+                onChange={(v) => {
+                  setObjetivo(v as LeadObjetivo);
+                  setError(null);
+                }}
+                columns={1}
+                helpByValue={OBJETIVO_HELP}
+              />
+            </Field>
             <Field label="Seu nome" required htmlFor="lw-name">
               <Input
                 id="lw-name"
@@ -392,8 +440,16 @@ export function LeadWizard() {
               </Field>
             </div>
             <Field
-              label="Quanto você acha que ele vale? (opcional)"
-              help="Um valor aproximado ajuda a encontrar trocas equilibradas."
+              label={
+                objetivo === "ALUGAR"
+                  ? "Quanto você gostaria de receber de aluguel por mês? (opcional)"
+                  : "Quanto você acha que ele vale? (opcional)"
+              }
+              help={
+                isPermuta
+                  ? "Um valor aproximado ajuda a encontrar trocas equilibradas."
+                  : "Um valor aproximado ajuda a nossa equipe na avaliação."
+              }
               htmlFor="lw-value"
             >
               <MoneyInput
@@ -455,9 +511,9 @@ export function LeadWizard() {
                       onClick={() =>
                         setPhotos((prev) => prev.filter((_, j) => j !== i))
                       }
-                      className="absolute right-1.5 top-1.5 flex size-9 items-center justify-center rounded-full bg-black/60 text-white"
+                      className="absolute right-1.5 top-1.5 flex size-11 items-center justify-center rounded-full bg-black/60 text-white"
                     >
-                      <Trash2 className="size-4" />
+                      <Trash2 className="size-5" />
                     </button>
                   </div>
                 ))}
@@ -485,7 +541,7 @@ export function LeadWizard() {
           </div>
         )}
 
-        {step === 5 && (
+        {isPermuta && step === 5 && (
           <div className="space-y-6">
             <Field
               label="Que tipo de imóvel você aceita na troca?"
@@ -573,7 +629,7 @@ export function LeadWizard() {
           </div>
         )}
 
-        {step === 6 && (
+        {objetivo !== "" && step === reviewStep && (
           <div className="space-y-4">
             <h2 className="text-xl font-bold text-stone-900">
               Confira antes de enviar
@@ -581,6 +637,7 @@ export function LeadWizard() {
             <dl className="divide-y divide-stone-100 rounded-2xl border-2 border-stone-200 px-4">
               {(
                 [
+                  ["Objetivo", labelOf(LEAD_OBJETIVO_OPTIONS, objetivo)],
                   ["Nome", name],
                   ["WhatsApp", whatsapp],
                   [
@@ -608,8 +665,9 @@ export function LeadWizard() {
               ))}
             </dl>
             <p className="rounded-xl bg-brand-100 p-4 text-base text-brand-900">
-              Ao enviar, nossa equipe revisa o cadastro antes de publicar. O
-              endereço exato nunca aparece no site — só cidade e bairro.
+              {isPermuta
+                ? "Ao enviar, nossa equipe revisa o cadastro antes de publicar. O endereço exato nunca aparece no site — só cidade e bairro."
+                : "Ao enviar, nossa equipe vai avaliar seu imóvel e entrar em contato pelo WhatsApp. O endereço exato nunca aparece no site — só cidade e bairro."}
             </p>
           </div>
         )}
@@ -639,7 +697,7 @@ export function LeadWizard() {
           ) : (
             <span />
           )}
-          {step < STEPS.length ? (
+          {step < reviewStep ? (
             <Button size="lg" onClick={next}>
               Continuar →
             </Button>
