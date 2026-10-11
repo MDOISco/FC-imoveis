@@ -265,10 +265,23 @@ export default async function SiteHomePage({
         </div>
       </section>
 
-      {/* ===== Permutas ===== */}
+      {/* ===== Permutas (banner com vídeo aéreo de Bragança) ===== */}
       <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-        <div className="overflow-hidden rounded-3xl bg-brand-950 text-white shadow-lg">
-          <div className="flex flex-col items-center gap-6 px-6 py-10 text-center sm:px-10">
+        <div className="relative overflow-hidden rounded-3xl bg-brand-950 text-white shadow-lg">
+          {/* Vídeo direto em HTML: o React não escreve o atributo "muted" no
+              HTML do servidor, e sem ele o autoplay falha no celular. */}
+          <div
+            className="absolute inset-0"
+            aria-hidden="true"
+            dangerouslySetInnerHTML={{
+              __html: `<video class="absolute inset-0 size-full object-cover" poster="/videos/braganca-aerea-poster.jpg" autoplay muted loop playsinline preload="auto"><source src="/videos/braganca-aerea.webm" type="video/webm"><source src="/videos/braganca-aerea.mp4" type="video/mp4"></video>`,
+            }}
+          />
+          <div
+            className="absolute inset-0 bg-gradient-to-b from-brand-950/85 via-brand-950/55 to-brand-950/85"
+            aria-hidden="true"
+          />
+          <div className="relative flex flex-col items-center gap-6 px-6 py-12 text-center sm:px-10 sm:py-16">
             <span className="flex size-16 items-center justify-center rounded-2xl bg-gold-400 text-gold-950">
               <KeyRound className="size-9" />
             </span>
