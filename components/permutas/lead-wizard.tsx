@@ -598,7 +598,7 @@ export function LeadWizard() {
                 </div>
               ))}
             </dl>
-            <p className="rounded-xl bg-brand-50 p-4 text-base text-brand-900">
+            <p className="rounded-xl bg-brand-100 p-4 text-base text-brand-900">
               Ao enviar, nossa equipe revisa o cadastro antes de publicar. O
               endereço exato nunca aparece no site — só cidade e bairro.
             </p>

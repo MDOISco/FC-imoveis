@@ -39,7 +39,7 @@ export default async function ConfiguracoesPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-extrabold text-stone-900">
+        <h1 className="font-display text-4xl font-bold text-stone-900">
           Configurações
         </h1>
         <p className="mt-1 text-base text-stone-500">

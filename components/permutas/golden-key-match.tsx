@@ -128,7 +128,7 @@ export function GoldenKeyMatch({
     >
       <div className="anim-match-pop w-full max-w-sm rounded-3xl bg-white p-6 text-center shadow-2xl">
         <GoldenKeySvg className="mx-auto size-40" />
-        <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-gold-600">
+        <h2 className="mt-2 font-display text-4xl font-bold tracking-tight text-gold-700">
           🔑 DEU MATCH!
         </h2>
         <p className="mt-2 text-lg font-semibold text-stone-800">
@@ -146,7 +146,7 @@ export function GoldenKeyMatch({
           {propertyTitle}
         </p>
         <p className="text-base text-stone-500">{propertyLocation}</p>
-        <p className="mt-4 rounded-xl bg-brand-50 p-3 text-base text-brand-900">
+        <p className="mt-4 rounded-xl bg-brand-100 p-3 text-base text-brand-900">
           A equipe da FC Imóveis vai entrar em contato com vocês para conduzir a
           permuta com segurança.
         </p>

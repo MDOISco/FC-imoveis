@@ -30,7 +30,7 @@ export function PedidoEndereco({
 
   if (sent) {
     return (
-      <p className="rounded-xl bg-brand-50 px-4 py-3 text-base font-semibold text-brand-900">
+      <p className="rounded-xl bg-brand-100 px-4 py-3 text-base font-semibold text-brand-900">
         ✓ Recebido! Nossa equipe vai entrar em contato com a localização.
       </p>
     );
