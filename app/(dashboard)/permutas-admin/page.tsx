@@ -4,6 +4,10 @@ import {
   type AprovacaoItem,
 } from "@/components/permutas/admin-aprovacao-card";
 import {
+  AdminClientes,
+  type ClienteImovelItem,
+} from "@/components/permutas/admin-clientes";
+import {
   AdminEnderecos,
   type PedidoEnderecoItem,
 } from "@/components/permutas/admin-enderecos";
@@ -57,7 +61,8 @@ export default async function PermutasAdminPage({
 }) {
   const { aba } = await searchParams;
 
-  const [aprovacoes, likedSwipes, matches, enderecos] = await Promise.all([
+  const [aprovacoes, clientes, likedSwipes, matches, enderecos] =
+    await Promise.all([
     db.property.findMany({
       where: { source: "LEAD", status: "EM_APROVACAO" },
       include: {
@@ -66,6 +71,15 @@ export default async function PermutasAdminPage({
         tradePreference: true,
       },
       orderBy: { createdAt: "asc" },
+    }),
+    // Imóveis de clientes já revisados (gestão: tirar do ar / excluir)
+    db.property.findMany({
+      where: {
+        source: "LEAD",
+        status: { in: ["ATIVO", "DESATIVADO", "REPROVADO"] },
+      },
+      include: { photos: { orderBy: { position: "asc" } }, lead: true },
+      orderBy: { updatedAt: "desc" },
     }),
     db.swipe.findMany({
       where: { liked: true, toProperty: { source: "CORRETOR" } },
@@ -157,6 +171,26 @@ export default async function PermutasAdminPage({
     };
   });
 
+  const clienteItems: ClienteImovelItem[] = clientes.map((p) => {
+    const cover = p.photos.find((f) => f.isCover) ?? p.photos[0];
+    return {
+      id: p.id,
+      refCode: p.refCode,
+      typeLabel: p.propertyType
+        ? PROPERTY_TYPE_LABELS[p.propertyType]
+        : "Imóvel",
+      location: `${p.neighborhood ? `${p.neighborhood}, ` : ""}${p.city}`,
+      specs: specsSummary(p) || "sem detalhes",
+      status: p.status,
+      leadName: p.lead?.name ?? "—",
+      leadWhatsapp: p.lead?.whatsapp ?? "—",
+      thumbUrl: cover
+        ? `/api/arquivos/${cover.thumbPath}?v=${cover.updatedAt.getTime()}`
+        : null,
+      createdAt: formatDate(p.createdAt),
+    };
+  });
+
   const interesseItems: InteresseItem[] = pendingInterests.map((s) => {
     const cover =
       s.toProperty.photos.find((f) => f.isCover) ?? s.toProperty.photos[0];
@@ -219,9 +253,13 @@ export default async function PermutasAdminPage({
 
   const novosMatches = matches.filter((m) => m.status === "NOVO").length;
   const novosEnderecos = enderecos.filter((e) => e.status === "NOVO").length;
-  const active = ["aprovacoes", "interesses", "matches", "enderecos"].includes(
-    aba ?? "",
-  )
+  const active = [
+    "aprovacoes",
+    "clientes",
+    "interesses",
+    "matches",
+    "enderecos",
+  ].includes(aba ?? "")
     ? aba!
     : "aprovacoes";
 
@@ -247,6 +285,12 @@ export default async function PermutasAdminPage({
             label: "Aprovações",
             href: "/permutas-admin?aba=aprovacoes",
             count: aprovacaoItems.length,
+          },
+          {
+            value: "clientes",
+            label: "Imóveis de clientes",
+            href: "/permutas-admin?aba=clientes",
+            count: clienteItems.length,
           },
           {
             value: "interesses",
@@ -283,6 +327,7 @@ export default async function PermutasAdminPage({
             ))}
           </div>
         ))}
+      {active === "clientes" && <AdminClientes items={clienteItems} />}
       {active === "interesses" && <AdminInteresses items={interesseItems} />}
       {active === "matches" && <AdminMatches items={matchItems} />}
       {active === "enderecos" && <AdminEnderecos items={enderecoItems} />}

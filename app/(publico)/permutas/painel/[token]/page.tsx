@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MeusMatches, type MatchItem } from "@/components/permutas/meus-matches";
 import { SwipeDeck } from "@/components/permutas/swipe-deck";
@@ -48,6 +49,14 @@ function StatusBanner({
       </div>
     );
   }
+  if (status === "DESATIVADO") {
+    return (
+      <p className="rounded-2xl bg-stone-100 px-5 py-4 text-base font-semibold text-stone-700">
+        ⏸️ Seu imóvel está <strong>fora do ar</strong> no momento e não aparece
+        para os outros clientes. Fale com a nossa equipe para publicar de novo.
+      </p>
+    );
+  }
   return null;
 }
 
@@ -61,8 +70,30 @@ export default async function PainelLeadPage({
   const { token } = await params;
   const { aba } = await searchParams;
   const lead = await getLeadByToken(token);
-  const property = lead?.properties[0];
-  if (!lead || !property) notFound();
+  if (!lead) notFound();
+  const property = lead.properties[0];
+  // Cadastro excluído pela equipe: tela amigável em vez de erro 404.
+  if (!property) {
+    return (
+      <div className="mx-auto max-w-xl space-y-5 rounded-3xl border-2 border-stone-200 bg-white p-8 text-center">
+        <p className="text-5xl">🏡</p>
+        <h1 className="text-2xl font-extrabold text-stone-900">
+          Olá, {lead.name.split(" ")[0]}!
+        </h1>
+        <p className="text-lg text-stone-600">
+          O cadastro do seu imóvel foi <strong>removido</strong> da página de
+          permutas. Se foi um engano ou se quiser participar de novo, é só
+          cadastrar outra vez — leva poucos minutos.
+        </p>
+        <Link
+          href="/permutas/cadastrar"
+          className="inline-flex min-h-14 items-center justify-center rounded-2xl bg-brand-700 px-8 text-lg font-extrabold text-white hover:bg-brand-800"
+        >
+          Cadastrar meu imóvel de novo
+        </Link>
+      </div>
+    );
+  }
 
   const matches = await db.tradeMatch.findMany({
     where: {

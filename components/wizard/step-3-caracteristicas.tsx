@@ -116,7 +116,7 @@ export function Step3Caracteristicas({
           {counters.map((c) => (
             <div
               key={c.key}
-              className="flex items-center justify-between gap-4 rounded-xl border-2 border-stone-200 bg-white px-4 py-3"
+              className="flex flex-wrap items-center justify-between gap-3 rounded-xl border-2 border-stone-200 bg-white px-4 py-3"
             >
               <span className="font-semibold text-stone-800">{c.label}</span>
               <NumberStepper
@@ -155,7 +155,7 @@ export function Step3Caracteristicas({
 
       {isApartmentLike && (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <div className="flex items-center justify-between gap-4 rounded-xl border-2 border-stone-200 bg-white px-4 py-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border-2 border-stone-200 bg-white px-4 py-3">
             <span className="font-semibold text-stone-800">Andar</span>
             <NumberStepper
               label="Andar"
@@ -163,7 +163,7 @@ export function Step3Caracteristicas({
               onChange={(v) => set("floor", v)}
             />
           </div>
-          <div className="flex items-center justify-between gap-4 rounded-xl border-2 border-stone-200 bg-white px-4 py-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border-2 border-stone-200 bg-white px-4 py-3">
             <span className="font-semibold text-stone-800">
               Andares no prédio
             </span>

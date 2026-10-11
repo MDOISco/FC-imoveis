@@ -357,10 +357,17 @@ export function LeadWizard() {
               ).map(([label, value, setter]) => (
                 <div
                   key={label}
-                  className="flex items-center justify-between gap-3 rounded-xl border-2 border-stone-200 px-4 py-3"
+                  className="rounded-xl border-2 border-stone-200 px-4 py-3 text-center"
                 >
-                  <span className="font-semibold text-stone-800">{label}</span>
-                  <NumberStepper label={label} value={value} onChange={setter} />
+                  <span className="block font-semibold text-stone-800">
+                    {label}
+                  </span>
+                  <NumberStepper
+                    className="mt-2 justify-center"
+                    label={label}
+                    value={value}
+                    onChange={setter}
+                  />
                 </div>
               ))}
             </div>
@@ -513,21 +520,23 @@ export function LeadWizard() {
               />
             </Field>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div className="flex items-center justify-between gap-3 rounded-xl border-2 border-stone-200 px-4 py-3">
-                <span className="font-semibold text-stone-800">
+              <div className="rounded-xl border-2 border-stone-200 px-4 py-3 text-center">
+                <span className="block font-semibold text-stone-800">
                   Quartos (mínimo)
                 </span>
                 <NumberStepper
+                  className="mt-2 justify-center"
                   label="Quartos mínimos"
                   value={wantMinBedrooms}
                   onChange={setWantMinBedrooms}
                 />
               </div>
-              <div className="flex items-center justify-between gap-3 rounded-xl border-2 border-stone-200 px-4 py-3">
-                <span className="font-semibold text-stone-800">
+              <div className="rounded-xl border-2 border-stone-200 px-4 py-3 text-center">
+                <span className="block font-semibold text-stone-800">
                   Vagas (mínimo)
                 </span>
                 <NumberStepper
+                  className="mt-2 justify-center"
                   label="Vagas mínimas"
                   value={wantMinParking}
                   onChange={setWantMinParking}
