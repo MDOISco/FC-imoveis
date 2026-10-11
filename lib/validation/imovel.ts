@@ -39,7 +39,9 @@ const optionalFloat = z
 
 /** Etapa 1 — mínimo para criar o rascunho. */
 export const step1Schema = z.object({
-  purpose: z.enum(values(PURPOSES), "Escolha a finalidade do anúncio"),
+  // Lista fechada do BANCO (a opção "PERMUTA" da UI vira VENDA + acceptsTrade
+  // antes de chegar aqui; TEMPORADA é legado aceito, sem UI nova).
+  purpose: z.enum(["VENDA", "LOCACAO", "VENDA_LOCACAO", "TEMPORADA"], "Escolha a finalidade do anúncio"),
   propertyType: z.enum(values(PROPERTY_TYPES), "Escolha o tipo de imóvel"),
   title: optionalTrimmed,
   brokerId: optionalTrimmed,

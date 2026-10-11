@@ -26,27 +26,30 @@ model Settings {
 }
 
 model Broker {
-  id         String     @id @default(cuid())
-  name       String
-  phone      String?
-  creci      String?
-  email      String?
-  active     Boolean    @default(true)
-  properties Property[]
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  id           String        @id @default(cuid())
+  name         String
+  phone        String?
+  creci        String?
+  email        String?
+  active       Boolean       @default(true)
+  properties   Property[]
+  appointments Appointment[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
 
 // Cliente da página de Permutas (acessa por link privado, sem senha)
 model Lead {
-  id          String     @id @default(cuid())
-  name        String
-  whatsapp    String
-  email       String?
-  accessToken String     @unique @default(cuid())
-  properties  Property[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id           String        @id @default(cuid())
+  name         String
+  whatsapp     String
+  email        String?
+  accessToken  String        @unique @default(cuid())
+  properties   Property[]
+  appointments Appointment[]
+  chatThreads  ChatThread[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
 
 model Property {
@@ -131,6 +134,7 @@ model Property {
   matchesAsA      TradeMatch[]        @relation("MatchA")
   matchesAsB      TradeMatch[]        @relation("MatchB")
   addressRequests AddressRequest[]
+  appointments    Appointment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -251,4 +255,59 @@ model AddressRequest {
   createdAt  DateTime @default(now())
 
   @@index([status])
+}
+
+// Visita/atendimento agendado pela página pública.
+// Integrações futuras (Google Agenda e avisos por e-mail) entram via lib/notify.ts.
+model Appointment {
+  id          String    @id @default(cuid())
+  propertyId  String?
+  property    Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  brokerId    String?
+  broker      Broker?   @relation(fields: [brokerId], references: [id], onDelete: SetNull)
+  leadId      String?
+  lead        Lead?     @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  name        String
+  phone       String
+  email       String?
+  startsAt    DateTime
+  endsAt      DateTime
+  status      String    @default("AGENDADO") // AGENDADO|CONFIRMADO|CANCELADO|REALIZADO
+  cancelToken String    @unique @default(cuid()) // link de cancelamento do cliente
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([startsAt])
+  @@index([brokerId, startsAt])
+}
+
+// Conversa do bate-papo do site (cliente <-> equipe)
+model ChatThread {
+  id            String        @id @default(cuid())
+  name          String
+  phone         String?
+  leadId        String?
+  lead          Lead?         @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  status        String        @default("ABERTO") // ABERTO|ENCERRADO
+  clientToken   String        @unique @default(cuid()) // guardado no navegador do cliente
+  lastMessageAt DateTime      @default(now())
+  messages      ChatMessage[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([status, lastMessageAt])
+}
+
+model ChatMessage {
+  id           String     @id @default(cuid())
+  threadId     String
+  thread       ChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  from         String // CLIENTE | EQUIPE
+  text         String
+  readByTeam   Boolean    @default(false)
+  readByClient Boolean    @default(false)
+  createdAt    DateTime   @default(now())
+
+  @@index([threadId, createdAt])
 }

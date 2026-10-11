@@ -40,13 +40,18 @@ export const STATUS_BADGE_CLASSES: Record<string, string> = {
 
 /* ============================ Finalidade ========================== */
 
+// A FC não trabalha com temporada; no lugar, a finalidade "Permuta" (que na
+// prática é VENDA + tag de permuta — a tradução acontece na etapa 1 do wizard).
 export const PURPOSES: Option[] = [
   { value: "VENDA", label: "Venda" },
   { value: "LOCACAO", label: "Locação" },
   { value: "VENDA_LOCACAO", label: "Venda e Locação" },
-  { value: "TEMPORADA", label: "Temporada" },
+  { value: "PERMUTA", label: "♻️ Permuta" },
 ];
-export const PURPOSE_LABELS = toMap(PURPOSES);
+export const PURPOSE_LABELS: Record<string, string> = {
+  ...toMap(PURPOSES),
+  TEMPORADA: "Temporada", // legado: nenhum imóvel novo usa
+};
 
 export function purposeIncludesSale(purpose?: string | null) {
   return purpose === "VENDA" || purpose === "VENDA_LOCACAO";
@@ -279,6 +284,58 @@ export const ADDRESS_REQUEST_STATUSES: Option[] = [
   { value: "NOVO", label: "Novo" },
   { value: "CONTATADO", label: "Contatado" },
 ];
+
+/* ================= Cadastro do cliente (objetivo) ================= */
+
+// O que o cliente quer fazer com o imóvel dele no cadastro público.
+// Mapeamento no banco: PERMUTAR -> purpose=VENDA + acceptsTrade=true;
+// VENDER -> purpose=VENDA; ALUGAR -> purpose=LOCACAO (acceptsTrade=false).
+export const LEAD_OBJETIVO_OPTIONS: Array<Option & { help: string }> = [
+  {
+    value: "PERMUTAR",
+    label: "♻️ Trocar (permuta)",
+    help: "Seu imóvel entra na página de permutas e você explora as trocas possíveis.",
+  },
+  {
+    value: "VENDER",
+    label: "🏷️ Vender",
+    help: "Nossa equipe avalia seu imóvel e entra em contato para anunciar a venda.",
+  },
+  {
+    value: "ALUGAR",
+    label: "🔑 Alugar",
+    help: "Nossa equipe avalia seu imóvel e entra em contato para anunciar a locação.",
+  },
+];
+
+export function objetivoDoImovel(p: {
+  purpose: string | null;
+  acceptsTrade: boolean;
+}): "PERMUTAR" | "VENDER" | "ALUGAR" {
+  if (p.acceptsTrade) return "PERMUTAR";
+  return p.purpose === "LOCACAO" ? "ALUGAR" : "VENDER";
+}
+
+export const LEAD_OBJETIVO_BADGE_CLASSES: Record<string, string> = {
+  PERMUTAR: "bg-gold-100 text-gold-900",
+  VENDER: "bg-brand-100 text-brand-900",
+  ALUGAR: "bg-blue-100 text-blue-900",
+};
+
+/* ========================== Agendamentos ========================== */
+
+export const APPOINTMENT_STATUSES: Option[] = [
+  { value: "AGENDADO", label: "Agendada" },
+  { value: "CONFIRMADO", label: "Confirmada" },
+  { value: "CANCELADO", label: "Cancelada" },
+  { value: "REALIZADO", label: "Realizada" },
+];
+export const APPOINTMENT_STATUS_BADGE_CLASSES: Record<string, string> = {
+  AGENDADO: "bg-gold-100 text-gold-900",
+  CONFIRMADO: "bg-brand-100 text-brand-900",
+  CANCELADO: "bg-stone-200 text-stone-700",
+  REALIZADO: "bg-blue-100 text-blue-900",
+};
 
 /* ============================ Ordenação =========================== */
 

@@ -40,7 +40,11 @@ export function Step1Basico({
   const router = useRouter();
   const initial: Form = useMemo(
     () => ({
-      purpose: property?.purpose ?? "",
+      // Na UI, "PERMUTA" = Venda + tag de permuta (o banco guarda VENDA).
+      purpose:
+        property?.acceptsTrade && property?.purpose === "VENDA"
+          ? "PERMUTA"
+          : (property?.purpose ?? ""),
       propertyType: property?.propertyType ?? "",
       title: property?.title ?? "",
       brokerId: property?.brokerId ?? "",
@@ -69,8 +73,17 @@ export function Step1Basico({
   }
 
   function payload() {
+    // "PERMUTA" (UI) vira VENDA + tag de permuta no banco; se o corretor
+    // tirou a opção Permuta, a tag é desligada junto.
+    const isPermuta = form.purpose === "PERMUTA";
+    const eraPermuta = initial.purpose === "PERMUTA";
     return {
-      purpose: form.purpose,
+      purpose: isPermuta ? "VENDA" : form.purpose,
+      ...(isPermuta
+        ? { acceptsTrade: true }
+        : eraPermuta
+          ? { acceptsTrade: false }
+          : {}),
       propertyType: form.propertyType,
       title: form.title,
       brokerId: form.brokerId,
@@ -129,7 +142,7 @@ export function Step1Basico({
 
   const suggestion = suggestTitle({
     propertyType: form.propertyType || null,
-    purpose: form.purpose || null,
+    purpose: form.purpose === "PERMUTA" ? "VENDA" : form.purpose || null,
     neighborhood: property?.neighborhood ?? null,
     condoName: property?.condoName ?? null,
     bedrooms: property?.bedrooms ?? null,

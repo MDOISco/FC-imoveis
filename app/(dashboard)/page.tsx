@@ -41,7 +41,8 @@ export default async function DashboardPage({
     where.status = status;
   }
   if (tipo) where.propertyType = tipo;
-  if (finalidade) where.purpose = finalidade;
+  if (finalidade === "PERMUTA") where.acceptsTrade = true;
+  else if (finalidade) where.purpose = finalidade;
   if (corretor) where.brokerId = corretor;
   if (busca) {
     where.OR = [

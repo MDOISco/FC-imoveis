@@ -33,9 +33,13 @@ export const config = {
     "/imoveis/:path*",
     "/configuracoes",
     "/permutas-admin",
+    "/agenda",
+    "/conversas",
     "/api/imoveis/:path*",
     "/api/corretores/:path*",
     "/api/configuracoes/:path*",
     "/api/permutas/admin/:path*",
+    "/api/agenda/admin/:path*",
+    "/api/chat/admin/:path*",
   ],
 };

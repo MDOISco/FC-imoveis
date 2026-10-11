@@ -2,12 +2,21 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Building2, KeyRound, LogOut, Settings } from "lucide-react";
+import {
+  Building2,
+  CalendarDays,
+  KeyRound,
+  LogOut,
+  MessageCircle,
+  Settings,
+} from "lucide-react";
 import { cn } from "@/lib/cn";
 
 const links = [
   { href: "/", label: "Imóveis", icon: Building2 },
   { href: "/permutas-admin", label: "Permutas", icon: KeyRound },
+  { href: "/agenda", label: "Agenda", icon: CalendarDays },
+  { href: "/conversas", label: "Conversas", icon: MessageCircle },
   { href: "/configuracoes", label: "Configurações", icon: Settings },
 ];
 
