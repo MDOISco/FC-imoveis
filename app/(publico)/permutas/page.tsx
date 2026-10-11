@@ -9,18 +9,21 @@ export const dynamic = "force-dynamic";
 
 const PASSOS = [
   {
+    numero: "01",
     icon: Search,
-    title: "1. Cadastre seu imóvel",
+    title: "Cadastre seu imóvel",
     text: "Leva poucos minutos: fotos, informações e o que você procura na troca.",
   },
   {
+    numero: "02",
     icon: KeyRound,
-    title: "2. Explore e dê o match",
+    title: "Explore e dê o match",
     text: "Veja imóveis disponíveis para permuta. Gostou? Toque na chave. Se o outro lado também tiver interesse, a chave dourada se abre!",
   },
   {
+    numero: "03",
     icon: Handshake,
-    title: "3. A gente cuida do resto",
+    title: "A gente cuida do resto",
     text: "Deu match? Nossa equipe entra em contato com os dois lados e conduz a troca com segurança.",
   },
 ];
@@ -35,19 +38,25 @@ export default async function PermutasLandingPage() {
 
   return (
     <div className="space-y-10">
-      <section className="rounded-3xl bg-gradient-to-br from-brand-900 to-brand-700 px-6 py-10 text-center text-white sm:px-10">
-        <h1 className="mx-auto max-w-2xl text-3xl font-extrabold leading-tight sm:text-4xl">
+      <section className="rounded-3xl bg-gradient-to-br from-brand-950 via-brand-900 to-brand-800 px-6 py-12 text-center text-white sm:px-10 sm:py-14">
+        <p className="text-sm font-bold uppercase tracking-[0.22em] text-gold-300">
+          FC Imóveis · Bragança Paulista
+        </p>
+        <h1 className="mx-auto mt-3 max-w-2xl font-display text-4xl font-bold leading-tight sm:text-5xl">
           Troque seu imóvel pelo imóvel dos seus sonhos
-          <span className="text-gold-300"> em Bragança Paulista</span>
         </h1>
-        <p className="mx-auto mt-4 max-w-xl text-lg text-brand-50">
+        <div
+          className="mx-auto mt-5 h-0.5 w-16 bg-gold-400"
+          aria-hidden="true"
+        />
+        <p className="mx-auto mt-5 max-w-xl text-lg text-brand-100">
           A página de permutas da FC Imóveis funciona como um jogo de combinar:
           você cadastra o seu imóvel, curte os que interessam e, quando os dois
           lados combinam, <strong>a chave dourada se abre</strong>. 🔑
         </p>
         <Link
           href="/permutas/cadastrar"
-          className="mt-7 inline-flex min-h-14 items-center justify-center rounded-2xl bg-gold-400 px-8 text-lg font-extrabold text-gold-950 shadow-lg hover:bg-gold-300"
+          className="mt-8 inline-flex min-h-14 items-center justify-center rounded-2xl bg-gold-400 px-8 text-lg font-extrabold text-gold-950 shadow-lg hover:bg-gold-300"
         >
           Quero permutar meu imóvel
         </Link>
@@ -57,19 +66,26 @@ export default async function PermutasLandingPage() {
         {PASSOS.map((p) => (
           <div
             key={p.title}
-            className="rounded-2xl border border-stone-200 bg-white p-6 text-center"
+            className="rounded-2xl border border-stone-200 bg-white p-6"
           >
-            <span className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-brand-50 text-brand-700">
-              <p.icon className="size-7" />
-            </span>
-            <h2 className="mt-3 text-lg font-bold text-stone-900">{p.title}</h2>
+            <div className="flex items-center justify-between">
+              <span className="font-display text-5xl font-bold leading-none text-gold-600">
+                {p.numero}
+              </span>
+              <span className="flex size-12 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
+                <p.icon className="size-6" />
+              </span>
+            </div>
+            <h2 className="mt-4 text-xl font-bold text-stone-900">{p.title}</h2>
             <p className="mt-1.5 text-base text-stone-600">{p.text}</p>
           </div>
         ))}
       </section>
 
       <section className="rounded-2xl border border-stone-200 bg-white p-6">
-        <h2 className="text-xl font-bold text-stone-900">Já tenho cadastro</h2>
+        <h2 className="font-display text-2xl font-bold text-stone-900">
+          Já tenho cadastro
+        </h2>
         <p className="mb-4 mt-1 text-base text-stone-600">
           Use o link privado que você recebeu ao cadastrar o seu imóvel.
         </p>
@@ -77,8 +93,11 @@ export default async function PermutasLandingPage() {
       </section>
 
       <section>
-        <h2 className="mb-1 text-2xl font-extrabold text-stone-900">
-          Imóveis disponíveis para permuta
+        <p className="text-sm font-bold uppercase tracking-[0.22em] text-gold-700">
+          Vitrine de permutas
+        </p>
+        <h2 className="mb-1 mt-1 font-display text-3xl font-bold text-stone-900">
+          Imóveis disponíveis para troca
         </h2>
         <p className="mb-5 text-base text-stone-500">
           Por segurança, mostramos apenas cidade e bairro. Cadastre-se para

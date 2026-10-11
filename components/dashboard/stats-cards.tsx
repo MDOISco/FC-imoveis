@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Building2, CheckCircle2, FileEdit, KeyRound } from "lucide-react";
 
+/** Faixa de números do painel: células com divisórias finas sobre o verde
+ *  escuro do hero. Cada célula é um link que já aplica o filtro certo. */
 export function StatsCards({
   total,
   ativos,
@@ -25,70 +27,60 @@ export function StatsCards({
       value: total,
       icon: Building2,
       href: "/",
-      accent: "text-brand-700 bg-brand-50",
     },
     {
       label: "Anunciados (ativos)",
       value: ativos,
       icon: CheckCircle2,
       href: "/?status=ATIVO",
-      accent: "text-brand-700 bg-brand-50",
     },
     {
       label: "Rascunhos para concluir",
       value: rascunhos,
       icon: FileEdit,
       href: "/?status=RASCUNHO",
-      accent: "text-amber-700 bg-amber-50",
     },
     {
       label: "Vendidos / Alugados",
       value: negociados,
       icon: CheckCircle2,
       href: "/?status=VENDIDO",
-      accent: "text-purple-700 bg-purple-50",
     },
   ];
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+    <div className="grid grid-cols-2 gap-px bg-white/10 lg:grid-cols-5">
       {cards.map((c) => (
         <Link
           key={c.label}
           href={c.href}
-          className="flex items-center gap-4 rounded-2xl border border-stone-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+          className="bg-brand-950 px-5 py-5 transition-colors hover:bg-brand-900 sm:px-6"
         >
-          <span
-            className={`flex size-12 shrink-0 items-center justify-center rounded-xl ${c.accent}`}
-          >
-            <c.icon className="size-6" />
+          <span className="block font-display text-4xl font-bold leading-none text-white">
+            {c.value}
           </span>
-          <span>
-            <span className="block text-3xl font-extrabold leading-none text-stone-900">
-              {c.value}
-            </span>
-            <span className="mt-1 block text-sm font-semibold text-stone-500">
-              {c.label}
-            </span>
+          <span className="mt-2.5 flex items-center gap-1.5 text-sm font-semibold text-brand-200">
+            <c.icon className="size-4 shrink-0 text-brand-300" />
+            {c.label}
           </span>
         </Link>
       ))}
       <Link
         href="/permutas-admin"
-        className="flex items-center gap-4 rounded-2xl border border-gold-300 bg-gold-50 p-5 shadow-sm transition-shadow hover:shadow-md"
+        className="col-span-2 bg-brand-950 px-5 py-5 transition-colors hover:bg-brand-900 sm:px-6 lg:col-span-1"
       >
-        <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-gold-400 text-gold-950">
-          <KeyRound className="size-6" />
+        <span className="block font-display text-4xl font-bold leading-none text-gold-300">
+          {permutaTotal}
         </span>
-        <span>
-          <span className="block text-3xl font-extrabold leading-none text-gold-900">
-            {permutaTotal}
-          </span>
-          <span className="mt-1 block text-sm font-semibold text-gold-800">
-            Permutas para cuidar
-            {permutaTotal > 0 &&
-              ` (${permutasPendentes} aprov. · ${matchesNovos} match${matchesNovos === 1 ? "" : "es"} · ${pedidosEndereco} endereço)`}
-          </span>
+        <span className="mt-2.5 flex items-center gap-1.5 text-sm font-semibold text-gold-200">
+          <KeyRound className="size-4 shrink-0 text-gold-300" />
+          Permutas para cuidar
         </span>
+        {permutaTotal > 0 && (
+          <span className="mt-1 block text-sm text-gold-200/80">
+            {permutasPendentes} aprov. · {matchesNovos} match
+            {matchesNovos === 1 ? "" : "es"} · {pedidosEndereco} endereço
+          </span>
+        )}
       </Link>
     </div>
   );

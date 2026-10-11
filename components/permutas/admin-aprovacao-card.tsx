@@ -95,7 +95,7 @@ export function AdminAprovacaoCard({ item }: { item: AprovacaoItem }) {
   }
 
   return (
-    <div className="rounded-2xl border-2 border-amber-200 bg-white p-5">
+    <div className="rounded-2xl border-2 border-gold-300 bg-white p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-sm font-bold uppercase tracking-wide text-stone-400">

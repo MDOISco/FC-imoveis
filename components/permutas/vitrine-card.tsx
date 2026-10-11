@@ -26,7 +26,7 @@ export function VitrineCard({ property }: { property: PublicProperty }) {
         </span>
       </div>
       <div className="flex flex-1 flex-col gap-1.5 p-4">
-        <p className="text-sm font-bold uppercase tracking-wide text-stone-400">
+        <p className="text-sm font-bold uppercase tracking-[0.12em] text-gold-700">
           {property.typeLabel}
         </p>
         <h3 className="text-lg font-bold leading-snug text-stone-900">
@@ -56,7 +56,7 @@ export function VitrineCard({ property }: { property: PublicProperty }) {
             </span>
           ) : null}
         </div>
-        <p className="mt-auto pt-2 text-lg font-extrabold text-brand-800">
+        <p className="mt-auto pt-2 font-display text-2xl font-bold text-brand-900">
           {property.valueLabel}
         </p>
         <Link

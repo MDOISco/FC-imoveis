@@ -144,33 +144,42 @@ export default async function DashboardPage({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <div>
-          <h1 className="text-3xl font-extrabold text-stone-900">
-            {selectedBroker
-              ? `Imóveis de ${selectedBroker.name.split(" ")[0]}`
-              : "Meus imóveis"}
-          </h1>
-          <p className="mt-1 text-base text-stone-500">
-            {selectedBroker
-              ? `Carteira do corretor ${selectedBroker.name}.`
-              : "Cadastre, publique nos portais e acompanhe as permutas."}
-          </p>
+      <section className="overflow-hidden rounded-3xl bg-brand-950 shadow-lg">
+        <div className="flex flex-col justify-between gap-6 px-6 pb-8 pt-8 sm:flex-row sm:items-end sm:px-8">
+          <div>
+            <p className="text-sm font-bold uppercase tracking-[0.22em] text-gold-300">
+              FC Imóveis · Bragança Paulista
+            </p>
+            <h1 className="mt-2 font-display text-4xl font-bold text-white sm:text-5xl">
+              {selectedBroker
+                ? `Imóveis de ${selectedBroker.name.split(" ")[0]}`
+                : "Meus imóveis"}
+            </h1>
+            <p className="mt-3 max-w-xl text-lg text-brand-100">
+              {selectedBroker
+                ? `Carteira do corretor ${selectedBroker.name}.`
+                : "Cadastre, publique nos portais e acompanhe as permutas."}
+            </p>
+          </div>
+          <Link
+            href="/imoveis/novo"
+            className={buttonClasses("gold", "lg") + " shrink-0"}
+          >
+            <Plus className="size-6" /> Cadastrar imóvel
+          </Link>
         </div>
-        <Link href="/imoveis/novo" className={buttonClasses("primary", "lg")}>
-          <Plus className="size-6" /> Cadastrar imóvel
-        </Link>
-      </div>
-
-      <StatsCards
-        total={total}
-        ativos={ativos}
-        rascunhos={rascunhos}
-        negociados={negociados}
-        permutasPendentes={permutasPendentes}
-        matchesNovos={matchesNovos}
-        pedidosEndereco={pedidosEndereco}
-      />
+        <div className="border-t border-white/10">
+          <StatsCards
+            total={total}
+            ativos={ativos}
+            rascunhos={rascunhos}
+            negociados={negociados}
+            permutasPendentes={permutasPendentes}
+            matchesNovos={matchesNovos}
+            pedidosEndereco={pedidosEndereco}
+          />
+        </div>
+      </section>
 
       <BrokerChips
         brokers={brokers.map((b) => ({

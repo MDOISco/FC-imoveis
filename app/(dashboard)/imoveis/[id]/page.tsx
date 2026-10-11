@@ -78,11 +78,11 @@ export default async function FichaImovelPage({
                   <Repeat className="size-4" /> Permuta
                 </Badge>
               )}
-              <span className="text-base font-bold uppercase tracking-wide text-stone-400">
+              <span className="text-base font-bold uppercase tracking-[0.12em] text-gold-700">
                 {property.refCode}
               </span>
             </div>
-            <h1 className="mt-1.5 text-3xl font-extrabold text-stone-900">
+            <h1 className="mt-1.5 font-display text-4xl font-bold text-stone-900">
               {displayTitle(property)}
             </h1>
             <p className="mt-1 text-lg text-stone-500">

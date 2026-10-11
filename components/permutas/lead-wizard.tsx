@@ -196,7 +196,7 @@ export function LeadWizard() {
     )}`;
     return (
       <div className="mx-auto max-w-lg space-y-6 rounded-3xl border border-stone-200 bg-white p-7 text-center">
-        <PartyPopper className="mx-auto size-14 text-gold-500" />
+        <PartyPopper className="mx-auto size-14 text-gold-600" />
         <h1 className="text-2xl font-extrabold text-stone-900">
           Imóvel enviado para análise!
         </h1>

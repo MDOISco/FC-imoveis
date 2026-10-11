@@ -4,31 +4,49 @@
   --font-sans: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue",
     Arial, sans-serif;
 
-  /* Verde institucional (confiança) */
-  --color-brand-50: #f0f9f4;
-  --color-brand-100: #dbf0e3;
-  --color-brand-200: #b9e1cb;
-  --color-brand-300: #8bcaa9;
-  --color-brand-400: #57ac82;
-  --color-brand-500: #359066;
-  --color-brand-600: #247351;
-  --color-brand-700: #1d5c42;
-  --color-brand-800: #194a37;
-  --color-brand-900: #153d2e;
-  --color-brand-950: #0a221a;
+  /* Serifada de destaque (títulos) — ar editorial, carregada em app/layout.tsx */
+  --font-display: var(--font-playfair), "Playfair Display", Georgia,
+    "Times New Roman", serif;
 
-  /* Dourado (a chave dourada das permutas) */
-  --color-gold-50: #fdf9e9;
-  --color-gold-100: #faf0c6;
-  --color-gold-200: #f5df8f;
-  --color-gold-300: #eec74f;
-  --color-gold-400: #e6ad22;
-  --color-gold-500: #d69414;
-  --color-gold-600: #b8720e;
-  --color-gold-700: #93520f;
-  --color-gold-800: #7a4214;
-  --color-gold-900: #683716;
-  --color-gold-950: #3d1d08;
+  /* Verde esmeralda profundo (confiança, sofisticação) */
+  --color-brand-50: #f3f7f5;
+  --color-brand-100: #e1ebe6;
+  --color-brand-200: #c3d7cd;
+  --color-brand-300: #9abcac;
+  --color-brand-400: #6c9a86;
+  --color-brand-500: #4e7f6a;
+  --color-brand-600: #3b6654;
+  --color-brand-700: #315546;
+  --color-brand-800: #28443a;
+  --color-brand-900: #16302b;
+  --color-brand-950: #0c1f1b;
+
+  /* Dourado champanhe (a chave dourada das permutas) */
+  --color-gold-50: #faf6ec;
+  --color-gold-100: #f3ead3;
+  --color-gold-200: #e7d6a8;
+  --color-gold-300: #d9bc7a;
+  --color-gold-400: #cda45c;
+  --color-gold-500: #bb8c47;
+  --color-gold-600: #a1713a;
+  --color-gold-700: #815832;
+  --color-gold-800: #68472c;
+  --color-gold-900: #553b27;
+  --color-gold-950: #2f1f12;
+
+  /* Neutros quentes (papel/creme) — substituem o cinza padrão do Tailwind
+     mantendo a mesma escala de claridade (contraste preservado) */
+  --color-stone-50: #faf8f1;
+  --color-stone-100: #f4f1e6;
+  --color-stone-200: #e8e3d3;
+  --color-stone-300: #d8d1bc;
+  --color-stone-400: #a89e89;
+  --color-stone-500: #7b7262;
+  --color-stone-600: #5a5346;
+  --color-stone-700: #474134;
+  --color-stone-800: #2b2721;
+  --color-stone-900: #1d1a14;
+  --color-stone-950: #0d0b07;
 }
 
 /* Base 18px: corretores mais velhos — tudo em rem escala junto */

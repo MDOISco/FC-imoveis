@@ -28,7 +28,7 @@ export const STATUS_LABELS = toMap(PROPERTY_STATUSES);
 
 // Classes completas (Tailwind v4 não enxerga classes montadas dinamicamente)
 export const STATUS_BADGE_CLASSES: Record<string, string> = {
-  RASCUNHO: "bg-stone-200 text-stone-800",
+  RASCUNHO: "border border-stone-300 bg-white text-stone-800",
   EM_APROVACAO: "bg-amber-100 text-amber-900",
   ATIVO: "bg-brand-100 text-brand-900",
   RESERVADO: "bg-blue-100 text-blue-900",
