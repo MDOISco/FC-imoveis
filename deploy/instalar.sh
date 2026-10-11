@@ -124,12 +124,15 @@ else
 fi
 cd "$DIR"
 npm ci
+npm run build
+# Migração com o serviço parado: o SQLite trava se o sistema estiver no ar
+# (acontece ao rodar o instalador de novo para atualizar/consertar).
+systemctl stop fc-imoveis >/dev/null 2>&1 || true
 npx prisma migrate deploy
 if [[ "$DEMO" == "--demo" ]]; then
   echo "==> Carregando dados de demonstração"
   npx prisma db seed || true
 fi
-npm run build
 
 echo "==> [6/8] Variáveis e serviço do sistema (systemd)"
 # Arquivo de ambiente com permissão 600 (só root lê). Valores entre aspas
@@ -202,9 +205,10 @@ set -e
 cd $DIR
 git pull --ff-only origin $BRANCH
 npm ci
-npx prisma migrate deploy
 npm run build
-systemctl restart fc-imoveis
+systemctl stop fc-imoveis
+npx prisma migrate deploy
+systemctl start fc-imoveis
 echo "Atualizado!"
 EOF
 chmod +x /usr/local/bin/fc-atualizar
