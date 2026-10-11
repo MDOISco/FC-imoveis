@@ -164,13 +164,13 @@ export function SwipeDeck({
               </div>
             )}
             <span
-              className="absolute left-4 top-4 rounded-xl border-4 border-brand-500 px-3 py-1 text-2xl font-extrabold uppercase text-brand-500"
+              className="absolute left-4 top-4 rounded-xl border-4 border-brand-600 bg-white/85 px-3 py-1 text-2xl font-extrabold uppercase text-brand-700"
               style={{ opacity: likeOpacity, transform: "rotate(-12deg)" }}
             >
               🔑 Quero!
             </span>
             <span
-              className="absolute right-4 top-4 rounded-xl border-4 border-red-500 px-3 py-1 text-2xl font-extrabold uppercase text-red-500"
+              className="absolute right-4 top-4 rounded-xl border-4 border-red-500 bg-white/85 px-3 py-1 text-2xl font-extrabold uppercase text-red-600"
               style={{ opacity: passOpacity, transform: "rotate(12deg)" }}
             >
               Passo
@@ -222,7 +222,7 @@ export function SwipeDeck({
                 {top.description}
               </p>
             )}
-            <p className="text-sm font-semibold text-stone-400">
+            <p className="text-sm font-semibold text-stone-500">
               {top.sourceLabel} · ref. {top.refCode}
             </p>
             <PedidoEndereco

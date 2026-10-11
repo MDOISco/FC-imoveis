@@ -32,15 +32,15 @@ export function PropertyCard({ property }: { property: PropertyWithRelations }) 
   const enabledPortals = property.publications.filter((p) => p.enabled);
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm transition-shadow hover:shadow-md">
-      <Link href={href} className="block">
-        <div className="relative aspect-[4/3] bg-stone-200">
+    <div className="flex flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm transition-shadow hover:shadow-lg">
+      <Link href={href} className="group block">
+        <div className="relative aspect-[4/3] overflow-hidden bg-stone-200">
           {cover ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={`/api/arquivos/${cover.thumbPath}?v=${cover.updatedAt.getTime()}`}
               alt={displayTitle(property)}
-              className="size-full object-cover"
+              className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
           ) : (
             <div className="flex size-full flex-col items-center justify-center gap-2 text-stone-400">
@@ -61,7 +61,7 @@ export function PropertyCard({ property }: { property: PropertyWithRelations }) 
         </div>
       </Link>
       <div className="flex flex-1 flex-col gap-2 p-4">
-        <p className="text-sm font-bold uppercase tracking-wide text-stone-400">
+        <p className="text-sm font-bold uppercase tracking-[0.12em] text-gold-700">
           {property.refCode}
           {property.purpose && ` · ${PURPOSE_LABELS[property.purpose]}`}
           {property.propertyType &&
@@ -85,7 +85,7 @@ export function PropertyCard({ property }: { property: PropertyWithRelations }) 
         {specsSummary(property) && (
           <p className="text-base text-stone-600">{specsSummary(property)}</p>
         )}
-        <p className="mt-auto pt-2 text-xl font-extrabold text-brand-800">
+        <p className="mt-auto pt-2 font-display text-2xl font-bold text-brand-900">
           {priceLabel(property)}
         </p>
         {enabledPortals.length > 0 && (

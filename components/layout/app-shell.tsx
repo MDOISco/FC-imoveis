@@ -8,16 +8,18 @@ import { authEnabled } from "@/lib/auth";
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen">
-      <header className="bg-brand-900 text-white shadow-md">
+      <header className="border-b-2 border-gold-500 bg-brand-950 text-white shadow-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
           <Link
             href="/"
-            className="flex items-center gap-2.5 rounded-xl px-2 py-1 text-xl font-extrabold tracking-tight"
+            className="flex items-center gap-3 rounded-xl px-2 py-1"
           >
             <span className="flex size-10 items-center justify-center rounded-xl bg-gold-400 text-gold-950">
               <Home className="size-6" />
             </span>
-            FC Imóveis
+            <span className="whitespace-nowrap font-display text-2xl font-bold tracking-tight">
+              FC Imóveis
+            </span>
           </Link>
           <NavLinks showLogout={authEnabled()} />
         </div>

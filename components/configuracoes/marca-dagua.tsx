@@ -96,7 +96,7 @@ export function MarcaDagua({
             <img
               src={`/api/arquivos/${logoPath}?v=${Date.now()}`}
               alt="Logo atual"
-              className="h-20 max-w-48 rounded-xl border-2 border-stone-200 bg-[repeating-conic-gradient(#f5f5f4_0_25%,#fff_0_50%)] bg-[length:16px_16px] object-contain p-2"
+              className="h-20 max-w-48 rounded-xl border-2 border-stone-200 bg-[repeating-conic-gradient(var(--color-stone-100)_0_25%,#fff_0_50%)] bg-[length:16px_16px] object-contain p-2"
             />
           ) : (
             <p className="text-stone-400">Nenhum logo enviado.</p>

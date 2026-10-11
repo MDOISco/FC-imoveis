@@ -29,7 +29,7 @@ function StatusBanner({
   }
   if (status === "ATIVO") {
     return (
-      <p className="rounded-2xl bg-brand-50 px-5 py-4 text-base font-semibold text-brand-900">
+      <p className="rounded-2xl border-2 border-brand-200 bg-brand-100 px-5 py-4 text-base font-semibold text-brand-900">
         ✅ Seu imóvel foi <strong>aprovado</strong> e já aparece para outros
         clientes interessados em permuta.
       </p>
@@ -94,7 +94,7 @@ export default async function PainelLeadPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-extrabold text-stone-900 sm:text-3xl">
+        <h1 className="font-display text-3xl font-bold text-stone-900 sm:text-4xl">
           Olá, {lead.name.split(" ")[0]}! 👋
         </h1>
         <p className="mt-1 text-base text-stone-500">

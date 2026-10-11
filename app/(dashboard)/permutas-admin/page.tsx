@@ -228,7 +228,7 @@ export default async function PermutasAdminPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="flex items-center gap-3 text-3xl font-extrabold text-stone-900">
+        <h1 className="flex items-center gap-3 font-display text-4xl font-bold text-stone-900">
           <span className="flex size-12 items-center justify-center rounded-2xl bg-gold-400 text-gold-950">
             <KeyRound className="size-7" />
           </span>
