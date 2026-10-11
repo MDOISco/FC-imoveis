@@ -34,6 +34,11 @@ fi
 
 echo "==> [1/8] Pacotes básicos"
 export DEBIAN_FRONTEND=noninteractive
+# Se uma execução anterior deixou o repositório do Caddy quebrado (fora do
+# ar), tira da lista para não travar o apt; o passo 4 tenta de novo.
+if [[ -f /etc/apt/sources.list.d/caddy-stable.list ]] && ! command -v caddy >/dev/null; then
+  rm -f /etc/apt/sources.list.d/caddy-stable.list
+fi
 apt-get update -y
 apt-get install -y curl git ca-certificates gnupg sqlite3 fontconfig \
   fonts-dejavu-core debian-keyring debian-archive-keyring apt-transport-https
@@ -62,12 +67,52 @@ fi
 
 echo "==> [4/8] Caddy (HTTPS automático)"
 if ! command -v caddy >/dev/null; then
-  curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' \
-    | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
-  curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' \
-    > /etc/apt/sources.list.d/caddy-stable.list
-  apt-get update -y && apt-get install -y caddy
+  # 1ª tentativa: repositório oficial (apt). Se estiver fora do ar (ex.: 402
+  # do cloudsmith), cai para o binário oficial baixado do site do Caddy.
+  (
+    set -e
+    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' \
+      | gpg --dearmor --yes -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' \
+      > /etc/apt/sources.list.d/caddy-stable.list
+    apt-get update -y
+    apt-get install -y caddy
+  ) || true
 fi
+if ! command -v caddy >/dev/null; then
+  echo "    repositório do Caddy indisponível — baixando o binário oficial"
+  rm -f /etc/apt/sources.list.d/caddy-stable.list
+  ARCH="$(dpkg --print-architecture)"   # amd64 ou arm64
+  curl -fsSL -o /usr/local/bin/caddy.novo \
+    "https://caddyserver.com/api/download?os=linux&arch=${ARCH}"
+  chmod +x /usr/local/bin/caddy.novo
+  /usr/local/bin/caddy.novo version >/dev/null   # confere que o binário roda
+  mv /usr/local/bin/caddy.novo /usr/local/bin/caddy
+fi
+mkdir -p /etc/caddy
+# Serviço do systemd (o pacote apt já traz o dele; criamos só se não existir)
+if [[ ! -f /lib/systemd/system/caddy.service && ! -f /etc/systemd/system/caddy.service ]]; then
+  CADDY_BIN="$(command -v caddy)"
+  cat > /etc/systemd/system/caddy.service <<EOF
+[Unit]
+Description=Caddy (HTTPS automatico)
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=$CADDY_BIN run --config /etc/caddy/Caddyfile
+ExecReload=$CADDY_BIN reload --config /etc/caddy/Caddyfile --force
+Restart=always
+RestartSec=5
+User=root
+LimitNOFILE=1048576
+
+[Install]
+WantedBy=multi-user.target
+EOF
+  systemctl daemon-reload
+fi
+systemctl enable caddy >/dev/null 2>&1 || true
 
 echo "==> [5/8] Código do sistema"
 if [[ -d "$DIR/.git" ]]; then
