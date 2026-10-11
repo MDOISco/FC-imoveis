@@ -14,8 +14,22 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
 - **Permutas** (`/permutas`, público): cliente cadastra o próprio imóvel
   (vai para aprovação da equipe), deck estilo Tinder; no match mútuo abre a
   **chave dourada** (animação). Equipe intermedia; contatos só no dashboard.
+- **Cadastro do cliente** (`/permutas/cadastrar`) cobre 3 objetivos:
+  Trocar (permuta), Vender e Alugar — venda/locação pula a etapa de troca e
+  vai à fila da equipe (sem deck). `objetivoDoImovel()` em lib/constants.ts.
+- **Agendar visitas** (`/agendar`, público; `/agenda`, equipe): grade de
+  horários em fuso de Brasília (lib/agenda/slots.ts — USE listarDias/conflita,
+  não reinvente fuso), slot revalidado no servidor, arquivo .ics
+  (lib/agenda/ics.ts). Google Agenda/e-mail entram em **lib/notify.ts**.
+- **Bate-papo ao vivo** (widget nas páginas públicas; `/conversas` na equipe):
+  ChatThread/ChatMessage, polling leve (sem lib externa), bolinha de não lidas.
+- **Mapa da cidade** (`/cidade`): Leaflet + OpenStreetMap (sem chave), pontos
+  reais em lib/cidade/pontos.ts. Componente só-cliente (Leaflet usa window).
 - Feito para corretores de mais idade: **letras grandes (base 18px), botões
   grandes, pt-BR em toda a UI**. Manter esse padrão em qualquer tela nova.
+- **Imóvel de cliente (source=LEAD) tem gestão própria** (Permutas → Imóveis
+  de clientes): NUNCA operar status/edição pela ficha/wizard do corretor —
+  as rotas /api/imoveis bloqueiam source=LEAD de propósito (regressão do bug 1).
 
 ## Produção (está NO AR)
 
