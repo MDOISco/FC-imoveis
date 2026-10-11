@@ -242,7 +242,7 @@ export function LeadWizard() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
-        <h1 className="text-2xl font-extrabold text-stone-900 sm:text-3xl">
+        <h1 className="font-display text-3xl font-bold text-stone-900 sm:text-4xl">
           Cadastre seu imóvel para permuta
         </h1>
         <p className="mt-1 text-base text-stone-500">
