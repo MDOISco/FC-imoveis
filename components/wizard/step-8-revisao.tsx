@@ -185,7 +185,7 @@ export function Step8Revisao({
 
       <Section title="Comodidades" step={4} propertyId={property.id}>
         {property.amenities.length === 0 ? (
-          <p className="text-stone-400">Nenhuma marcada.</p>
+          <p className="text-stone-500">Nenhuma marcada.</p>
         ) : (
           <div className="flex flex-wrap gap-2">
             {property.amenities.map((key) => (
@@ -250,7 +250,7 @@ export function Step8Revisao({
             {property.description}
           </p>
         ) : (
-          <p className="text-stone-400">Ainda sem descrição.</p>
+          <p className="text-stone-500">Ainda sem descrição.</p>
         )}
       </Section>
 

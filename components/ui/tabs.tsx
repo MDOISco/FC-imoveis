@@ -36,7 +36,7 @@ export function Tabs({
             className={cn(
               "inline-flex min-h-12 items-center gap-2 rounded-t-xl border-b-4 px-5 font-semibold transition-colors",
               isActive
-                ? "border-brand-700 bg-brand-50 text-brand-900"
+                ? "border-brand-700 bg-brand-100 text-brand-900"
                 : "border-transparent text-stone-600 hover:bg-stone-100 hover:text-stone-900",
             )}
           >

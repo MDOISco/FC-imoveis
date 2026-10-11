@@ -60,7 +60,7 @@ export function FormEntrar() {
           <span className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-gold-400 text-gold-950">
             <Home className="size-9" />
           </span>
-          <h1 className="mt-4 text-3xl font-extrabold text-stone-900">
+          <h1 className="mt-4 font-display text-4xl font-bold text-stone-900">
             FC Imóveis
           </h1>
           <p className="mt-1 text-lg text-stone-500">
@@ -93,7 +93,7 @@ export function FormEntrar() {
           )}
         </Button>
 
-        <p className="mt-5 text-center text-base text-stone-400">
+        <p className="mt-5 text-center text-base text-stone-500">
           Esqueceu a senha? Fale com a administração da FC Imóveis.
         </p>
       </form>

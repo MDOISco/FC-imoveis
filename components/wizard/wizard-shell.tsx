@@ -39,9 +39,9 @@ export function WizardShell({
             <ArrowLeft className="size-5" />
             {property.status === "RASCUNHO" ? "Voltar ao painel" : "Voltar à ficha"}
           </Link>
-          <h1 className="mt-1 text-2xl font-extrabold text-stone-900">
+          <h1 className="mt-1 font-display text-3xl font-bold text-stone-900">
             {property.status === "RASCUNHO" ? "Cadastrar imóvel" : "Editar imóvel"}{" "}
-            <span className="font-bold text-stone-400">· {property.refCode}</span>
+            <span className="font-bold text-stone-500">· {property.refCode}</span>
           </h1>
         </div>
       </div>

@@ -196,7 +196,7 @@ export function LeadWizard() {
     )}`;
     return (
       <div className="mx-auto max-w-lg space-y-6 rounded-3xl border border-stone-200 bg-white p-7 text-center">
-        <PartyPopper className="mx-auto size-14 text-gold-500" />
+        <PartyPopper className="mx-auto size-14 text-gold-600" />
         <h1 className="text-2xl font-extrabold text-stone-900">
           Imóvel enviado para análise!
         </h1>
@@ -242,7 +242,7 @@ export function LeadWizard() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
-        <h1 className="text-2xl font-extrabold text-stone-900 sm:text-3xl">
+        <h1 className="font-display text-3xl font-bold text-stone-900 sm:text-4xl">
           Cadastre seu imóvel para permuta
         </h1>
         <p className="mt-1 text-base text-stone-500">
@@ -607,7 +607,7 @@ export function LeadWizard() {
                 </div>
               ))}
             </dl>
-            <p className="rounded-xl bg-brand-50 p-4 text-base text-brand-900">
+            <p className="rounded-xl bg-brand-100 p-4 text-base text-brand-900">
               Ao enviar, nossa equipe revisa o cadastro antes de publicar. O
               endereço exato nunca aparece no site — só cidade e bairro.
             </p>

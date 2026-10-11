@@ -26,7 +26,7 @@ export function GoldenKeySvg({ className }: { className?: string }) {
               y1={y1}
               x2={x2}
               y2={y2}
-              stroke="#e6ad22"
+              className="stroke-gold-400"
               strokeWidth="6"
               strokeLinecap="round"
             />
@@ -38,9 +38,8 @@ export function GoldenKeySvg({ className }: { className?: string }) {
       <g>
         {/* alça (abre com a animação) */}
         <path
-          className="anim-cadeado"
+          className="anim-cadeado stroke-stone-500"
           d="M70 92 v-18 a30 30 0 0 1 60 0 v18"
-          stroke="#78716c"
           strokeWidth="12"
           strokeLinecap="round"
         />
@@ -51,13 +50,19 @@ export function GoldenKeySvg({ className }: { className?: string }) {
           width="84"
           height="66"
           rx="12"
-          fill="#1d5c42"
-          stroke="#153d2e"
+          className="fill-brand-700 stroke-brand-900"
           strokeWidth="4"
         />
         {/* fechadura */}
-        <circle cx="100" cy="118" r="9" fill="#0a221a" />
-        <rect x="96" y="120" width="8" height="18" rx="3" fill="#0a221a" />
+        <circle cx="100" cy="118" r="9" className="fill-brand-950" />
+        <rect
+          x="96"
+          y="120"
+          width="8"
+          height="18"
+          rx="3"
+          className="fill-brand-950"
+        />
       </g>
 
       {/* chave dourada girando */}
@@ -66,7 +71,7 @@ export function GoldenKeySvg({ className }: { className?: string }) {
           cx="138"
           cy="70"
           r="16"
-          stroke="#e6ad22"
+          className="stroke-gold-500"
           strokeWidth="9"
           fill="none"
         />
@@ -75,7 +80,7 @@ export function GoldenKeySvg({ className }: { className?: string }) {
           y1="81"
           x2="98"
           y2="110"
-          stroke="#e6ad22"
+          className="stroke-gold-500"
           strokeWidth="10"
           strokeLinecap="round"
         />
@@ -84,7 +89,7 @@ export function GoldenKeySvg({ className }: { className?: string }) {
           y1="102"
           x2="112"
           y2="112"
-          stroke="#e6ad22"
+          className="stroke-gold-500"
           strokeWidth="8"
           strokeLinecap="round"
         />
@@ -93,7 +98,7 @@ export function GoldenKeySvg({ className }: { className?: string }) {
           y1="110"
           x2="106"
           y2="118"
-          stroke="#e6ad22"
+          className="stroke-gold-500"
           strokeWidth="8"
           strokeLinecap="round"
         />
@@ -123,7 +128,7 @@ export function GoldenKeyMatch({
     >
       <div className="anim-match-pop w-full max-w-sm rounded-3xl bg-white p-6 text-center shadow-2xl">
         <GoldenKeySvg className="mx-auto size-40" />
-        <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-gold-600">
+        <h2 className="mt-2 font-display text-4xl font-bold tracking-tight text-gold-700">
           🔑 DEU MATCH!
         </h2>
         <p className="mt-2 text-lg font-semibold text-stone-800">
@@ -141,7 +146,7 @@ export function GoldenKeyMatch({
           {propertyTitle}
         </p>
         <p className="text-base text-stone-500">{propertyLocation}</p>
-        <p className="mt-4 rounded-xl bg-brand-50 p-3 text-base text-brand-900">
+        <p className="mt-4 rounded-xl bg-brand-100 p-3 text-base text-brand-900">
           A equipe da FC Imóveis vai entrar em contato com vocês para conduzir a
           permuta com segurança.
         </p>

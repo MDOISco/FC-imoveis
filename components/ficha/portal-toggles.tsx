@@ -15,7 +15,7 @@ function statusText(
   propertyStatus: string,
 ): { text: string; className: string } {
   if (!pub?.enabled) {
-    return { text: "Não publicado", className: "text-stone-400" };
+    return { text: "Não publicado", className: "text-stone-500" };
   }
   if (propertyStatus !== "ATIVO") {
     return {
