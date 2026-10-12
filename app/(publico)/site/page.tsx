@@ -90,9 +90,22 @@ export default async function SiteHomePage({
 
   return (
     <div>
-      {/* ===== Hero ===== */}
-      <section className="bg-gradient-to-br from-brand-950 via-brand-900 to-brand-800 text-white">
-        <div className="mx-auto max-w-6xl px-4 pb-10 pt-14 text-center sm:px-6 sm:pt-20">
+      {/* ===== Hero (vídeo aéreo de Bragança em largura total) ===== */}
+      <section className="relative overflow-hidden bg-brand-950 text-white">
+        {/* Vídeo direto em HTML: o React não escreve o atributo "muted" no
+            HTML do servidor, e sem ele o autoplay falha no celular. */}
+        <div
+          className="absolute inset-0"
+          aria-hidden="true"
+          dangerouslySetInnerHTML={{
+            __html: `<video class="absolute inset-0 size-full object-cover" poster="/videos/braganca-aerea-poster.jpg" autoplay muted loop playsinline preload="auto"><source src="/videos/braganca-aerea.webm" type="video/webm"><source src="/videos/braganca-aerea.mp4" type="video/mp4"></video>`,
+          }}
+        />
+        <div
+          className="absolute inset-0 bg-gradient-to-b from-brand-950/90 via-brand-950/65 to-brand-950/90"
+          aria-hidden="true"
+        />
+        <div className="relative mx-auto max-w-6xl px-4 pb-10 pt-14 text-center sm:px-6 sm:pt-20">
           <p className="text-sm font-bold uppercase tracking-[0.22em] text-gold-300">
             Imobiliária em Bragança Paulista · SP
           </p>
@@ -133,12 +146,12 @@ export default async function SiteHomePage({
           </div>
         </div>
         {/* Faixa de números */}
-        <div className="border-t border-white/10">
+        <div className="relative border-t border-white/10">
           <div className="mx-auto grid max-w-6xl grid-cols-3 gap-px bg-white/10">
             {stats.map((s) => (
               <div
                 key={s.label}
-                className="bg-brand-950/60 px-4 py-5 text-center sm:px-6"
+                className="bg-brand-950/70 px-4 py-5 text-center sm:px-6"
               >
                 <span className="block font-display text-4xl font-bold leading-none text-gold-300">
                   {s.valor}
@@ -266,7 +279,7 @@ export default async function SiteHomePage({
         </div>
       </section>
 
-      {/* ===== Permutas (banner com vídeo aéreo de Bragança) ===== */}
+      {/* ===== Permutas ===== */}
       <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="relative overflow-hidden rounded-3xl bg-brand-950 text-white shadow-lg">
           {/* Autoplay robusto no celular (Modo de Economia, apps, etc.) */}
