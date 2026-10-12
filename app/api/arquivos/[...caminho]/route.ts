@@ -17,6 +17,11 @@ export async function GET(
 ) {
   const { caminho } = await params;
   const rel = caminho.join("/");
+  // A foto ORIGINAL (sem marca d'água e com metadados do celular, ex.: GPS)
+  // nunca é servida ao público — só as versões tratadas web.jpg/thumb.webp.
+  if (/\/photos\/[^/]+\/original\.[A-Za-z0-9]+$/.test(rel)) {
+    return NextResponse.json({ error: "Arquivo não encontrado" }, { status: 404 });
+  }
   const abs = resolveSafe(rel);
   if (!abs) {
     return NextResponse.json({ error: "Caminho inválido" }, { status: 400 });

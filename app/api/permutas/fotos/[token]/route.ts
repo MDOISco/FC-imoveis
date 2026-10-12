@@ -23,6 +23,14 @@ export async function POST(
   const lead = await getLeadByToken(token);
   const property = lead?.properties[0];
   if (!lead || !property) return jsonError("Link inválido", 404);
+  // Depois de publicado (ou pausado), foto nova só com a equipe — senão uma
+  // imagem sem revisão iria direto para o ar.
+  if (!["EM_APROVACAO", "REPROVADO"].includes(property.status)) {
+    return jsonError(
+      "Seu cadastro já foi publicado. Para trocar fotos, fale com a nossa equipe.",
+      403,
+    );
+  }
 
   let form: FormData;
   try {

@@ -10,6 +10,7 @@ import {
   MessageCircle,
   Settings,
 } from "lucide-react";
+import { ChatNaoLidasBadge } from "@/components/chat/nao-lidas-badge";
 import { cn } from "@/lib/cn";
 
 const links = [
@@ -51,6 +52,7 @@ export function NavLinks({ showLogout = false }: { showLogout?: boolean }) {
           >
             <Icon className="size-5 shrink-0" />
             <span className="hidden sm:inline">{label}</span>
+            {href === "/conversas" && <ChatNaoLidasBadge />}
           </Link>
         );
       })}

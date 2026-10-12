@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { WizardShell } from "@/components/wizard/wizard-shell";
 import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
@@ -36,6 +36,9 @@ export default async function EditarImovelPage({
   ]);
 
   if (!property) notFound();
+  // Imóvel de cliente não passa pelo wizard do corretor: a revisão/edição
+  // dele acontece em Permutas (Aprovações / Imóveis de clientes).
+  if (property.source === "LEAD") redirect("/permutas-admin?aba=clientes");
 
   const step = Math.min(Math.max(Number(etapa) || 1, 1), 8);
 

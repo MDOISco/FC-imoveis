@@ -3,7 +3,7 @@ import { MapaBraganca } from "@/components/cidade/mapa-braganca";
 import { CURIOSIDADES_GERAIS } from "@/lib/cidade/pontos";
 
 export const metadata = {
-  title: "Conheça Bragança Paulista — FC Imóveis",
+  title: { absolute: "Conheça Bragança Paulista — FC Imóveis" },
   description:
     "Mapa interativo com os pontos turísticos e as curiosidades da Cidade Poesia, a Capital Nacional da Linguiça Artesanal.",
 };

@@ -3,16 +3,23 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Phone, RefreshCw, Sparkles, X } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
 import { apiFetch, ApiError } from "@/lib/client-api";
 import { cn } from "@/lib/cn";
+import {
+  labelOf,
+  LEAD_OBJETIVO_BADGE_CLASSES,
+  LEAD_OBJETIVO_OPTIONS,
+} from "@/lib/constants";
 
 export type AprovacaoItem = {
   id: string;
   refCode: string;
+  objetivo: "PERMUTAR" | "VENDER" | "ALUGAR";
   typeLabel: string;
   location: string;
   specs: string;
@@ -64,6 +71,8 @@ export function AdminAprovacaoCard({ item }: { item: AprovacaoItem }) {
     }
   }
 
+  const isPermuta = item.objetivo === "PERMUTAR";
+
   async function approve() {
     setBusy(true);
     try {
@@ -71,7 +80,11 @@ export function AdminAprovacaoCard({ item }: { item: AprovacaoItem }) {
         method: "POST",
         body: { action: "aprovar", description, descriptionStyle: style },
       });
-      toast(`${item.refCode} aprovado e publicado nas permutas!`);
+      toast(
+        isPermuta
+          ? `${item.refCode} aprovado e publicado nas permutas!`
+          : `${item.refCode} aprovado! O cliente acompanha pelo painel dele.`,
+      );
       router.refresh();
     } catch (e) {
       toast(e instanceof ApiError ? e.message : "Falha ao aprovar.", "erro");
@@ -101,7 +114,12 @@ export function AdminAprovacaoCard({ item }: { item: AprovacaoItem }) {
           <p className="text-sm font-bold uppercase tracking-wide text-stone-400">
             {item.refCode} · enviado em {item.createdAt}
           </p>
-          <h3 className="text-xl font-bold text-stone-900">
+          <div className="mt-1">
+            <Badge className={LEAD_OBJETIVO_BADGE_CLASSES[item.objetivo]}>
+              {labelOf(LEAD_OBJETIVO_OPTIONS, item.objetivo)}
+            </Badge>
+          </div>
+          <h3 className="mt-1 text-xl font-bold text-stone-900">
             {item.typeLabel} · {item.location}
           </h3>
           <p className="text-base text-stone-600">
@@ -131,15 +149,25 @@ export function AdminAprovacaoCard({ item }: { item: AprovacaoItem }) {
         </div>
       )}
 
-      <p className="mt-4 rounded-xl bg-gold-50 px-4 py-3 text-base text-gold-900">
-        <strong>Procura na troca:</strong> {item.preferenceSummary}
-      </p>
+      {isPermuta && (
+        <p className="mt-4 rounded-xl bg-gold-50 px-4 py-3 text-base text-gold-900">
+          <strong>Procura na troca:</strong> {item.preferenceSummary}
+        </p>
+      )}
 
       <div className="mt-5 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h4 className="text-lg font-bold text-stone-900">
-            Descrição do anúncio
-          </h4>
+          <div>
+            <h4 className="text-lg font-bold text-stone-900">
+              Descrição do anúncio
+            </h4>
+            {!isPermuta && (
+              <p className="text-sm text-stone-500">
+                Opcional por agora: se deixar como está, usamos o texto do
+                cliente. Dá para melhorar depois na ficha do imóvel.
+              </p>
+            )}
+          </div>
           <Button variant="secondary" disabled={loadingSug} onClick={generate}>
             {suggestions ? (
               <RefreshCw className={cn("size-5", loadingSug && "animate-spin")} />
@@ -225,7 +253,8 @@ export function AdminAprovacaoCard({ item }: { item: AprovacaoItem }) {
         ) : (
           <div className="flex flex-wrap gap-3">
             <Button size="lg" disabled={busy} onClick={approve}>
-              <Check className="size-5" /> Aprovar e publicar
+              <Check className="size-5" />{" "}
+              {isPermuta ? "Aprovar e publicar" : "Aprovar cadastro"}
             </Button>
             <Button
               variant="secondary"

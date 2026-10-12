@@ -30,6 +30,7 @@ export type PublicProperty = {
   description: string | null;
   amenities: string[];
   sourceLabel: string; // "Imóvel da FC Imóveis" | "Imóvel de cliente"
+  daCarteira: boolean; // imóvel da carteira da imobiliária (aceita agendar visita)
   photos: PublicPhoto[];
   videoUrl: string | null;
 };
@@ -73,6 +74,7 @@ export function toPublicProperty(
       .filter((x): x is string => Boolean(x)),
     sourceLabel:
       p.source === "CORRETOR" ? "Imóvel da FC Imóveis" : "Imóvel de cliente",
+    daCarteira: p.source === "CORRETOR",
     photos: ordered.map((f) => ({
       thumbUrl: `/api/arquivos/${f.thumbPath}?v=${f.updatedAt.getTime()}`,
       webUrl: `/api/arquivos/${f.webPath}?v=${f.updatedAt.getTime()}`,

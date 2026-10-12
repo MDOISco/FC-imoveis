@@ -95,7 +95,16 @@ export default async function FichaImovelPage({
               </span>
             </p>
           </div>
-          <StatusActions propertyId={property.id} status={property.status} />
+          {property.source === "LEAD" ? (
+            <Link
+              href="/permutas-admin?aba=clientes"
+              className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-gold-100 px-4 font-bold text-gold-950 hover:bg-gold-200"
+            >
+              👤 Imóvel de cliente — gerenciar em Permutas
+            </Link>
+          ) : (
+            <StatusActions propertyId={property.id} status={property.status} />
+          )}
         </div>
       </div>
 

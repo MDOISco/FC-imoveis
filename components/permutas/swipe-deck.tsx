@@ -52,10 +52,14 @@ export function SwipeDeck({
     const top = cards?.[0];
     if (!top || leaving) return;
     setLeaving(liked ? "right" : "left");
+    const eraUltima = (cards?.length ?? 0) === 1;
     setTimeout(() => {
       setCards((prev) => (prev ? prev.slice(1) : prev));
       setLeaving(null);
       setDrag(null);
+      // O servidor manda o deck em levas de 20: acabou a leva, busca a próxima
+      // antes de anunciar que os imóveis terminaram.
+      if (eraUltima) void fetchDeck();
     }, 260);
     try {
       const res = await apiFetch<{

@@ -2,24 +2,32 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Home, Trash2 } from "lucide-react";
+import { Eye, EyeOff, Home, RotateCcw, Trash2 } from "lucide-react";
+import { CopyButton } from "@/components/ui/copy-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ConfirmButton } from "@/components/ui/confirm-dialog";
 import { EmptyState } from "@/components/ui/empty-state";
 import { toast } from "@/components/ui/toast";
 import { apiFetch, ApiError } from "@/lib/client-api";
+import {
+  labelOf,
+  LEAD_OBJETIVO_BADGE_CLASSES,
+  LEAD_OBJETIVO_OPTIONS,
+} from "@/lib/constants";
 import { formatDate } from "@/lib/format";
 
 export type ClienteImovelItem = {
   id: string;
   refCode: string;
+  objetivo: "PERMUTAR" | "VENDER" | "ALUGAR";
   typeLabel: string;
   location: string;
   specs: string;
   status: string; // ATIVO | DESATIVADO | REPROVADO
   leadName: string;
   leadWhatsapp: string;
+  painelUrl: string | null; // link privado do cliente (para reenviar se ele perder)
   thumbUrl: string | null;
   createdAt: string;
 };
@@ -35,7 +43,10 @@ export function AdminClientes({ items }: { items: ClienteImovelItem[] }) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
 
-  async function act(id: string, action: "desativar" | "reativar" | "excluir") {
+  async function act(
+    id: string,
+    action: "desativar" | "reativar" | "reanalisar" | "excluir",
+  ) {
     setBusy(id);
     try {
       await apiFetch(`/api/permutas/admin/clientes/${id}`, {
@@ -47,7 +58,9 @@ export function AdminClientes({ items }: { items: ClienteImovelItem[] }) {
           ? "Cadastro excluído. Ele saiu do site na hora."
           : action === "desativar"
             ? "Imóvel tirado do ar. Ele não aparece mais na página pública."
-            : "Imóvel publicado de novo.",
+            : action === "reanalisar"
+              ? "Cadastro voltou para a fila de Aprovações."
+              : "Imóvel publicado de novo.",
       );
       router.refresh();
     } catch (e) {
@@ -94,6 +107,9 @@ export function AdminClientes({ items }: { items: ClienteImovelItem[] }) {
             <div className="flex-1">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge className={badge.className}>{badge.label}</Badge>
+                <Badge className={LEAD_OBJETIVO_BADGE_CLASSES[item.objetivo]}>
+                  {labelOf(LEAD_OBJETIVO_OPTIONS, item.objetivo)}
+                </Badge>
                 <span className="text-base text-stone-500">
                   cadastrado em {item.createdAt}
                 </span>
@@ -116,6 +132,14 @@ export function AdminClientes({ items }: { items: ClienteImovelItem[] }) {
                   <EyeOff className="size-5" /> Tirar do ar
                 </Button>
               )}
+              {item.status === "REPROVADO" && (
+                <Button
+                  disabled={busy === item.id}
+                  onClick={() => act(item.id, "reanalisar")}
+                >
+                  <RotateCcw className="size-5" /> Revisar de novo
+                </Button>
+              )}
               {item.status === "DESATIVADO" && (
                 <Button
                   disabled={busy === item.id}
@@ -123,6 +147,12 @@ export function AdminClientes({ items }: { items: ClienteImovelItem[] }) {
                 >
                   <Eye className="size-5" /> Publicar de novo
                 </Button>
+              )}
+              {item.painelUrl && (
+                <CopyButton
+                  text={`${typeof window !== "undefined" ? window.location.origin : ""}${item.painelUrl}`}
+                  label="Copiar link do cliente"
+                />
               )}
               <ConfirmButton
                 title="Excluir este cadastro?"

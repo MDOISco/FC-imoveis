@@ -19,6 +19,14 @@ export async function POST(request: Request) {
   const lead = await getLeadByToken(String(body.token ?? ""));
   const mine = lead?.properties[0];
   if (!lead || !mine) return jsonError("Link inválido", 404);
+  // Só participa do deck quem está na permuta e com cadastro válido
+  // (em análise ainda pode curtir; reprovado/fora do ar, não).
+  if (!mine.acceptsTrade || !["ATIVO", "EM_APROVACAO"].includes(mine.status)) {
+    return jsonError(
+      "Seu cadastro não está participando das permutas no momento. Fale com a nossa equipe.",
+      403,
+    );
+  }
 
   const toPropertyId = String(body.toPropertyId ?? "");
   const liked = Boolean(body.liked);

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Bath, BedDouble, Camera, Car, MapPin, Ruler } from "lucide-react";
 import type { Photo, Property } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
@@ -107,6 +108,14 @@ export function ImovelCard({
           >
             Tenho interesse
           </a>
+        )}
+        {property.source === "CORRETOR" && (
+          <Link
+            href={`/agendar?imovel=${property.id}`}
+            className="mt-2 inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border-2 border-brand-700 px-4 font-semibold text-brand-800 transition-colors hover:bg-brand-50"
+          >
+            📅 Agendar visita
+          </Link>
         )}
       </div>
     </div>
