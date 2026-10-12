@@ -8,6 +8,7 @@ import {
   STATUS_LABELS,
 } from "@/lib/constants";
 import { displayTitle, priceLabel, specsSummary } from "@/lib/property-display";
+import { DeleteDraftButton } from "./delete-draft-button";
 import type { PropertyWithRelations } from "./property-card";
 import type { Broker } from "@prisma/client";
 
@@ -94,17 +95,26 @@ export function PropertyTable({ properties }: { properties: Row[] }) {
                   </Badge>
                 </td>
                 <td className="px-4 py-3">
-                  <Link
-                    href={href}
-                    className={
-                      isDraft
-                        ? "inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-gold-400 px-4 font-semibold text-gold-950 hover:bg-gold-300"
-                        : "inline-flex min-h-11 items-center gap-1.5 rounded-xl border-2 border-stone-200 px-4 font-semibold text-stone-700 hover:border-brand-500 hover:text-brand-800"
-                    }
-                  >
-                    <Pencil className="size-4" />
-                    {isDraft ? "Continuar" : "Abrir"}
-                  </Link>
+                  <div className="flex items-center justify-end gap-2">
+                    <Link
+                      href={href}
+                      className={
+                        isDraft
+                          ? "inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-gold-400 px-4 font-semibold text-gold-950 hover:bg-gold-300"
+                          : "inline-flex min-h-11 items-center gap-1.5 rounded-xl border-2 border-stone-200 px-4 font-semibold text-stone-700 hover:border-brand-500 hover:text-brand-800"
+                      }
+                    >
+                      <Pencil className="size-4" />
+                      {isDraft ? "Continuar" : "Abrir"}
+                    </Link>
+                    {isDraft && (
+                      <DeleteDraftButton
+                        propertyId={p.id}
+                        refCode={p.refCode}
+                        compact
+                      />
+                    )}
+                  </div>
                 </td>
               </tr>
             );

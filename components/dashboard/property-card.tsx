@@ -3,6 +3,7 @@ import { Camera, Pencil, Repeat, UserRound } from "lucide-react";
 import type { Broker, Photo, PortalPublication, Property } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
 import { buttonClasses } from "@/components/ui/button";
+import { DeleteDraftButton } from "@/components/dashboard/delete-draft-button";
 import {
   PORTAL_LABELS,
   PROPERTY_TYPE_LABELS,
@@ -101,12 +102,19 @@ export function PropertyCard({ property }: { property: PropertyWithRelations }) 
           </div>
         )}
         {isDraft && (
-          <Link
-            href={href}
-            className={buttonClasses("gold", "md") + " mt-2 w-full"}
-          >
-            <Pencil className="size-5" /> Continuar cadastro
-          </Link>
+          <div className="mt-2 flex flex-col gap-2">
+            <Link
+              href={href}
+              className={buttonClasses("gold", "md") + " w-full"}
+            >
+              <Pencil className="size-5" /> Continuar cadastro
+            </Link>
+            <DeleteDraftButton
+              propertyId={property.id}
+              refCode={property.refCode}
+              className="w-full justify-center"
+            />
+          </div>
         )}
       </div>
     </div>
