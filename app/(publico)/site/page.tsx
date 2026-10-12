@@ -6,6 +6,7 @@ import {
   KeyRound,
   MessageCircle,
 } from "lucide-react";
+import { HeroVideo } from "@/components/site/hero-video";
 import { ImovelCard, type SiteProperty } from "@/components/site/imovel-card";
 import { cn } from "@/lib/cn";
 import { purposeIncludesRent, purposeIncludesSale } from "@/lib/constants";
@@ -268,14 +269,12 @@ export default async function SiteHomePage({
       {/* ===== Permutas (banner com vídeo aéreo de Bragança) ===== */}
       <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="relative overflow-hidden rounded-3xl bg-brand-950 text-white shadow-lg">
-          {/* Vídeo direto em HTML: o React não escreve o atributo "muted" no
-              HTML do servidor, e sem ele o autoplay falha no celular. */}
-          <div
-            className="absolute inset-0"
-            aria-hidden="true"
-            dangerouslySetInnerHTML={{
-              __html: `<video class="absolute inset-0 size-full object-cover" poster="/videos/braganca-aerea-poster.jpg" autoplay muted loop playsinline preload="auto"><source src="/videos/braganca-aerea.webm" type="video/webm"><source src="/videos/braganca-aerea.mp4" type="video/mp4"></video>`,
-            }}
+          {/* Autoplay robusto no celular (Modo de Economia, apps, etc.) */}
+          <HeroVideo
+            className="absolute inset-0 size-full object-cover"
+            webm="/videos/braganca-aerea.webm"
+            mp4="/videos/braganca-aerea.mp4"
+            poster="/videos/braganca-aerea-poster.jpg"
           />
           <div
             className="absolute inset-0 bg-gradient-to-b from-brand-950/85 via-brand-950/55 to-brand-950/85"
