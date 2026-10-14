@@ -147,11 +147,13 @@ export function ImovelDetalhes({
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
         {/* Coluna principal: fotos + descrição */}
         <div className="space-y-6 lg:col-span-3">
-          <Galeria
-            photos={fotos}
-            video={video}
-            title={publicTitle(property)}
-          />
+          <div data-secao="Fotos">
+            <Galeria
+              photos={fotos}
+              video={video}
+              title={publicTitle(property)}
+            />
+          </div>
 
           {/* Números rápidos */}
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -207,7 +209,10 @@ export function ImovelDetalhes({
           </div>
 
           {property.description && (
-            <section className="rounded-2xl border border-stone-200 bg-white p-6 sm:p-8">
+            <section
+              data-secao="Sobre este imóvel"
+              className="rounded-2xl border border-stone-200 bg-white p-6 sm:p-8"
+            >
               <h2 className="font-display text-2xl font-bold text-stone-900">
                 Sobre este imóvel
               </h2>
@@ -219,7 +224,10 @@ export function ImovelDetalhes({
           )}
 
           {amenities.length > 0 && (
-            <section className="rounded-2xl border border-stone-200 bg-white p-6 sm:p-8">
+            <section
+              data-secao="Comodidades"
+              className="rounded-2xl border border-stone-200 bg-white p-6 sm:p-8"
+            >
               <h2 className="font-display text-2xl font-bold text-stone-900">
                 Comodidades
               </h2>
@@ -241,7 +249,10 @@ export function ImovelDetalhes({
 
         {/* Coluna lateral: preço, contato e detalhes */}
         <div className="space-y-6 lg:col-span-2">
-          <section className="overflow-hidden rounded-2xl border-2 border-gold-400/60 bg-brand-950 p-6 text-white shadow-lg sm:p-7">
+          <section
+            data-secao="Valor e contato"
+            className="overflow-hidden rounded-2xl border-2 border-gold-400/60 bg-brand-950 p-6 text-white shadow-lg sm:p-7"
+          >
             <p className="text-sm font-bold uppercase tracking-[0.22em] text-gold-300">
               Valor
             </p>
@@ -287,6 +298,7 @@ export function ImovelDetalhes({
                   href={zap}
                   target="_blank"
                   rel="noopener noreferrer"
+                  data-atividade="WHATSAPP"
                   className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-gold-400 px-6 text-lg font-extrabold text-gold-950 shadow-lg transition-colors hover:bg-gold-300"
                 >
                   <MessageCircle className="size-6" /> Falar no WhatsApp
@@ -294,6 +306,7 @@ export function ImovelDetalhes({
               )}
               <Link
                 href={`/agendar?imovel=${property.id}`}
+                data-atividade="AGENDAR"
                 className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl border-2 border-white/40 px-6 text-lg font-bold text-white transition-colors hover:border-gold-300 hover:text-gold-200"
               >
                 <CalendarDays className="size-6" /> Agendar visita
@@ -305,7 +318,10 @@ export function ImovelDetalhes({
             </p>
           </section>
 
-          <section className="rounded-2xl border border-stone-200 bg-white p-6">
+          <section
+            data-secao="Detalhes"
+            className="rounded-2xl border border-stone-200 bg-white p-6"
+          >
             <h2 className="flex items-center gap-2 font-display text-2xl font-bold text-stone-900">
               <Building2 className="size-6 text-brand-700" /> Detalhes
             </h2>

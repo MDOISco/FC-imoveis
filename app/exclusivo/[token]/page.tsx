@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { Home, Lock, MessageCircle, Sparkles } from "lucide-react";
 import { ImovelDetalhes } from "@/components/site/imovel-detalhes";
+import { RastreioAtividade } from "@/components/site/rastreio-atividade";
 import { SenhaExclusiva } from "@/components/site/senha-exclusiva";
 import { ACCESS_COOKIE, expectedToken, safeEqual } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -195,7 +196,14 @@ export default async function ExclusivoPage({ params }: Params) {
           whatsapp={settings.whatsapp}
           whatsappText={`Olá! Sou ${link.clientName}. Vi a apresentação exclusiva do imóvel ${property.refCode} (${publicLocation(property)}) e gostaria de conversar.`}
         />
+        <p className="mt-8 text-center text-sm text-stone-500">
+          Para a equipe atender você melhor, registramos quando esta
+          apresentação é aberta, o que é clicado e a cidade aproximada do
+          acesso. Nada disso é compartilhado com terceiros.
+        </p>
       </main>
+      {/* Registro silencioso da visita (só depois da senha; não conta a equipe). */}
+      <RastreioAtividade origem="EXCLUSIVO" token={token} />
       <Rodape
         agencyName={settings.agencyName}
         creci={settings.creci}

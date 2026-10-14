@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { ImovelDetalhes } from "@/components/site/imovel-detalhes";
+import { RastreioAtividade } from "@/components/site/rastreio-atividade";
 import { db } from "@/lib/db";
 import {
   publicLocation,
@@ -78,6 +79,12 @@ export default async function ImovelPublicoPage({ params }: Params) {
           whatsappText={`Olá! Tenho interesse no imóvel ${property.refCode} (${publicLocation(property)}) que vi no site da FC Imóveis.`}
         />
       </div>
+      <p className="mt-8 text-center text-sm text-stone-500">
+        Registramos visitas e cliques nesta página (sem identificar você) para
+        melhorar o atendimento.
+      </p>
+      {/* Contagem de visitas anônimas do site (não conta a equipe). */}
+      <RastreioAtividade origem="SITE" imovelId={property.id} />
     </div>
   );
 }
