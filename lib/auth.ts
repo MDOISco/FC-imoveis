@@ -26,7 +26,10 @@ export async function expectedToken(): Promise<string | null> {
   return token;
 }
 
-async function hmacHex(secret: string, message: string): Promise<string> {
+export async function hmacHex(
+  secret: string,
+  message: string,
+): Promise<string> {
   const enc = new TextEncoder();
   const cryptoKey = await crypto.subtle.importKey(
     "raw",

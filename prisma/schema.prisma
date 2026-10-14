@@ -125,7 +125,12 @@ model Property {
   leadDescription  String? // texto escrito pelo próprio cliente (permuta)
   rejectionReason  String? // motivo de reprovação (permuta)
 
+  // Site público: o imóvel só aparece na vitrine e ganha página própria
+  // (/site/imovel/[id]) quando a equipe liga este botão na ficha.
+  publishedOnSite Boolean @default(false)
+
   photos          Photo[]
+  privateLinks    PrivateLink[]
   video           Video?
   publications    PortalPublication[]
   tradePreference TradePreference?
@@ -143,6 +148,25 @@ model Property {
   @@index([neighborhood])
   @@index([propertyType])
   @@index([source, status])
+}
+
+// Link privado de um imóvel para UM cliente (quase uma landing page):
+// /exclusivo/[token], protegido por senha criada pelo corretor na ficha.
+// Guardamos só o HMAC da senha (segredo da instalação) — nunca a senha em si.
+model PrivateLink {
+  id           String    @id @default(cuid())
+  propertyId   String
+  property     Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  token        String    @unique // vai na URL — aleatório e impossível de adivinhar
+  clientName   String // para a equipe saber de quem é o link
+  passwordHash String
+  active       Boolean   @default(true) // desligar = link para de funcionar na hora
+  viewCount    Int       @default(0) // base do acompanhamento de atividade
+  lastViewAt   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([propertyId])
 }
 
 model Photo {
