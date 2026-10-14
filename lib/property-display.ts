@@ -75,3 +75,13 @@ export function displayTitle(p: PropertyLike): string {
     : "Imóvel";
   return p.neighborhood ? `${type} — ${p.neighborhood}` : type;
 }
+
+/** Título para o PÚBLICO: nunca usa o bairro quando o endereço está oculto. */
+export function publicTitle(p: PropertyLike): string {
+  if (p.title) return p.title;
+  const type = p.propertyType
+    ? PROPERTY_TYPE_LABELS[p.propertyType]
+    : "Imóvel";
+  if (p.addressVisibility === "OCULTO" || !p.neighborhood) return type;
+  return `${type} — ${p.neighborhood}`;
+}

@@ -50,7 +50,8 @@ export default async function SiteHomePage({
   const [settings, todos] = await Promise.all([
     getSettings(),
     db.property.findMany({
-      where: { status: "ATIVO", source: "CORRETOR" },
+      // Só entra na vitrine quem a equipe publicou na ficha ("Publicar no site")
+      where: { status: "ATIVO", source: "CORRETOR", publishedOnSite: true },
       include: { photos: { orderBy: { position: "asc" } } },
       orderBy: { updatedAt: "desc" },
       take: 60,

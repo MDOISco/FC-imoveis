@@ -2,7 +2,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Lock, Repeat } from "lucide-react";
 import { Galeria } from "@/components/ficha/galeria";
+import {
+  LinksPrivados,
+  type LinkPrivadoDto,
+} from "@/components/ficha/links-privados";
 import { PortalToggles } from "@/components/ficha/portal-toggles";
+import { SitePublicacao } from "@/components/ficha/site-publicacao";
 import { StatusActions } from "@/components/ficha/status-actions";
 import { Badge } from "@/components/ui/badge";
 import { CardSection } from "@/components/ui/card";
@@ -21,6 +26,7 @@ import {
 import { db } from "@/lib/db";
 import { formatArea, formatBRL, formatDate } from "@/lib/format";
 import { displayTitle, priceLabel } from "@/lib/property-display";
+import { getSettings, publicBaseUrl } from "@/lib/settings";
 import { toWizardProperty } from "@/lib/wizard-dto";
 
 export const dynamic = "force-dynamic";
@@ -41,19 +47,33 @@ export default async function FichaImovelPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const property = await db.property.findUnique({
-    where: { id },
-    include: {
-      photos: { orderBy: { position: "asc" } },
-      video: true,
-      publications: true,
-      broker: true,
-      lead: true,
-    },
-  });
+  const [property, settings] = await Promise.all([
+    db.property.findUnique({
+      where: { id },
+      include: {
+        photos: { orderBy: { position: "asc" } },
+        video: true,
+        publications: true,
+        broker: true,
+        lead: true,
+        privateLinks: { orderBy: { createdAt: "desc" } },
+      },
+    }),
+    getSettings(),
+  ]);
   if (!property) notFound();
 
   const dto = toWizardProperty(property);
+  const base = publicBaseUrl(settings);
+  const linksDto: LinkPrivadoDto[] = property.privateLinks.map((l) => ({
+    id: l.id,
+    clientName: l.clientName,
+    active: l.active,
+    viewCount: l.viewCount,
+    lastViewAt: l.lastViewAt ? l.lastViewAt.toISOString() : null,
+    createdAt: l.createdAt.toISOString(),
+    url: `${base}/exclusivo/${l.token}`,
+  }));
   const parking =
     (property.parkingCovered ?? 0) + (property.parkingUncovered ?? 0);
   const amenities = dto.amenities;
@@ -338,14 +358,32 @@ export default async function FichaImovelPage({
           </CardSection>
 
           {property.source === "CORRETOR" && (
-            <CardSection title="Publicação nos portais">
-              <PortalToggles
-                propertyId={property.id}
-                publications={dto.publications}
-                propertyStatus={property.status}
-                priceOnRequest={property.priceOnRequest}
-              />
-            </CardSection>
+            <>
+              <CardSection title="Site da FC Imóveis">
+                <SitePublicacao
+                  propertyId={property.id}
+                  publishedOnSite={property.publishedOnSite}
+                  propertyStatus={property.status}
+                  publicUrl={`${base}/site/imovel/${property.id}`}
+                />
+              </CardSection>
+
+              <CardSection title="Links exclusivos para clientes">
+                <LinksPrivados
+                  propertyId={property.id}
+                  initialLinks={linksDto}
+                />
+              </CardSection>
+
+              <CardSection title="Publicação nos portais">
+                <PortalToggles
+                  propertyId={property.id}
+                  publications={dto.publications}
+                  propertyStatus={property.status}
+                  priceOnRequest={property.priceOnRequest}
+                />
+              </CardSection>
+            </>
           )}
         </div>
       </div>

@@ -7,18 +7,11 @@ import { formatArea } from "@/lib/format";
 import {
   priceLabel,
   publicLocation,
+  publicTitle,
   totalParking,
 } from "@/lib/property-display";
 
 export type SiteProperty = Property & { photos: Photo[] };
-
-/** Título público: nunca usa o bairro quando o endereço está oculto. */
-function publicTitle(p: SiteProperty): string {
-  if (p.title) return p.title;
-  const type = p.propertyType ? PROPERTY_TYPE_LABELS[p.propertyType] : "Imóvel";
-  if (p.addressVisibility === "OCULTO" || !p.neighborhood) return type;
-  return `${type} — ${p.neighborhood}`;
-}
 
 /** Card da vitrine do site público (só cidade/bairro — nunca endereço). */
 export function ImovelCard({
@@ -32,24 +25,39 @@ export function ImovelCard({
     property.photos.find((f) => f.isCover) ?? property.photos[0] ?? null;
   const parking = totalParking(property);
   const area = property.usableArea ?? property.totalArea;
+  // Página individual: só imóveis da imobiliária têm (/site/imovel/[id])
+  const detalhesHref =
+    property.source === "CORRETOR" ? `/site/imovel/${property.id}` : null;
+
+  const foto = cover ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={`/api/arquivos/${cover.thumbPath}?v=${cover.updatedAt.getTime()}`}
+      alt={publicTitle(property)}
+      className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+    />
+  ) : (
+    <div className="flex size-full flex-col items-center justify-center gap-2 text-stone-400">
+      <Camera className="size-10" />
+      <span className="text-sm font-medium">Fotos em breve</span>
+    </div>
+  );
 
   return (
     <div className="flex flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm transition-shadow hover:shadow-lg">
       <div className="group relative aspect-[4/3] overflow-hidden bg-stone-200">
-        {cover ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={`/api/arquivos/${cover.thumbPath}?v=${cover.updatedAt.getTime()}`}
-            alt={publicTitle(property)}
-            className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
+        {detalhesHref ? (
+          <Link
+            href={detalhesHref}
+            aria-label={`Ver detalhes de ${publicTitle(property)}`}
+            className="block size-full"
+          >
+            {foto}
+          </Link>
         ) : (
-          <div className="flex size-full flex-col items-center justify-center gap-2 text-stone-400">
-            <Camera className="size-10" />
-            <span className="text-sm font-medium">Fotos em breve</span>
-          </div>
+          foto
         )}
-        <div className="absolute left-3 top-3 flex flex-wrap gap-2">
+        <div className="pointer-events-none absolute left-3 top-3 flex flex-wrap gap-2">
           {property.purpose && (
             <Badge className="bg-brand-900/90 text-white">
               {PURPOSE_LABELS[property.purpose]}
@@ -67,7 +75,13 @@ export function ImovelCard({
             ` · ${PROPERTY_TYPE_LABELS[property.propertyType]}`}
         </p>
         <h3 className="text-xl font-bold leading-snug text-stone-900">
-          {publicTitle(property)}
+          {detalhesHref ? (
+            <Link href={detalhesHref} className="hover:text-brand-800">
+              {publicTitle(property)}
+            </Link>
+          ) : (
+            publicTitle(property)
+          )}
         </h3>
         <p className="inline-flex items-center gap-1.5 text-base text-stone-600">
           <MapPin className="size-4 shrink-0 text-brand-600" />
@@ -99,6 +113,14 @@ export function ImovelCard({
         <p className="mt-auto pt-3 font-display text-2xl font-bold text-brand-900">
           {priceLabel(property)}
         </p>
+        {detalhesHref && (
+          <Link
+            href={detalhesHref}
+            className="mt-2 inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-gold-400 px-4 font-bold text-gold-950 transition-colors hover:bg-gold-300"
+          >
+            Ver fotos e detalhes
+          </Link>
+        )}
         {whatsappHref && (
           <a
             href={whatsappHref}

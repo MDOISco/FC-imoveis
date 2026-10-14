@@ -49,10 +49,19 @@ export async function PATCH(request: Request, { params }: Params) {
     data?: unknown;
     wizardStep?: unknown;
     status?: unknown;
+    publishedOnSite?: unknown;
   } | null;
   if (!body) return jsonError("Requisição inválida");
 
   const update: Record<string, unknown> = {};
+
+  if (body.publishedOnSite !== undefined) {
+    // Publicação no site é decisão da equipe sobre imóveis da imobiliária.
+    if (existing.source === "LEAD") {
+      return jsonError("Imóveis de clientes (permuta) não vão para o site.");
+    }
+    update.publishedOnSite = Boolean(body.publishedOnSite);
+  }
 
   if (body.data !== undefined) {
     const parsed = updateSchema.safeParse(body.data);
