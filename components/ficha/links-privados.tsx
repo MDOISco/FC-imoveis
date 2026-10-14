@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
+  Activity,
   Eye,
   KeyRound,
   Link2,
@@ -136,6 +138,12 @@ export function LinksPrivados({
         este imóvel, sem acesso ao resto do site. Funciona mesmo com o imóvel
         fora do site público.
       </p>
+      <Link
+        href={`/atividade?imovel=${propertyId}`}
+        className="inline-flex min-h-12 items-center gap-2 rounded-xl border-2 border-brand-200 bg-brand-50 px-4 text-base font-bold text-brand-900 hover:border-brand-400"
+      >
+        <Activity className="size-5" /> Ver atividade dos clientes neste imóvel
+      </Link>
 
       {/* Painel do link recém-criado: única chance de copiar a senha */}
       {novo && (

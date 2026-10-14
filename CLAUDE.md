@@ -25,6 +25,19 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
   ChatThread/ChatMessage, polling leve (sem lib externa), bolinha de não lidas.
 - **Mapa da cidade** (`/cidade`): Leaflet + OpenStreetMap (sem chave), pontos
   reais em lib/cidade/pontos.ts. Componente só-cliente (Leaflet usa window).
+- **Site público** (`/site`, prévia com noindex): página do imóvel em
+  `/site/imovel/[id]` só para imóvel ATIVO + "Publicar no site" ligado na
+  ficha. **Link exclusivo** (`/exclusivo/[token]`, senha por cliente criada na
+  ficha; só o HMAC fica no banco; sem menu, sem acesso ao resto do site).
+- **Atividade** (`/atividade`, equipe): registro das visitas às páginas do
+  imóvel (link exclusivo identificado pelo nome do cliente; site anônimo):
+  tempo com a aba visível, rolagem, cidade aproximada pelo IP (ipwho.is,
+  sem chave, falha silenciosa), cliques (WhatsApp, Agendar, fotos, vídeo) e
+  seções vistas. Modelos Visit/VisitEvent; rota pública `/api/atividade`
+  (abrir/pulso/evento); componente `RastreioAtividade` + marcações
+  `data-atividade`/`data-secao` em imovel-detalhes/galeria. Equipe logada
+  não conta; recarregar em < 30 min continua a mesma visita. **Nunca**
+  guardar IP nem navegador. A lista não atualiza sozinha (decisão da dona).
 - Feito para corretores de mais idade: **letras grandes (base 18px), botões
   grandes, pt-BR em toda a UI**. Manter esse padrão em qualquer tela nova.
 - **Imóvel de cliente (source=LEAD) tem gestão própria** (Permutas → Imóveis

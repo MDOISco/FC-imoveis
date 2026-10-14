@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  Activity,
   Building2,
   CalendarDays,
   KeyRound,
@@ -18,6 +19,7 @@ const links = [
   { href: "/permutas-admin", label: "Permutas", icon: KeyRound },
   { href: "/agenda", label: "Agenda", icon: CalendarDays },
   { href: "/conversas", label: "Conversas", icon: MessageCircle },
+  { href: "/atividade", label: "Atividade", icon: Activity },
   { href: "/configuracoes", label: "Configurações", icon: Settings },
 ];
 

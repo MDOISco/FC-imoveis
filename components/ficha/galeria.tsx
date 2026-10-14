@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Camera, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { registrarAtividade } from "@/components/site/rastreio-atividade";
 import { cn } from "@/lib/cn";
 import type { WizardPhoto, WizardVideo } from "@/lib/wizard-dto";
 
@@ -38,6 +39,8 @@ export function Galeria({
           type="button"
           className="block w-full overflow-hidden rounded-2xl"
           onClick={() => setOpen(true)}
+          data-atividade="FOTO"
+          data-rotulo={`Foto ${index + 1}`}
           aria-label="Ampliar foto"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -56,6 +59,8 @@ export function Galeria({
               key={photo.id}
               type="button"
               onClick={() => setIndex(i)}
+              data-atividade="FOTO"
+              data-rotulo={`Foto ${i + 1}`}
               className={cn(
                 "shrink-0 overflow-hidden rounded-xl border-[3px]",
                 i === index ? "border-brand-600" : "border-transparent",
@@ -80,6 +85,7 @@ export function Galeria({
           <video
             controls
             preload="metadata"
+            onPlay={() => registrarAtividade("VIDEO")}
             className="max-h-96 w-full rounded-2xl border border-stone-200 bg-black"
             src={`/api/arquivos/${video.path}`}
           />

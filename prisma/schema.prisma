@@ -131,6 +131,7 @@ model Property {
 
   photos          Photo[]
   privateLinks    PrivateLink[]
+  visits          Visit[]
   video           Video?
   publications    PortalPublication[]
   tradePreference TradePreference?
@@ -165,8 +166,45 @@ model PrivateLink {
   lastViewAt   DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+  visits       Visit[]
 
   @@index([propertyId])
+}
+
+// Uma VISITA à página de um imóvel (apresentação exclusiva ou página do
+// site). Alimenta a tela "Atividade" do painel: quando abriu, quanto tempo
+// ficou, até onde rolou, cidade aproximada e o que clicou (VisitEvent).
+// De propósito NÃO guarda IP nem navegador — só o mínimo útil à equipe.
+model Visit {
+  id            String       @id @default(cuid())
+  propertyId    String
+  property      Property     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  privateLinkId String? // nulo = visita anônima pelo site
+  privateLink   PrivateLink? @relation(fields: [privateLinkId], references: [id], onDelete: Cascade)
+  origin        String // EXCLUSIVO | SITE (lib/atividade.ts)
+  startedAt     DateTime     @default(now())
+  lastSeenAt    DateTime     @default(now())
+  seconds       Int          @default(0) // tempo com a página visível
+  scrollPct     Int          @default(0) // até onde desceu (0–100)
+  city          String? // cidade aproximada pelo IP (pode faltar)
+  region        String? // UF
+  events        VisitEvent[]
+
+  @@index([propertyId, startedAt])
+  @@index([startedAt])
+}
+
+// O que o cliente fez durante a visita: clique no WhatsApp, em "Agendar
+// visita", foto ampliada, play no vídeo, seção da página que chegou a ver.
+model VisitEvent {
+  id      String   @id @default(cuid())
+  visitId String
+  visit   Visit    @relation(fields: [visitId], references: [id], onDelete: Cascade)
+  type    String // WHATSAPP | AGENDAR | FOTO | VIDEO | SECAO (lib/atividade.ts)
+  label   String? // ex.: "Comodidades", "Foto 3"
+  at      DateTime @default(now())
+
+  @@index([visitId])
 }
 
 model Photo {

@@ -35,6 +35,7 @@ export const config = {
     "/permutas-admin",
     "/agenda",
     "/conversas",
+    "/atividade",
     "/api/imoveis/:path*",
     "/api/corretores/:path*",
     "/api/configuracoes/:path*",
