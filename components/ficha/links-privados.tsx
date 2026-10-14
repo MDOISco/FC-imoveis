@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Eye,
   KeyRound,
@@ -58,7 +58,13 @@ export function LinksPrivados({
   const [links, setLinks] = useState(initialLinks);
   const [formAberto, setFormAberto] = useState(initialLinks.length === 0);
   const [nome, setNome] = useState("");
-  const [senha, setSenha] = useState(gerarSenha());
+  // Começa vazia e sorteia só no navegador: sortear durante a renderização
+  // faria o servidor e o navegador gerarem senhas diferentes (erro de
+  // "hydration" do React e senha mostrada ≠ senha salva).
+  const [senha, setSenha] = useState("");
+  useEffect(() => {
+    setSenha((s) => s || gerarSenha());
+  }, []);
   const [busy, setBusy] = useState(false);
   // Último link criado: só aqui dá para copiar a senha (não fica salva à mostra)
   const [novo, setNovo] = useState<{ link: LinkPrivadoDto; senha: string } | null>(
@@ -247,9 +253,15 @@ export function LinksPrivados({
                 <span>Criado em {formatDate(link.createdAt)}</span>
                 <span className="inline-flex items-center gap-1.5">
                   <Eye className="size-5 text-stone-400" />
-                  {link.viewCount === 0
-                    ? "cliente ainda não abriu"
-                    : `${link.viewCount} visita${link.viewCount > 1 ? "s" : ""} · última ${formatRelative(link.lastViewAt!)}`}
+                  {link.viewCount === 0 ? (
+                    "cliente ainda não abriu"
+                  ) : (
+                    // suppressHydrationWarning: o "há X minutos" pode mudar
+                    // entre o servidor renderizar e o navegador assumir.
+                    <span suppressHydrationWarning>
+                      {`${link.viewCount} visita${link.viewCount > 1 ? "s" : ""} · última ${formatRelative(link.lastViewAt!)}`}
+                    </span>
+                  )}
                 </span>
               </p>
               <div className="mt-3 flex flex-wrap gap-2">

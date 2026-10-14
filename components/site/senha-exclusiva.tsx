@@ -23,6 +23,8 @@ export function SenhaExclusiva({ token }: { token: string }) {
       await apiFetch(`/api/exclusivo/${token}`, {
         method: "POST",
         body: { senha: senha.trim() },
+        // Senha errada aqui é erro DESTA tela, não "sessão da equipe expirou"
+        redirecionar401: false,
       });
       router.refresh(); // o servidor agora enxerga o cookie e mostra o imóvel
     } catch (err) {
@@ -31,6 +33,9 @@ export function SenhaExclusiva({ token }: { token: string }) {
           ? err.message
           : "Não foi possível verificar. Tente novamente.",
       );
+    } finally {
+      // Sempre destrava o botão: se o cookie não pegar (ex.: navegador
+      // bloqueando cookies), o cliente consegue tentar de novo.
       setBusy(false);
     }
   }
