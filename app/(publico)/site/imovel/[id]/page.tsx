@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -16,20 +17,23 @@ export const dynamic = "force-dynamic";
 
 type Params = { params: Promise<{ id: string }> };
 
-/** Só imóveis da imobiliária, ativos E publicados no site têm página pública. */
-function findPublico(id: string) {
-  return db.property.findFirst({
+/** Só imóveis da imobiliária, ativos E publicados no site têm página pública.
+ *  cache(): generateMetadata e a página usam a MESMA consulta — sem o cache,
+ *  cada visita faria todas as consultas duas vezes. */
+const findPublico = cache((id: string) =>
+  db.property.findFirst({
     where: { id, status: "ATIVO", source: "CORRETOR", publishedOnSite: true },
     include: { photos: { orderBy: { position: "asc" } }, video: true },
-  });
-}
+  }),
+);
+const getSettingsCached = cache(getSettings);
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { id } = await params;
   const property = await findPublico(id);
   if (!property) return { title: "Imóvel não encontrado" };
 
-  const settings = await getSettings();
+  const settings = await getSettingsCached();
   const cover =
     property.photos.find((f) => f.isCover) ?? property.photos[0] ?? null;
   const title = `${publicTitle(property)} — ${publicLocation(property)}`;
@@ -55,7 +59,7 @@ export default async function ImovelPublicoPage({ params }: Params) {
   const { id } = await params;
   const [property, settings] = await Promise.all([
     findPublico(id),
-    getSettings(),
+    getSettingsCached(),
   ]);
   if (!property) notFound();
 

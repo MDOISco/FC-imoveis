@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { jsonError } from "@/lib/api-helpers";
 import { listarDias } from "@/lib/agenda/slots";
 import { db } from "@/lib/db";
+import { temAcessoExclusivo } from "@/lib/exclusivo";
 import { toPublicProperty } from "@/lib/permutas/public-dto";
 
 export const runtime = "nodejs";
@@ -33,11 +34,19 @@ export async function GET(request: Request) {
       where: { id: imovelId },
       include: { photos: { orderBy: { position: "asc" } }, broker: true },
     });
-    if (
-      !property ||
-      property.source !== "CORRETOR" ||
-      property.status !== "ATIVO"
-    ) {
+    if (!property || property.source !== "CORRETOR") {
+      return jsonError(
+        "Este imóvel não está disponível para visitas no momento.",
+        404,
+      );
+    }
+    // Visível ao público: anúncio ativo no site OU na vitrine de permutas.
+    // Fora disso, só agenda quem abriu um link exclusivo com senha —
+    // "Fora do site, ninguém vê" precisa valer aqui também.
+    const visivel =
+      property.status === "ATIVO" &&
+      (property.publishedOnSite || property.acceptsTrade);
+    if (!visivel && !(await temAcessoExclusivo(property.id))) {
       return jsonError(
         "Este imóvel não está disponível para visitas no momento.",
         404,

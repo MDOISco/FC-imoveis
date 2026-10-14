@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { Home, Lock, MessageCircle, Sparkles } from "lucide-react";
 import { ImovelDetalhes } from "@/components/site/imovel-detalhes";
 import { SenhaExclusiva } from "@/components/site/senha-exclusiva";
-import { safeEqual } from "@/lib/auth";
+import { ACCESS_COOKIE, expectedToken, safeEqual } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { linkCookieName } from "@/lib/exclusivo";
 import { publicLocation } from "@/lib/property-display";
@@ -10,6 +10,11 @@ import { getSettings } from "@/lib/settings";
 import { waHref } from "@/lib/whatsapp";
 
 export const dynamic = "force-dynamic";
+
+// Página privada de UM cliente: nunca deve aparecer em buscadores.
+export const metadata = {
+  robots: { index: false, follow: false },
+};
 
 type Params = { params: Promise<{ token: string }> };
 
@@ -156,11 +161,22 @@ export default async function ExclusivoPage({ params }: Params) {
   }
 
   // Visita autorizada: registra a atividade (base do acompanhamento em
-  // tempo real que entra na próxima etapa do projeto).
-  await db.privateLink.update({
-    where: { id: link.id },
-    data: { viewCount: { increment: 1 }, lastViewAt: new Date() },
-  });
+  // tempo real que entra na próxima etapa do projeto). Para o número fazer
+  // sentido, não conta a própria equipe conferindo o link, nem recarregamentos
+  // da página em menos de 30 minutos.
+  const tokenEquipe = await expectedToken();
+  const ehEquipe = tokenEquipe
+    ? safeEqual(cookieStore.get(ACCESS_COOKIE)?.value, tokenEquipe)
+    : false;
+  const MEIA_HORA_MS = 30 * 60_000;
+  const visitaNova =
+    !link.lastViewAt || Date.now() - link.lastViewAt.getTime() > MEIA_HORA_MS;
+  if (!ehEquipe && visitaNova) {
+    await db.privateLink.update({
+      where: { id: link.id },
+      data: { viewCount: { increment: 1 }, lastViewAt: new Date() },
+    });
+  }
 
   const property = link.property;
 

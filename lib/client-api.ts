@@ -15,6 +15,10 @@ export async function apiFetch<T = unknown>(
   options?: {
     method?: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
     body?: unknown;
+    /** Páginas PÚBLICAS (ex.: senha do link exclusivo) passam false: um 401
+     *  ali é "senha errada", não "sessão da equipe expirou" — não pode jogar
+     *  o cliente na tela de entrada do painel. */
+    redirecionar401?: boolean;
   },
 ): Promise<T> {
   let res: Response;
@@ -45,7 +49,11 @@ export async function apiFetch<T = unknown>(
       (data as { error?: string } | null)?.error ??
       "Algo deu errado. Tente novamente.";
     // Sessão expirada ou senha trocada: leva de volta à tela de entrada
-    if (res.status === 401 && typeof window !== "undefined") {
+    if (
+      res.status === 401 &&
+      options?.redirecionar401 !== false &&
+      typeof window !== "undefined"
+    ) {
       const de = encodeURIComponent(
         window.location.pathname + window.location.search,
       );

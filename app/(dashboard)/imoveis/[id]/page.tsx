@@ -24,6 +24,7 @@ import {
   STATUS_LABELS,
 } from "@/lib/constants";
 import { db } from "@/lib/db";
+import { linkToDto } from "@/lib/exclusivo";
 import { formatArea, formatBRL, formatDate } from "@/lib/format";
 import { displayTitle, priceLabel } from "@/lib/property-display";
 import { getSettings, publicBaseUrl } from "@/lib/settings";
@@ -65,15 +66,9 @@ export default async function FichaImovelPage({
 
   const dto = toWizardProperty(property);
   const base = publicBaseUrl(settings);
-  const linksDto: LinkPrivadoDto[] = property.privateLinks.map((l) => ({
-    id: l.id,
-    clientName: l.clientName,
-    active: l.active,
-    viewCount: l.viewCount,
-    lastViewAt: l.lastViewAt ? l.lastViewAt.toISOString() : null,
-    createdAt: l.createdAt.toISOString(),
-    url: `${base}/exclusivo/${l.token}`,
-  }));
+  const linksDto: LinkPrivadoDto[] = property.privateLinks.map((l) =>
+    linkToDto(l, base),
+  );
   const parking =
     (property.parkingCovered ?? 0) + (property.parkingUncovered ?? 0);
   const amenities = dto.amenities;

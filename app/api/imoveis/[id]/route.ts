@@ -139,6 +139,19 @@ export async function DELETE(_req: Request, { params }: Params) {
   const { id } = await params;
   const existing = await db.property.findUnique({ where: { id } });
   if (!existing) return jsonError("Imóvel não encontrado", 404);
+  // Imóvel de cliente tem gestão própria (Permutas → Imóveis de clientes).
+  if (existing.source === "LEAD") {
+    return jsonError(
+      "Este é um imóvel de cliente. Gerencie em Permutas → Imóveis de clientes.",
+    );
+  }
+  // Apagar de vez é só para rascunho; imóvel publicado sai de cena mudando a
+  // situação (Vendido/Alugado/Desativado), sem perder histórico e fotos.
+  if (existing.status !== "RASCUNHO") {
+    return jsonError(
+      "Só rascunhos podem ser excluídos. Para tirar um imóvel do ar, mude a situação dele na ficha.",
+    );
+  }
   await db.property.delete({ where: { id } });
   await removePath(`properties/${id}`);
   return NextResponse.json({ ok: true });

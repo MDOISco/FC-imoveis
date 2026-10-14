@@ -3,7 +3,10 @@
 // amarrado ao id do link e ao segredo da instalação (DASHBOARD_SEGREDO) —
 // mesmo esquema do acesso da equipe (lib/auth.ts): o banco nunca tem a senha,
 // e trocar o segredo invalida todos os acessos.
-import { hmacHex } from "./auth";
+// Só para código de servidor (usa cookies e o banco).
+import { cookies } from "next/headers";
+import { hmacHex, safeEqual } from "./auth";
+import { db } from "./db";
 
 const FALLBACK_SECRET = "fc-imoveis-dev-sem-segredo";
 
@@ -44,3 +47,43 @@ export const LINK_RULES = {
   senhaMin: 4,
   senhaMax: 40,
 } as const;
+
+/** Este navegador já digitou a senha de algum link ATIVO deste imóvel?
+ *  Libera, por exemplo, o agendamento de visita de um imóvel que está fora
+ *  do site público mas foi apresentado ao cliente por link exclusivo. */
+export async function temAcessoExclusivo(propertyId: string): Promise<boolean> {
+  const links = await db.privateLink.findMany({
+    where: { propertyId, active: true },
+    select: { token: true, passwordHash: true },
+  });
+  if (links.length === 0) return false;
+  const jar = await cookies();
+  return links.some((l) =>
+    safeEqual(jar.get(linkCookieName(l.token))?.value, l.passwordHash),
+  );
+}
+
+/** Formato do link enviado ao painel — nunca inclui o hash da senha.
+ *  Usado pela ficha do imóvel e pela API de links (um lugar só). */
+export function linkToDto(
+  link: {
+    id: string;
+    token: string;
+    clientName: string;
+    active: boolean;
+    viewCount: number;
+    lastViewAt: Date | null;
+    createdAt: Date;
+  },
+  base: string,
+) {
+  return {
+    id: link.id,
+    clientName: link.clientName,
+    active: link.active,
+    viewCount: link.viewCount,
+    lastViewAt: link.lastViewAt ? link.lastViewAt.toISOString() : null,
+    createdAt: link.createdAt.toISOString(),
+    url: `${base}/exclusivo/${link.token}`,
+  };
+}

@@ -8,6 +8,7 @@ import {
   listarDias,
 } from "@/lib/agenda/slots";
 import { db } from "@/lib/db";
+import { temAcessoExclusivo } from "@/lib/exclusivo";
 import { notificar } from "@/lib/notify";
 import { agendamentoSchema } from "@/lib/validation/agenda";
 
@@ -30,7 +31,8 @@ export async function POST(request: Request) {
   const inicio = new Date(parsed.data.inicioISO);
   const inicioISO = inicio.toISOString();
 
-  // Imóvel (quando houver): só carteira da imobiliária e só anúncio ativo.
+  // Imóvel (quando houver): só carteira da imobiliária, e só se o visitante
+  // pode mesmo vê-lo (mesma regra de /api/agenda/slots).
   let property: Prisma.PropertyGetPayload<{
     include: { broker: true };
   }> | null = null;
@@ -39,11 +41,16 @@ export async function POST(request: Request) {
       where: { id: imovelId },
       include: { broker: true },
     });
-    if (
-      !property ||
-      property.source !== "CORRETOR" ||
-      property.status !== "ATIVO"
-    ) {
+    if (!property || property.source !== "CORRETOR") {
+      return jsonError(
+        "Este imóvel não está disponível para visitas no momento.",
+        404,
+      );
+    }
+    const visivel =
+      property.status === "ATIVO" &&
+      (property.publishedOnSite || property.acceptsTrade);
+    if (!visivel && !(await temAcessoExclusivo(property.id))) {
       return jsonError(
         "Este imóvel não está disponível para visitas no momento.",
         404,
