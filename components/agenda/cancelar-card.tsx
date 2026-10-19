@@ -28,7 +28,7 @@ export function CancelarCard({
   return (
     <ConfirmButton
       title="Cancelar esta visita?"
-      message={`A visita de ${quando} será cancelada e o horário ficará livre para outras pessoas.`}
+      message={`A visita de ${quando} será cancelada e o horário ficará livre para outras pessoas. Se puder, desmarque sempre com antecedência — a agenda é combinada com o cliente e com o proprietário do imóvel.`}
       confirmLabel="Sim, cancelar visita"
       cancelLabel="Voltar"
       className="w-full"

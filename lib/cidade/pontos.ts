@@ -25,14 +25,14 @@ export const PONTOS_TURISTICOS: PontoTuristico[] = [
       "O coração do lazer bragantino: pista de caminhada à beira d'água, quiosques, pedalinhos e um pôr do sol que é programa garantido no fim de tarde. É um dos lugares mais amados e bem avaliados da cidade.",
   },
   {
-    id: "estadio-nabi",
-    nome: "Estádio Nabi Abi Chedid",
+    id: "novo-estadio-bragantino",
+    nome: "Novo estádio do Red Bull Bragantino",
     emoji: "⚽",
     categoria: "Esporte",
-    lat: -22.9653902,
-    lng: -46.5368855,
+    lat: -22.9508303,
+    lng: -46.5270896,
     curiosidade:
-      "A casa do Red Bull Bragantino, o Massa Bruta! Em dia de jogo a cidade inteira vibra — e o estádio fica pertinho do centro, dá para ir caminhando do Lago do Taboão.",
+      "A casa do Massa Bruta está de mudança: o antigo estádio Nabi Abi Chedid foi demolido e o clube constrói um novo estádio na região do Posto de Monta (Parque de Exposições Dr. Fernando Costa). Em dia de jogo, a cidade inteira vibra!",
   },
   {
     id: "catedral",
@@ -75,14 +75,14 @@ export const PONTOS_TURISTICOS: PontoTuristico[] = [
       "O famoso 'centrão' de Bragança: comércio forte e movimentado o ano inteiro. E atenção ao título oficial da cidade: Capital Nacional da Linguiça Artesanal — procure as casas de linguiça tradicionais e prove a iguaria que leva o nome de Bragança para o Brasil todo!",
   },
   {
-    id: "parque-estados",
-    nome: "Parque dos Estados",
+    id: "jardim-publico",
+    nome: "Jardim Público",
     emoji: "🌳",
     categoria: "Natureza",
-    lat: -22.9142911,
-    lng: -46.5546636,
+    lat: -22.9635973,
+    lng: -46.5391013,
     curiosidade:
-      "Área verde generosa para piquenique, esporte e brincadeira com as crianças. Bragança é Estância Climática desde 1964 — o clima ameno da Serra da Mantiqueira é um dos grandes motivos de tanta gente escolher viver aqui.",
+      "O tradicional Jardim Público de Bragança (Parque Luiz Gonzaga da Silva Leme), pertinho do centro: árvores centenárias, sombra e espaço para caminhar e descansar. Bragança é Estância Climática desde 1964 — o clima ameno da Serra da Mantiqueira é um dos grandes motivos de tanta gente escolher viver aqui.",
   },
   {
     id: "braganca-shopping",
@@ -111,14 +111,14 @@ export const CURIOSIDADES_GERAIS: Array<{ emoji: string; titulo: string; texto: 
   },
   {
     emoji: "⛰️",
-    titulo: "Estância Climática desde 1964",
+    titulo: "Circuito das Águas Paulista",
     texto:
-      "Clima ameno da Serra da Mantiqueira o ano todo — reconhecimento oficial que poucas cidades paulistas têm.",
+      "Bragança faz parte do Circuito das Águas Paulista e é Estância Climática desde 1964 — clima ameno da Serra da Mantiqueira o ano todo.",
   },
   {
     emoji: "💚",
     titulo: "A Cidade Poesia",
     texto:
-      "É assim, carinhosamente, que Bragança é conhecida — pelo jeito acolhedor, pelas praças floridas e pela vida boa de interior a só uma hora de São Paulo.",
+      "Bragança é chamada carinhosamente de \"Cidade Poesia\" principalmente porque foi construída sobre sete colinas, como Roma — cada uma abrigando uma paróquia ou um marco histórico. Some isso às praças floridas e à vida boa de interior a uma hora de São Paulo.",
   },
 ];

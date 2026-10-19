@@ -117,7 +117,7 @@ export function SwipeDeck({
         </h3>
         <p className="mx-auto mt-2 max-w-sm text-base text-stone-500">
           Você já viu todos os imóveis disponíveis para permuta. Volte em breve
-          — novos imóveis entram toda semana.
+          para ver novas opções de imóveis.
         </p>
       </div>
     );

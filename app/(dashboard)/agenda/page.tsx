@@ -46,7 +46,7 @@ function toItem(ap: ApFull): AgendamentoItem {
     imovelId: p?.id ?? null,
     imovelLabel: p
       ? `${p.refCode} · ${p.title ?? `${typeLabel}${p.neighborhood ? ` — ${p.neighborhood}` : ""}`}`
-      : "Atendimento na imobiliária",
+      : "Atendimento na ACIBRAG",
     corretor: ap.broker?.name ?? null,
     status: ap.status,
     criadoEm: formatDateTime(ap.createdAt),
