@@ -56,16 +56,17 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
   `sudo fc-atualizar` (git pull, build, migrate com o serviço parado,
   restart). Backups diários em `/var/backups/fc-imoveis`.
 - **Regra de fim de sessão (pedido da dona)**: toda sessão que mudar o
-  código termina mostrando o **procedimento completo para ela atualizar o
-  site**, em bloco pronto para copiar e colar no terminal do computador
-  dela (ela acessa por ssh):
+  código termina mostrando o procedimento que ela usa para atualizar o
+  site, em bloco pronto para copiar e colar no terminal do computador dela:
 
   ```
-  ssh -i chave-privada.key ubuntu@fcimoveis.duckdns.org
+  ssh root@fcimoveis.duckdns.org
   sudo fc-atualizar
   ```
 
-  (Se o PR da sessão ainda não foi mesclado, lembrar de mesclar antes.)
+  (Ela entra como root; ela costuma usar o IP da VPS no lugar do domínio —
+  é o mesmo servidor, mas o IP não fica anotado aqui porque o repositório
+  é público. Se o PR da sessão ainda não foi mesclado, mesclar antes.)
 - Instalador completo e idempotente: `deploy/instalar.sh` (guia em
   `deploy/LEIA-ME.md`). `deploy/fc.sh` = atalho zero-decisões.
 - O repositório é **PÚBLICO**: nunca commitar senhas, chaves ou dados reais.
