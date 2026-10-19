@@ -35,6 +35,9 @@ const DIFERENCIAIS = [
   },
 ];
 
+// Tipos que contam como "imóvel comercial" na faixa de números e no filtro.
+const TIPOS_COMERCIAIS = ["GALPAO", "SALA_COMERCIAL", "LOJA", "PREDIO_COMERCIAL"];
+
 function first(v: string | string[] | undefined): string {
   return Array.isArray(v) ? (v[0] ?? "") : (v ?? "");
 }
@@ -61,6 +64,9 @@ export default async function SiteHomePage({
   const aVenda = todos.filter((p) => purposeIncludesSale(p.purpose));
   const paraAlugar = todos.filter((p) => purposeIncludesRent(p.purpose));
   const comPermuta = todos.filter((p) => p.acceptsTrade);
+  const comerciais = todos.filter(
+    (p) => p.propertyType && TIPOS_COMERCIAIS.includes(p.propertyType),
+  );
 
   const properties =
     ver === "comprar"
@@ -69,13 +75,16 @@ export default async function SiteHomePage({
         ? paraAlugar
         : ver === "permuta"
           ? comPermuta
-          : todos;
+          : ver === "comercial"
+            ? comerciais
+            : todos;
 
   const filtros = [
     { valor: "", label: "Todos", total: todos.length },
     { valor: "comprar", label: "Comprar", total: aVenda.length },
     { valor: "alugar", label: "Alugar", total: paraAlugar.length },
-    { valor: "permuta", label: "Com permuta", total: comPermuta.length },
+    { valor: "permuta", label: "Permuta", total: comPermuta.length },
+    { valor: "comercial", label: "Comercial", total: comerciais.length },
   ];
 
   const zapGeral = waHref(
@@ -84,9 +93,10 @@ export default async function SiteHomePage({
   );
 
   const stats = [
-    { valor: aVenda.length, label: "imóveis à venda" },
-    { valor: paraAlugar.length, label: "para alugar" },
-    { valor: comPermuta.length, label: "aceitam permuta" },
+    { valor: aVenda.length, label: "venda" },
+    { valor: paraAlugar.length, label: "aluguel" },
+    { valor: comPermuta.length, label: "permuta" },
+    { valor: comerciais.length, label: "comerciais" },
   ];
 
   return (
@@ -148,7 +158,7 @@ export default async function SiteHomePage({
         </div>
         {/* Faixa de números */}
         <div className="relative border-t border-white/10">
-          <div className="mx-auto grid max-w-6xl grid-cols-3 gap-px bg-white/10">
+          <div className="mx-auto grid max-w-6xl grid-cols-2 gap-px bg-white/10 sm:grid-cols-4">
             {stats.map((s) => (
               <div
                 key={s.label}

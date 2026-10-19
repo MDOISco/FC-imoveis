@@ -42,9 +42,9 @@ export function localPublico(p: ImovelParaIcs | null | undefined): string | null
   return !esconde && p.neighborhood ? `${p.neighborhood}, ${p.city}` : p.city;
 }
 
-/** "Casa em Centro, Bragança Paulista" | "Atendimento na imobiliária". */
+/** "Casa em Centro, Bragança Paulista" | "Atendimento na ACIBRAG". */
 export function tituloPublico(p: ImovelParaIcs | null | undefined): string {
-  if (!p) return "Atendimento na imobiliária";
+  if (!p) return "Atendimento na ACIBRAG";
   const tipo = p.propertyType
     ? (PROPERTY_TYPE_LABELS[p.propertyType] ?? "Imóvel")
     : "Imóvel";
@@ -91,7 +91,7 @@ export function icsParaEquipe(
     ap.email ? `E-mail: ${ap.email}` : null,
     property
       ? `Imóvel: ${property.refCode} — ${tituloPublico(property)}`
-      : "Atendimento na imobiliária",
+      : "Atendimento na ACIBRAG",
     ap.notes ? `Observações: ${ap.notes}` : null,
   ].filter((x): x is string => Boolean(x));
   return montar(ap, resumoEvento(property), partes.join("\n"), localPublico(property));

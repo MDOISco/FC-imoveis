@@ -238,7 +238,7 @@ export function AgendarForm({ imovelId }: { imovelId: string | null }) {
           role="alert"
           className="rounded-2xl bg-gold-100 px-5 py-4 text-base font-semibold text-gold-900"
         >
-          {avisoImovel} Você pode agendar um atendimento na imobiliária, ou
+          {avisoImovel} Você pode agendar um atendimento na ACIBRAG, ou
           escolher outro imóvel na vitrine.
         </p>
       )}
@@ -279,18 +279,19 @@ export function AgendarForm({ imovelId }: { imovelId: string | null }) {
             onClick={() => setImovelAtual(null)}
             className="flex min-h-12 w-full items-center justify-center gap-2 border-t border-stone-200 bg-stone-50 px-4 text-base font-semibold text-brand-800 hover:bg-brand-50"
           >
-            <Building2 className="size-5" /> Quero um atendimento na
-            imobiliária, sem imóvel específico
+            <Building2 className="size-5" /> Quero um atendimento na ACIBRAG,
+            sem imóvel específico
           </button>
         </div>
       ) : (
         <div className="rounded-3xl border border-stone-200 bg-white p-5">
           <p className="flex items-center gap-2 text-lg font-bold text-stone-900">
             <Building2 className="size-6 text-brand-700" /> Atendimento na
-            imobiliária
+            ACIBRAG
           </p>
           <p className="mt-1 text-base text-stone-600">
-            Você conversa com a nossa equipe pessoalmente. Se preferir visitar
+            Você conversa com a nossa equipe pessoalmente, na sede da ACIBRAG.
+            Se preferir visitar
             um imóvel específico, escolha-o na{" "}
             <Link href="/site" className="font-semibold text-brand-700 underline">
               vitrine do site
@@ -417,7 +418,7 @@ export function AgendarForm({ imovelId }: { imovelId: string | null }) {
                   <strong>{dados.imovel.location}</strong>
                 </>
               ) : (
-                <>Atendimento na imobiliária</>
+                <>Atendimento na ACIBRAG</>
               )}{" "}
               — <strong>{formatarDataHoraSP(new Date(inicioSel))}</strong>.
               {dados.corretor && (
@@ -455,6 +456,8 @@ export function AgendarForm({ imovelId }: { imovelId: string | null }) {
             </Button>
             <p className="text-center text-sm text-stone-500">
               Por segurança, o endereço exato é combinado com a nossa equipe.
+              Agende com antecedência: quando o imóvel está habitado, a visita
+              também é combinada com o proprietário.
             </p>
           </div>
         )}
