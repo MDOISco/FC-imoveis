@@ -55,6 +55,10 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
 - **Atualizar produção** = commit + push aqui e, no servidor,
   `sudo fc-atualizar` (git pull, build, migrate com o serviço parado,
   restart). Backups diários em `/var/backups/fc-imoveis`.
+- **Regra de fim de sessão (pedido da dona)**: toda vez que uma sessão
+  terminar com mudança no código, encerrar a resposta com o bloco pronto
+  para copiar e colar (entrar no servidor + atualizar):
+  `ssh ubuntu@fcimoveis.duckdns.org` e depois `sudo fc-atualizar`.
 - Instalador completo e idempotente: `deploy/instalar.sh` (guia em
   `deploy/LEIA-ME.md`). `deploy/fc.sh` = atalho zero-decisões.
 - O repositório é **PÚBLICO**: nunca commitar senhas, chaves ou dados reais.
