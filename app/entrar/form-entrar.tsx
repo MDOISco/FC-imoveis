@@ -58,7 +58,7 @@ export function FormEntrar() {
         className="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl"
       >
         <div className="mb-6 text-center">
-          <Logo className="mx-auto size-40 rounded-2xl" />
+          <Logo className="mx-auto h-56" />
           <h1 className="mt-4 font-display text-4xl font-bold text-stone-900">
             FC Imóveis
           </h1>

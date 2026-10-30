@@ -24,7 +24,7 @@ function Cabecalho({ agencyName }: { agencyName: string }) {
   return (
     <header className="border-b-2 border-gold-500 bg-brand-950 text-white">
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:px-6">
-        <Logo />
+        <Logo selo className="h-14" />
         <span>
           <span className="block font-display text-xl font-bold tracking-tight sm:text-2xl">
             {agencyName}

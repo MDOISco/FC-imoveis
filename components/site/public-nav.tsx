@@ -48,7 +48,7 @@ export function PublicNav({
           className="flex items-center gap-3"
           onClick={() => setAberto(false)}
         >
-          <Logo />
+          <Logo selo className="h-14" />
           <span>
             <span className="block whitespace-nowrap font-display text-xl font-bold tracking-tight sm:text-2xl">
               {agencyName}

@@ -14,7 +14,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             href="/"
             className="flex items-center gap-3 rounded-xl px-2 py-1"
           >
-            <Logo />
+            <Logo selo className="h-14" />
             <span className="whitespace-nowrap font-display text-2xl font-bold tracking-tight">
               FC Imóveis
             </span>
