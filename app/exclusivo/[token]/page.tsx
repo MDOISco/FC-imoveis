@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
-import { Home, Lock, MessageCircle, Sparkles } from "lucide-react";
+import { Lock, MessageCircle, Sparkles } from "lucide-react";
+import { LogoMarca } from "@/components/layout/logo";
 import { ImovelDetalhes } from "@/components/site/imovel-detalhes";
 import { RastreioAtividade } from "@/components/site/rastreio-atividade";
 import { SenhaExclusiva } from "@/components/site/senha-exclusiva";
@@ -23,9 +24,7 @@ function Cabecalho({ agencyName }: { agencyName: string }) {
   return (
     <header className="border-b-2 border-gold-500 bg-brand-950 text-white">
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:px-6">
-        <span className="flex size-10 items-center justify-center rounded-xl bg-gold-400 text-gold-950">
-          <Home className="size-6" />
-        </span>
+        <LogoMarca />
         <span>
           <span className="block font-display text-xl font-bold tracking-tight sm:text-2xl">
             {agencyName}

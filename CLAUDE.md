@@ -67,6 +67,11 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
   (`--color-brand-*` verde, `--color-gold-*` dourado). **Nunca** montar
   classe dinâmica (`bg-${x}`). Trocar o tema = trocar os tokens desse
   arquivo (a dona pretende pedir isso).
+- **Logo**: PNGs com fundo transparente em `public/logo/` (componente
+  `components/layout/logo.tsx`; ícone da aba em `app/icon.png`). A arte
+  original tem linhas marrom-escuras que somem no verde-escuro: nos
+  cabeçalhos e no login usar as versões `-fundo-escuro` (linhas douradas).
+  **Nunca** pôr quadrado/fundo branco atrás do logo (pedido da dona).
 - Prisma **6** e TypeScript **5 pinados** (não subir para Prisma 7 / TS 7).
   SQLite com WAL + busy_timeout; enums como constantes TS em
   `lib/constants.ts` (tokens pt-BR). Dinheiro em **reais inteiros** (Int).

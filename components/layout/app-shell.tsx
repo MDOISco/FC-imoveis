@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Home } from "lucide-react";
+import { LogoMarca } from "./logo";
 import { NavLinks } from "./nav-links";
 import { Toaster } from "@/components/ui/toast";
 import { authEnabled } from "@/lib/auth";
@@ -14,9 +14,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             href="/"
             className="flex items-center gap-3 rounded-xl px-2 py-1"
           >
-            <span className="flex size-10 items-center justify-center rounded-xl bg-gold-400 text-gold-950">
-              <Home className="size-6" />
-            </span>
+            <LogoMarca />
             <span className="whitespace-nowrap font-display text-2xl font-bold tracking-tight">
               FC Imóveis
             </span>
