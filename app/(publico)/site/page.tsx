@@ -1,9 +1,19 @@
 import Link from "next/link";
 import { Building2, CalendarDays, KeyRound, MessageCircle } from "lucide-react";
+import { BuscaImoveis } from "@/components/site/busca-imoveis";
 import { HeroVideo } from "@/components/site/hero-video";
 import { ImovelCard, type SiteProperty } from "@/components/site/imovel-card";
-import { cn } from "@/lib/cn";
-import { purposeIncludesRent, purposeIncludesSale } from "@/lib/constants";
+import {
+  SITE_BASE_WHERE,
+  TIPOS_COMERCIAIS,
+  buscaAtiva,
+  filtrar,
+  lerBusca,
+  ordenar,
+  paraItemBusca,
+  paraQuery,
+  resumoBusca,
+} from "@/lib/busca-site";
 import { db } from "@/lib/db";
 import { publicLocation } from "@/lib/property-display";
 import { getSettings } from "@/lib/settings";
@@ -11,68 +21,53 @@ import { waHref } from "@/lib/whatsapp";
 
 export const dynamic = "force-dynamic";
 
-// Tipos que contam como "imóvel comercial" na faixa de números e no filtro.
-const TIPOS_COMERCIAIS = ["GALPAO", "SALA_COMERCIAL", "LOJA", "PREDIO_COMERCIAL"];
-
-function first(v: string | string[] | undefined): string {
-  return Array.isArray(v) ? (v[0] ?? "") : (v ?? "");
-}
+// Quantos cards a vitrine mostra de uma vez
+const LIMITE_VITRINE = 60;
 
 export default async function SiteHomePage({
   searchParams,
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const params = await searchParams;
-  const ver = first(params.ver);
+  const busca = lerBusca(await searchParams);
 
-  const [settings, todos] = await Promise.all([
+  const [settings, publicados] = await Promise.all([
     getSettings(),
     db.property.findMany({
-      // Só entra na vitrine quem a equipe publicou na ficha ("Publicar no site")
-      where: { status: "ATIVO", source: "CORRETOR", publishedOnSite: true },
+      where: SITE_BASE_WHERE,
       include: { photos: { orderBy: { position: "asc" } } },
       orderBy: { updatedAt: "desc" },
-      take: 60,
     }) as Promise<SiteProperty[]>,
   ]);
 
-  const aVenda = todos.filter((p) => purposeIncludesSale(p.purpose));
-  const paraAlugar = todos.filter((p) => purposeIncludesRent(p.purpose));
-  const comPermuta = todos.filter((p) => p.acceptsTrade);
-  const comerciais = todos.filter(
-    (p) => p.propertyType && TIPOS_COMERCIAIS.includes(p.propertyType),
-  );
-
-  const properties =
-    ver === "comprar"
-      ? aVenda
-      : ver === "alugar"
-        ? paraAlugar
-        : ver === "permuta"
-          ? comPermuta
-          : ver === "comercial"
-            ? comerciais
-            : todos;
-
-  const filtros = [
-    { valor: "", label: "Todos", total: todos.length },
-    { valor: "comprar", label: "Comprar", total: aVenda.length },
-    { valor: "alugar", label: "Alugar", total: paraAlugar.length },
-    { valor: "permuta", label: "Permuta", total: comPermuta.length },
-    { valor: "comercial", label: "Comercial", total: comerciais.length },
-  ];
+  // Mesma regra da contagem ao vivo da caixa de busca (lib/busca-site.ts)
+  const itens = publicados.map(paraItemBusca);
+  const porId = new Map(publicados.map((p) => [p.id, p]));
+  const encontrados = ordenar(filtrar(itens, busca), busca);
+  const properties = encontrados
+    .slice(0, LIMITE_VITRINE)
+    .map((i) => porId.get(i.id))
+    .filter((p): p is SiteProperty => Boolean(p));
+  const pesquisando = buscaAtiva(busca);
+  const resumo = resumoBusca(busca);
 
   const zapGeral = waHref(
     settings.whatsapp,
     "Olá! Vim pelo site da FC Imóveis e gostaria de um atendimento.",
   );
+  const zapSemResultado = waHref(
+    settings.whatsapp,
+    `Olá! Procurei no site da FC Imóveis (${resumo.join(" · ")}) e não encontrei. Podem me avisar quando tiver algo assim?`,
+  );
 
   const stats = [
-    { valor: aVenda.length, label: "venda" },
-    { valor: paraAlugar.length, label: "aluguel" },
-    { valor: comPermuta.length, label: "permuta" },
-    { valor: comerciais.length, label: "comerciais" },
+    { valor: itens.filter((i) => i.venda).length, label: "venda" },
+    { valor: itens.filter((i) => i.aluguel).length, label: "aluguel" },
+    { valor: itens.filter((i) => i.permuta).length, label: "permuta" },
+    {
+      valor: itens.filter((i) => i.tipo && TIPOS_COMERCIAIS.includes(i.tipo)).length,
+      label: "comerciais",
+    },
   ];
 
   return (
@@ -152,58 +147,63 @@ export default async function SiteHomePage({
         </div>
       </section>
 
-      {/* ===== Vitrine ===== */}
+      {/* ===== Busca (logo abaixo do banner) ===== */}
+      <BuscaImoveis
+        key={paraQuery(busca)}
+        itens={itens}
+        inicial={busca}
+        whatsapp={settings.whatsapp}
+      />
+
+      {/* ===== Vitrine / resultado da busca ===== */}
       <section id="imoveis" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-12 sm:px-6">
         <p className="text-sm font-bold uppercase tracking-[0.22em] text-gold-700">
-          Vitrine
+          {pesquisando ? "Resultado da busca" : "Vitrine"}
         </p>
         <h2 className="mt-1 font-display text-3xl font-bold text-stone-900 sm:text-4xl">
-          Imóveis em destaque
+          {pesquisando
+            ? `${encontrados.length} ${encontrados.length === 1 ? "imóvel encontrado" : "imóveis encontrados"}`
+            : "Imóveis em destaque"}
         </h2>
-        <p className="mt-2 text-lg text-stone-600">
+        {pesquisando && (
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            {resumo.map((r) => (
+              <span
+                key={r}
+                className="rounded-full bg-brand-100 px-3 py-1 text-base font-semibold text-brand-900"
+              >
+                {r}
+              </span>
+            ))}
+            <Link
+              href="/site#busca"
+              className="inline-flex min-h-10 items-center rounded-full px-3 text-base font-bold text-brand-700 underline hover:text-brand-900"
+            >
+              Limpar busca
+            </Link>
+            <a
+              href="#busca"
+              className="inline-flex min-h-10 items-center rounded-full px-3 text-base font-bold text-brand-700 underline hover:text-brand-900"
+            >
+              Mudar a busca
+            </a>
+          </div>
+        )}
+        <p className="mt-3 text-lg text-stone-600">
           Por segurança, mostramos apenas cidade e bairro — a localização exata
           é informada pela nossa equipe.
         </p>
 
-        <div className="mt-6 flex flex-wrap gap-2">
-          {filtros.map((f) => {
-            const ativo = ver === f.valor;
-            return (
-              <Link
-                key={f.valor}
-                href={f.valor ? `/site?ver=${f.valor}#imoveis` : "/site#imoveis"}
-                aria-current={ativo ? "true" : undefined}
-                className={cn(
-                  "inline-flex min-h-12 items-center gap-2 rounded-xl border-2 px-4 font-semibold transition-colors",
-                  ativo
-                    ? "border-brand-800 bg-brand-800 text-white"
-                    : "border-stone-200 bg-white text-stone-700 hover:border-brand-400",
-                )}
-              >
-                {f.label}
-                <span
-                  className={cn(
-                    "rounded-full px-2 py-0.5 text-sm font-bold",
-                    ativo
-                      ? "bg-white/20 text-white"
-                      : "bg-stone-100 text-stone-600",
-                  )}
-                >
-                  {f.total}
-                </span>
-              </Link>
-            );
-          })}
-        </div>
-
         {properties.length === 0 ? (
           <p className="mt-8 rounded-2xl border-2 border-dashed border-stone-300 bg-stone-100 p-10 text-center text-lg text-stone-600">
-            Nenhum imóvel nessa categoria no momento.
-            {zapGeral && (
+            {pesquisando
+              ? "Nenhum imóvel com essa busca no momento."
+              : "Nenhum imóvel publicado no momento."}
+            {(pesquisando ? zapSemResultado : zapGeral) && (
               <>
                 {" "}
                 <a
-                  href={zapGeral}
+                  href={(pesquisando ? zapSemResultado : zapGeral) ?? undefined}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-bold text-brand-700 underline"
@@ -216,17 +216,28 @@ export default async function SiteHomePage({
           </p>
         ) : (
           <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {properties.map((p) => (
-              <ImovelCard
+            {properties.map((p, i) => (
+              <div
                 key={p.id}
-                property={p}
-                whatsappHref={waHref(
-                  settings.whatsapp,
-                  `Olá! Tenho interesse no imóvel ${p.refCode} (${publicLocation(p)}) que vi no site da FC Imóveis.`,
-                )}
-              />
+                className="anim-entra grid"
+                style={{ animationDelay: `${Math.min(i, 8) * 80}ms` }}
+              >
+                <ImovelCard
+                  property={p}
+                  whatsappHref={waHref(
+                    settings.whatsapp,
+                    `Olá! Tenho interesse no imóvel ${p.refCode} (${publicLocation(p)}) que vi no site da FC Imóveis.`,
+                  )}
+                />
+              </div>
             ))}
           </div>
+        )}
+        {encontrados.length > properties.length && (
+          <p className="mt-6 text-center text-lg text-stone-600">
+            Mostrando {properties.length} de {encontrados.length}. Use a busca
+            acima para afinar.
+          </p>
         )}
       </section>
 
