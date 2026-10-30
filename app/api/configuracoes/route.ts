@@ -10,6 +10,9 @@ export const dynamic = "force-dynamic";
 const patchSchema = z
   .object({
     agencyName: z.string().trim().min(1, "Informe o nome da imobiliária").max(120),
+    tradeName: z.string().trim().max(120).nullable(),
+    cnpj: z.string().trim().max(20).nullable(),
+    responsibleBroker: z.string().trim().max(120).nullable(),
     creci: z.string().trim().max(40).nullable(),
     phone: z.string().trim().max(30).nullable(),
     whatsapp: z.string().trim().max(30).nullable(),
@@ -35,6 +38,9 @@ export async function GET() {
   return NextResponse.json({
     settings: {
       agencyName: s.agencyName,
+      tradeName: s.tradeName,
+      cnpj: s.cnpj,
+      responsibleBroker: s.responsibleBroker,
       creci: s.creci,
       phone: s.phone,
       whatsapp: s.whatsapp,

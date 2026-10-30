@@ -8,21 +8,55 @@ const LINKS = [
   { href: "/cidade", label: "Conheça a cidade", icon: MapPin },
 ];
 
+export type DadosEmpresa = {
+  tradeName?: string | null;
+  cnpj?: string | null;
+  responsibleBroker?: string | null;
+  creci?: string | null;
+};
+
+/**
+ * Dados oficiais da empresa (nome de fantasia, CNPJ e CRECI do corretor
+ * responsável), vindos de Configurações → Imobiliária. Usado no rodapé do
+ * site e no do link exclusivo.
+ */
+export function DadosLegais({
+  tradeName,
+  cnpj,
+  responsibleBroker,
+  creci,
+}: DadosEmpresa) {
+  const empresa = [tradeName, cnpj && `CNPJ ${cnpj}`]
+    .filter(Boolean)
+    .join(" · ");
+  const responsavel = [
+    responsibleBroker && `Corretor responsável: ${responsibleBroker}`,
+    creci && `CRECI ${creci}`,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+  if (!empresa && !responsavel) return null;
+  return (
+    <div className="space-y-1 text-base text-brand-100">
+      {empresa && <p>{empresa}</p>}
+      {responsavel && <p>{responsavel}</p>}
+    </div>
+  );
+}
+
 export function PublicFooter({
   agencyName,
-  creci,
   phone,
   whatsapp,
-}: {
+  ...dados
+}: DadosEmpresa & {
   agencyName: string;
-  creci?: string | null;
   phone?: string | null;
   whatsapp?: string | null;
 }) {
   const contato =
-    [creci && `CRECI ${creci}`, phone, whatsapp && `WhatsApp ${whatsapp}`]
-      .filter(Boolean)
-      .join(" · ") || "Bragança Paulista/SP";
+    [phone, whatsapp && `WhatsApp ${whatsapp}`].filter(Boolean).join(" · ") ||
+    "Bragança Paulista/SP";
 
   return (
     <footer
@@ -48,6 +82,7 @@ export function PublicFooter({
           ))}
         </nav>
         <p className="text-lg">{contato}</p>
+        <DadosLegais {...dados} />
         <p className="text-sm text-brand-300">
           Por segurança, a localização exata dos imóveis é informada apenas pela
           nossa equipe.

@@ -11,6 +11,9 @@ datasource db {
 model Settings {
   id                Int      @id @default(1)
   agencyName        String   @default("FC Imóveis")
+  tradeName         String? // nome de fantasia do CNPJ (rodapé)
+  cnpj              String?
+  responsibleBroker String? // corretor responsável (dono do CRECI abaixo)
   creci             String?
   phone             String?
   whatsapp          String?
