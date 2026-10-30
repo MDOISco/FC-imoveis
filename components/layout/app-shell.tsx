@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { NavLinks } from "./nav-links";
-import { Logo } from "@/components/ui/logo";
+import { LogoMarca } from "@/components/ui/logo";
 import { Toaster } from "@/components/ui/toast";
 import { authEnabled } from "@/lib/auth";
 
@@ -14,7 +14,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             href="/"
             className="flex items-center gap-3 rounded-xl px-2 py-1"
           >
-            <Logo selo className="h-14" />
+            <LogoMarca />
             <span className="whitespace-nowrap font-display text-2xl font-bold tracking-tight">
               FC Imóveis
             </span>

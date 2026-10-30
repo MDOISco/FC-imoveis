@@ -3,7 +3,7 @@ import { Lock, MessageCircle, Sparkles } from "lucide-react";
 import { ImovelDetalhes } from "@/components/site/imovel-detalhes";
 import { RastreioAtividade } from "@/components/site/rastreio-atividade";
 import { SenhaExclusiva } from "@/components/site/senha-exclusiva";
-import { Logo } from "@/components/ui/logo";
+import { LogoMarca } from "@/components/ui/logo";
 import { ACCESS_COOKIE, expectedToken, safeEqual } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { linkCookieName } from "@/lib/exclusivo";
@@ -24,7 +24,7 @@ function Cabecalho({ agencyName }: { agencyName: string }) {
   return (
     <header className="border-b-2 border-gold-500 bg-brand-950 text-white">
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:px-6">
-        <Logo selo className="h-14" />
+        <LogoMarca />
         <span>
           <span className="block font-display text-xl font-bold tracking-tight sm:text-2xl">
             {agencyName}

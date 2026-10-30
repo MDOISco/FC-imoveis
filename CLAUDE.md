@@ -40,9 +40,12 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
   guardar IP nem navegador. A lista não atualiza sozinha (decisão da dona).
 - Feito para corretores de mais idade: **letras grandes (base 18px), botões
   grandes, pt-BR em toda a UI**. Manter esse padrão em qualquer tela nova.
-- **Logotipo** = a imagem enviada pela dona, só recortada sem fundo
-  (`public/logo.webp`; componente `components/ui/logo.tsx`, com `selo`
-  creme em fundo escuro). Não redesenhar nem vetorizar sem pedido dela.
+- **Logotipo** = a imagem enviada pela dona, já com fundo transparente e
+  cores originais (`public/logo/`: `fc-logo.png` completo, `fc-marca.png`
+  só a casa; componente `components/ui/logo.tsx`; ícones `app/icon.png` e
+  `app/apple-icon.png`). **Nunca** pôr plaquinha/fundo branco ou creme atrás
+  — ela pediu fundo TRANSPARENTE. Nos cabeçalhos verdes vai só a casa,
+  direto sobre o verde. Não redesenhar, recolorir nem vetorizar sem pedido dela.
 - **Imóvel de cliente (source=LEAD) tem gestão própria** (Permutas → Imóveis
   de clientes): NUNCA operar status/edição pela ficha/wizard do corretor —
   as rotas /api/imoveis bloqueiam source=LEAD de propósito (regressão do bug 1).

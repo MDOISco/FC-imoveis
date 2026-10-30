@@ -13,7 +13,7 @@ import {
   MessageCircle,
   X,
 } from "lucide-react";
-import { Logo } from "@/components/ui/logo";
+import { LogoMarca } from "@/components/ui/logo";
 import { cn } from "@/lib/cn";
 
 type Item = { href: string; label: string; icon: typeof Home; match: string };
@@ -48,7 +48,7 @@ export function PublicNav({
           className="flex items-center gap-3"
           onClick={() => setAberto(false)}
         >
-          <Logo selo className="h-14" />
+          <LogoMarca />
           <span>
             <span className="block whitespace-nowrap font-display text-xl font-bold tracking-tight sm:text-2xl">
               {agencyName}
