@@ -12,13 +12,13 @@ import { apiFetch, ApiError } from "@/lib/client-api";
 
 /** Só aceita caminhos internos (evita redirecionar para outro site após o login). */
 function safeDestination(raw: string | null): string {
-  if (!raw || !raw.startsWith("/") || raw.startsWith("//")) return "/";
+  if (!raw || !raw.startsWith("/") || raw.startsWith("//")) return "/painel";
   try {
     const url = new URL(raw, window.location.origin);
-    if (url.origin !== window.location.origin) return "/";
+    if (url.origin !== window.location.origin) return "/painel";
     return url.pathname + url.search;
   } catch {
-    return "/";
+    return "/painel";
   }
 }
 

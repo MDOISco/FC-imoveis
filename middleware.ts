@@ -2,9 +2,11 @@ import { NextResponse, type NextRequest } from "next/server";
 import { ACCESS_COOKIE, expectedToken, safeEqual } from "@/lib/auth";
 
 /**
- * Proteção do dashboard por senha de equipe (DASHBOARD_SENHA).
+ * Proteção do painel da equipe (/painel e telas internas) por senha única
+ * (DASHBOARD_SENHA). A raiz "/" leva ao site público (app/page.tsx).
  * - Sem a variável definida: tudo aberto (desenvolvimento local).
- * - Páginas/APIs PÚBLICAS (fora do matcher): /permutas*, /api/permutas (lead),
+ * - Páginas/APIs PÚBLICAS (fora do matcher): /, /site*, /cidade, /agendar*,
+ *   /exclusivo*, /permutas*, /api/permutas (lead),
  *   /api/feeds (portais), /api/arquivos (fotos), /entrar e /api/entrar.
  */
 export async function middleware(request: NextRequest) {
@@ -29,7 +31,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/",
+    "/painel",
     "/imoveis/:path*",
     "/configuracoes",
     "/permutas-admin",

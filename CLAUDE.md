@@ -7,7 +7,8 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
 
 ## O que é
 
-- **Dashboard interno** (`/`, protegido por senha única da equipe): cadastro
+- **Dashboard interno** (`/painel`, protegido por senha única da equipe; a raiz
+  `/` redireciona para o site público `/site`): cadastro
   de imóveis em wizard de 8 etapas, fotos com tratamento + marca d'água,
   vídeo, 3 descrições geradas (templates determinísticos ou IA), publicação
   automática nos portais via feeds XML VRSync, gestão de permutas.
