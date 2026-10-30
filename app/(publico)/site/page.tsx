@@ -1,11 +1,5 @@
 import Link from "next/link";
-import {
-  Building2,
-  CalendarDays,
-  Handshake,
-  KeyRound,
-  MessageCircle,
-} from "lucide-react";
+import { Building2, CalendarDays, KeyRound, MessageCircle } from "lucide-react";
 import { HeroVideo } from "@/components/site/hero-video";
 import { ImovelCard, type SiteProperty } from "@/components/site/imovel-card";
 import { cn } from "@/lib/cn";
@@ -16,24 +10,6 @@ import { getSettings } from "@/lib/settings";
 import { waHref } from "@/lib/whatsapp";
 
 export const dynamic = "force-dynamic";
-
-const DIFERENCIAIS = [
-  {
-    numero: "01",
-    title: "Atendimento de verdade",
-    text: "Aqui você fala direto com a Cátia ou com o Francisco — os corretores donos da FC — do primeiro contato até a entrega das chaves.",
-  },
-  {
-    numero: "02",
-    title: "Seu imóvel nos grandes portais",
-    text: "Anunciamos com fotos tratadas e descrição caprichada nos principais portais de imóveis do Brasil.",
-  },
-  {
-    numero: "03",
-    title: "Permutas com a chave dourada",
-    text: "Quer trocar de imóvel? Temos um sistema próprio de permutas: você cadastra o seu e, quando os dois lados combinam, a chave dourada se abre.",
-  },
-];
 
 // Tipos que contam como "imóvel comercial" na faixa de números e no filtro.
 const TIPOS_COMERCIAIS = ["GALPAO", "SALA_COMERCIAL", "LOJA", "PREDIO_COMERCIAL"];
@@ -252,42 +228,6 @@ export default async function SiteHomePage({
             ))}
           </div>
         )}
-      </section>
-
-      {/* ===== Por que a FC ===== */}
-      <section className="border-y border-stone-200 bg-white">
-        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-          <p className="text-sm font-bold uppercase tracking-[0.22em] text-gold-700">
-            Por que a FC Imóveis
-          </p>
-          <h2 className="mt-1 font-display text-3xl font-bold text-stone-900 sm:text-4xl">
-            Uma imobiliária do tamanho certo
-          </h2>
-          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            {DIFERENCIAIS.map((d) => (
-              <div
-                key={d.numero}
-                className="rounded-2xl border border-stone-200 bg-stone-50 p-6"
-              >
-                <span className="font-display text-5xl font-bold leading-none text-gold-600">
-                  {d.numero}
-                </span>
-                <h3 className="mt-4 text-xl font-bold text-stone-900">
-                  {d.title}
-                </h3>
-                <p className="mt-1.5 text-base text-stone-600">{d.text}</p>
-              </div>
-            ))}
-          </div>
-          <p className="mt-8 flex flex-wrap items-center gap-2 rounded-2xl bg-brand-100 p-5 text-lg text-brand-900">
-            <Handshake className="size-6 shrink-0 text-brand-700" />
-            <span>
-              <strong>FC</strong> é de <strong>Francisco e Cátia</strong>: os
-              dois corretores que atendem você pessoalmente, sem passar de mão
-              em mão.
-            </span>
-          </p>
-        </div>
       </section>
 
       {/* ===== Permutas (vídeo da chave dourada em largura total, sem som) ===== */}
