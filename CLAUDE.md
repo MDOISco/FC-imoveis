@@ -25,6 +25,12 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
   ChatThread/ChatMessage, polling leve (sem lib externa), bolinha de não lidas.
 - **Mapa da cidade** (`/cidade`): Leaflet + OpenStreetMap (sem chave), pontos
   reais em lib/cidade/pontos.ts. Componente só-cliente (Leaflet usa window).
+- **Busca do site** (caixa logo abaixo do banner de `/site`): regras em
+  `lib/busca-site.ts` (mesma função no servidor e na contagem ao vivo do
+  navegador), tela em `components/site/busca-imoveis.tsx`. Condomínio
+  **Jardim das Palmeiras** sempre primeiro, com estrela (é condomínio, o
+  principal da imobiliária). Bairro/condomínio de imóvel OCULTO e valor
+  "sob consulta" nunca entram na busca.
 - **Site público** (`/site`, prévia com noindex): página do imóvel em
   `/site/imovel/[id]` só para imóvel ATIVO + "Publicar no site" ligado na
   ficha. **Link exclusivo** (`/exclusivo/[token]`, senha por cliente criada na
@@ -90,6 +96,8 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
 
 ## Pendências conhecidas
 
+- **Próxima sessão já combinada**: ver `PROXIMA-SESSAO.md` (pontos da
+  cidade, distâncias nos imóveis, lista completa de bairros/condomínios).
 - Trocar para o domínio oficial quando chegar (Hostinger) + atualizar
   "Endereço público do sistema" em Configurações → Portais.
 - Cadastrar os feeds nos painéis dos portais (Canal Pro, Chaves na Mão,

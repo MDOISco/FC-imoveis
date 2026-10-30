@@ -42,6 +42,8 @@ import {
   MOBILIA_BUSCA,
   ORDENS_BUSCA,
   combina,
+  condominiosDisponiveis,
+  ehCondominioDestaque,
   locaisDisponiveis,
   paraQuery,
   resumoBusca,
@@ -135,6 +137,7 @@ export function BuscaImoveis({
     [itens, busca],
   );
   const locais = useMemo(() => locaisDisponiveis(itens), [itens]);
+  const condominios = useMemo(() => condominiosDisponiveis(itens), [itens]);
   const variasCidades = locais.length > 1;
   const totalBairros = locais.reduce((n, l) => n + l.bairros.length, 0);
   const resumo = resumoBusca(busca);
@@ -327,16 +330,43 @@ export function BuscaImoveis({
               <span className="inline-flex items-center gap-2">
                 <MapPin className="size-5 text-brand-700" /> Onde?
               </span>
-              {busca.locais.length > 0 && (
+              {busca.locais.length + busca.condominios.length > 0 && (
                 <button
                   type="button"
-                  onClick={() => muda({ locais: [] })}
+                  onClick={() => muda({ locais: [], condominios: [] })}
                   className="text-base font-semibold text-brand-700 hover:underline"
                 >
                   Qualquer lugar
                 </button>
               )}
             </legend>
+            <p className="mb-2 mt-3 text-sm font-bold uppercase tracking-wider text-stone-400">
+              Condomínios
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {condominios.map((c) => {
+                const destaque = ehCondominioDestaque(c);
+                return (
+                  <Pilula
+                    key={c}
+                    ativo={busca.condominios.includes(c)}
+                    onClick={() => muda({ condominios: alterna(busca.condominios, c) })}
+                    contagem={conta({ locais: [], condominios: [c] })}
+                    destaque={destaque}
+                  >
+                    {destaque && (
+                      <span aria-label="Condomínio principal" className="text-lg text-gold-500">
+                        ★
+                      </span>
+                    )}
+                    {c}
+                  </Pilula>
+                );
+              })}
+            </div>
+            <p className="mb-2 mt-5 text-sm font-bold uppercase tracking-wider text-stone-400">
+              Bairros
+            </p>
             {totalBairros > 10 && (
               <input
                 type="search"
@@ -344,15 +374,15 @@ export function BuscaImoveis({
                 onChange={(e) => setFiltroBairro(e.target.value)}
                 placeholder="Digite para achar o bairro…"
                 aria-label="Procurar bairro"
-                className="mt-3 w-full min-h-12 rounded-xl border-2 border-stone-300 bg-white px-4 text-stone-900 placeholder:text-stone-400 focus:border-brand-600 focus:outline-none sm:max-w-sm"
+                className="mb-3 w-full min-h-12 rounded-xl border-2 border-stone-300 bg-white px-4 text-stone-900 placeholder:text-stone-400 focus:border-brand-600 focus:outline-none sm:max-w-sm"
               />
             )}
             {locais.length === 0 ? (
-              <p className="mt-3 text-base text-stone-500">
+              <p className="text-base text-stone-500">
                 Os bairros aparecem aqui conforme os imóveis são publicados.
               </p>
             ) : (
-              <div className="mt-3 space-y-3">
+              <div className="space-y-3">
                 {locais.map(({ cidade, bairros }) => {
                   const visiveis = bairros.filter((b) =>
                     semAcento(b).includes(semAcento(filtroBairro.trim())),
@@ -377,7 +407,7 @@ export function BuscaImoveis({
                               key={local}
                               ativo={ativo}
                               onClick={() => muda({ locais: alterna(busca.locais, local) })}
-                              contagem={conta({ locais: [local] })}
+                              contagem={conta({ locais: [local], condominios: [] })}
                             >
                               {rotuloLocal(local)}
                             </Pilula>
@@ -727,6 +757,12 @@ function chipsAtivos(
       rotulo: rotuloLocal(l),
       remover: () => muda({ locais: b.locais.filter((x) => x !== l) }),
     });
+  for (const c of b.condominios)
+    chips.push({
+      chave: `c-${c}`,
+      rotulo: c,
+      remover: () => muda({ condominios: b.condominios.filter((x) => x !== c) }),
+    });
   // O resto vem do mesmo resumo usado no servidor, sem repetir os de cima
   const ja = new Set(chips.map((c) => c.rotulo));
   const removedores: Record<string, Partial<Busca>> = {
@@ -765,11 +801,13 @@ function Pilula({
   ativo,
   onClick,
   contagem,
+  destaque = false,
   children,
 }: {
   ativo: boolean;
   onClick: () => void;
   contagem?: number;
+  destaque?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -781,8 +819,10 @@ function Pilula({
         "inline-flex min-h-12 items-center gap-2 rounded-full border-2 px-4 text-base font-semibold transition-all duration-300 hover:-translate-y-0.5 active:scale-95",
         ativo
           ? "border-brand-800 bg-brand-800 text-white shadow-md"
-          : "border-stone-200 bg-white text-stone-700 hover:border-brand-400",
-        !ativo && contagem === 0 && "opacity-55",
+          : destaque
+            ? "border-gold-400 bg-gold-50 text-gold-950 shadow-sm hover:border-gold-500"
+            : "border-stone-200 bg-white text-stone-700 hover:border-brand-400",
+        !ativo && !destaque && contagem === 0 && "opacity-55",
       )}
     >
       {ativo && <Check className="anim-pop size-4" strokeWidth={3} />}

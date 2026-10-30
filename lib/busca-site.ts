@@ -79,6 +79,7 @@ export type ItemBusca = {
   tipo: string | null;
   cidade: string;
   bairro: string | null; // null quando o endereço é OCULTO
+  condominio: string | null; // idem
   quartos: number;
   suites: number;
   banheiros: number;
@@ -106,6 +107,7 @@ export function paraItemBusca(p: Property): ItemBusca {
     tipo: p.propertyType,
     cidade: p.city,
     bairro: p.addressVisibility === "OCULTO" ? null : p.neighborhood || null,
+    condominio: p.addressVisibility === "OCULTO" ? null : p.condoName?.trim() || null,
     quartos: p.bedrooms ?? 0,
     suites: p.suites ?? 0,
     banheiros: p.bathrooms ?? 0,
@@ -126,6 +128,7 @@ export type Busca = {
   finalidade: string; // "" | comprar | alugar | permuta
   tipos: string[]; // tokens de PROPERTY_TYPES
   locais: string[]; // "Cidade" ou "Bairro, Cidade"
+  condominios: string[];
   quartos: number;
   suites: number;
   banheiros: number;
@@ -147,6 +150,7 @@ export const BUSCA_VAZIA: Busca = {
   finalidade: "",
   tipos: [],
   locais: [],
+  condominios: [],
   quartos: 0,
   suites: 0,
   banheiros: 0,
@@ -197,6 +201,7 @@ export function lerBusca(params: Params): Busca {
     finalidade: FINALIDADES_BUSCA.some((f) => f.value === finalidade) ? finalidade : "",
     tipos: lista(params.tipo).filter((t) => tiposValidos.has(t)),
     locais: lista(params.local).slice(0, 40),
+    condominios: lista(params.condominio).slice(0, 40),
     quartos: inteiro(params.quartos, 4),
     suites: inteiro(params.suites, 4),
     banheiros: inteiro(params.banheiros, 4),
@@ -221,6 +226,7 @@ export function paraQuery(b: Busca): string {
   if (b.finalidade) q.set("finalidade", b.finalidade);
   for (const t of b.tipos) q.append("tipo", t);
   for (const l of b.locais) q.append("local", l);
+  for (const c of b.condominios) q.append("condominio", c);
   if (b.quartos) q.set("quartos", String(b.quartos));
   if (b.suites) q.set("suites", String(b.suites));
   if (b.banheiros) q.set("banheiros", String(b.banheiros));
@@ -272,12 +278,14 @@ export function combina(i: ItemBusca, b: Busca): boolean {
   if (b.finalidade === "alugar" && !i.aluguel) return false;
   if (b.finalidade === "permuta" && !i.permuta) return false;
   if (b.tipos.length && (!i.tipo || !b.tipos.includes(i.tipo))) return false;
+  // "Onde?": bairros/cidades e condomínios valem juntos (qualquer um serve)
   if (
-    b.locais.length &&
+    (b.locais.length || b.condominios.length) &&
     !b.locais.some((l) => {
       const { cidade, bairro } = separarLocal(l);
       return i.cidade === cidade && (bairro === null || i.bairro === bairro);
-    })
+    }) &&
+    !b.condominios.some((c) => i.condominio !== null && semAcento(c) === semAcento(i.condominio))
   )
     return false;
   if (i.quartos < b.quartos || i.suites < b.suites) return false;
@@ -299,7 +307,7 @@ export function combina(i: ItemBusca, b: Busca): boolean {
     const codigo = t.match(/^(?:fc)?[\s-]*0*(\d{1,6})$/);
     if (codigo) {
       if (Number(i.refCode.replace(/\D/g, "")) !== Number(codigo[1])) return false;
-    } else if (!semAcento(`${i.refCode} ${i.title} ${i.bairro ?? ""}`).includes(t)) {
+    } else if (!semAcento(`${i.refCode} ${i.title} ${i.bairro ?? ""} ${i.condominio ?? ""}`).includes(t)) {
       return false;
     }
   }
@@ -343,6 +351,31 @@ export function locaisDisponiveis(itens: ItemBusca[]): { cidade: string; bairros
     .map(([cidade, bairros]) => ({ cidade, bairros: [...bairros].sort(ordem) }));
 }
 
+// Condomínio principal da imobiliária (pedido da dona): sempre primeiro, com
+// estrela, mesmo antes de ter imóvel publicado lá.
+export const CONDOMINIO_DESTAQUE = "Jardim das Palmeiras";
+
+export function ehCondominioDestaque(nome: string): boolean {
+  return semAcento(nome).includes(semAcento(CONDOMINIO_DESTAQUE));
+}
+
+/** Condomínios dos imóveis publicados (nome como a equipe cadastrou). */
+export function condominiosDisponiveis(itens: ItemBusca[]): string[] {
+  const nomes = new Map<string, string>(); // sem acento -> nome exibido
+  for (const i of itens) {
+    if (i.condominio && !nomes.has(semAcento(i.condominio))) {
+      nomes.set(semAcento(i.condominio), i.condominio);
+    }
+  }
+  const lista = [...nomes.values()];
+  if (!lista.some(ehCondominioDestaque)) lista.push(CONDOMINIO_DESTAQUE);
+  return lista.sort(
+    (a, b) =>
+      Number(ehCondominioDestaque(b)) - Number(ehCondominioDestaque(a)) ||
+      a.localeCompare(b, "pt-BR"),
+  );
+}
+
 /** Rótulo curto de um local escolhido. */
 export function rotuloLocal(local: string): string {
   const { cidade, bairro } = separarLocal(local);
@@ -358,6 +391,7 @@ export function resumoBusca(b: Busca): string[] {
   if (b.finalidade && fin) partes.push(fin.label);
   partes.push(...b.tipos.map((t) => PROPERTY_TYPE_LABELS[t] ?? t));
   partes.push(...b.locais.map(rotuloLocal));
+  partes.push(...b.condominios);
   if (b.quartos) partes.push(N(b.quartos, "quarto", "quartos"));
   if (b.suites) partes.push(N(b.suites, "suíte", "suítes"));
   if (b.banheiros) partes.push(N(b.banheiros, "banheiro", "banheiros"));
