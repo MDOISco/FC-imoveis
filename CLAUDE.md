@@ -88,6 +88,12 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
   `sudo fc-dominio fcbragancaimoveis.com.br` (= `deploy/dominio.sh`: confere o DNS,
   põe `www` e os endereços antigos redirecionando para o novo, atualiza
   APP_URL e Configurações → Portais).
+- **Atalho `fc-dominio` antigo** (out/2026): o servidor ainda tinha o da 1ª
+  versão do instalador (só trocava a 1ª linha do Caddy, sem conferir DNS) e
+  derrubou o DuckDNS. `deploy/dominio.sh` agora recupera o endereço antigo
+  pelo APP_URL e, com `--forcar` antes do DNS chegar, mantém os antigos
+  abrindo o site (APP_URL só muda quando o DNS já aponta). Na dúvida rode
+  `sudo bash /opt/fc-imoveis/deploy/dominio.sh` (ele regrava o atalho).
 - Links antigos `/site` e `/site/imovel/[id]` redirecionam (next.config.ts)
   para `/` e `/imovel/[id]`. Painel: `/painel` (antes era `/`).
 - Servidor Ubuntu 22.04; app em `/opt/fc-imoveis` como serviço systemd

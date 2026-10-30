@@ -51,6 +51,18 @@ if [[ -f "$CADDYFILE" ]]; then
     | sed -e 's/[[:space:]]*{.*$//' -e 's/,/ /g' | tr ' ' '\n' \
     | grep -v -x -e '' -e "$NOVO" -e "www.$NOVO" | sort -u | tr '\n' ' ' || true)"
 fi
+# O endereço gravado em APP_URL também é antigo (ex.: o atalho fc-dominio da
+# 1ª versão do instalador trocava a 1ª linha do Caddy e "sumia" com o DuckDNS).
+APP_ANTIGO="$(grep -E '^APP_URL=' "$ENV_FILE" 2>/dev/null | head -1 \
+  | sed -e 's/^APP_URL=//' -e 's/"//g' -e 's|^https\?://||' -e 's|/.*$||' || true)"
+if [[ -n "$APP_ANTIGO" && "$APP_ANTIGO" != "$NOVO" && "$APP_ANTIGO" != "www.$NOVO" ]]; then
+  ANTIGOS="$(printf '%s\n' $ANTIGOS "$APP_ANTIGO" | sort -u | tr '\n' ' ')"
+fi
+
+# DNS ainda não chegou (trocado com --forcar): os endereços antigos continuam
+# MOSTRANDO o site (sem redirecionar para um domínio que ainda não abre).
+DNS_PRONTO=1
+[[ -n "$IP_SERVIDOR" && "$IP_DOMINIO" != "$IP_SERVIDOR" ]] && DNS_PRONTO=0
 
 echo "==> Configurando HTTPS (Caddy)"
 cp -a "$CADDYFILE" "$CADDYFILE.antes-dominio" 2>/dev/null || true
@@ -68,7 +80,11 @@ www.$NOVO {
 }
 EOF
   for antigo in $ANTIGOS; do
-    printf '\n%s {\n    redir https://%s{uri} permanent\n}\n' "$antigo" "$NOVO"
+    if [[ $DNS_PRONTO == 1 ]]; then
+      printf '\n%s {\n    redir https://%s{uri} permanent\n}\n' "$antigo" "$NOVO"
+    else
+      printf '\n%s {\n    reverse_proxy localhost:3000\n    request_body {\n        max_size 210MB\n    }\n}\n' "$antigo"
+    fi
   done
 } > "$CADDYFILE"
 
@@ -78,6 +94,7 @@ if ! "$CADDY_BIN" validate --config "$CADDYFILE" --adapter caddyfile >/dev/null 
   exit 1
 fi
 
+if [[ $DNS_PRONTO == 1 ]]; then
 echo "==> Atualizando o endereço do sistema"
 sed -i "s|^APP_URL=.*|APP_URL=\"https://$NOVO\"|" "$ENV_FILE"
 # "Endereço público do sistema" (Configurações → Portais), se estiver preenchido
@@ -85,6 +102,7 @@ if command -v sqlite3 >/dev/null 2>&1 && [[ -f "$DB" ]]; then
   sqlite3 -cmd ".timeout 5000" "$DB" \
     "UPDATE Settings SET publicBaseUrl='https://$NOVO' WHERE publicBaseUrl IS NOT NULL AND publicBaseUrl <> '';" \
     || echo "  (não consegui atualizar Configurações → Portais; ajuste lá à mão)"
+fi
 fi
 
 # Deixa o atalho "fc-dominio" usando sempre este script (versão do GitHub)
@@ -102,7 +120,14 @@ echo "  ✅ Domínio trocado!"
 echo ""
 echo "  Site (público):        https://$NOVO"
 echo "  Painel dos corretores: https://$NOVO/painel  (com senha)"
-[[ -n "$ANTIGOS" ]] && echo "  Endereços antigos que agora levam ao novo: $ANTIGOS"
+if [[ $DNS_PRONTO == 1 ]]; then
+  [[ -n "$ANTIGOS" ]] && echo "  Endereços antigos que agora levam ao novo: $ANTIGOS"
+else
+  echo "  ⚠ O DNS de $NOVO ainda não chegou. Enquanto isso o site continua"
+  echo "    abrindo em: $ANTIGOS"
+  echo "    Quando $NOVO abrir no navegador, rode de novo (sem --forcar):"
+  echo "    sudo fc-dominio $NOVO"
+fi
 echo ""
 echo "  O cadeado (HTTPS) pode levar 1 a 2 minutos na 1ª vez."
 echo "============================================================"
