@@ -88,3 +88,10 @@ uma linha em `lib/cidade/estabelecimentos.ts`.
   - valor "sob consulta" não entra no filtro nem na ordenação por preço;
   - o item de busca leva só a FAIXA de distância por categoria, nunca a
     coordenada.
+- "Onde?" mostra a lista oficial inteira (182 bairros e 91 condomínios),
+  mas de cara só os que têm imóvel publicado (e o Jardim das Palmeiras ★);
+  o resto em "Ver todos" (bairros agrupados por região) ou digitando.
+- "Perto de": o cliente escolhe categorias e a distância (500 m, 1 km ou
+  2 km); só aparece quando algum imóvel publicado tem localização boa.
+- Links antigos com grafia variante ("Vila Motta", "Jd. Palmeiras") são
+  lidos com o nome oficial.

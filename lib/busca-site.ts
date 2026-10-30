@@ -5,8 +5,24 @@
 //
 // Privacidade: o item de busca só carrega o que já aparece no anúncio. Bairro
 // de imóvel "OCULTO" e valor "sob consulta" nem entram (senão a busca
-// revelaria por eliminação). Rua/número/CEP nunca.
+// revelaria por eliminação). Rua/número/CEP nunca. A coordenada também não:
+// o item leva só a FAIXA de distância até cada categoria de lugar ("Perto de").
 import type { Property } from "@prisma/client";
+import { BAIRROS, NOMES_BAIRROS, bairroPorNome } from "@/lib/cidade/bairros";
+import {
+  CATEGORIA_POR_VALOR,
+  ehCategoriaLugar,
+  type CategoriaLugar,
+} from "@/lib/cidade/categorias";
+import {
+  CONDOMINIO_DESTAQUE,
+  NOMES_CONDOMINIOS,
+  condominioPorNome,
+  ehCondominioDestaque,
+  ordemCondominios,
+} from "@/lib/cidade/condominios";
+import { chaveNome } from "@/lib/cidade/nomes";
+import { FAIXAS_M, faixaDe, faixaPorCategoria, pontoDoImovel, rotuloFaixa } from "@/lib/cidade/perto";
 import {
   AMENITY_BY_KEY,
   PROPERTY_TYPE_LABELS,
@@ -17,6 +33,23 @@ import {
   type Option,
 } from "@/lib/constants";
 import { formatArea, formatBRL } from "@/lib/format";
+
+export { CONDOMINIO_DESTAQUE, ehCondominioDestaque };
+
+/** Cidade da lista oficial de bairros e condomínios. */
+export const CIDADE_PRINCIPAL = "Bragança Paulista";
+
+function daCidadePrincipal(cidade: string): boolean {
+  return chaveNome(cidade) === chaveNome(CIDADE_PRINCIPAL);
+}
+
+/** Região (indicativa) de cada bairro oficial, para agrupar na tela. */
+export const REGIAO_DO_BAIRRO: Record<string, string> = Object.fromEntries(
+  BAIRROS.map((b) => [b.nome, b.regiao]),
+);
+
+/** Distâncias que o cliente pode escolher em "Perto de" (metros). */
+export const DISTANCIAS_PERTO: number[] = FAIXAS_M.slice(0, 3);
 
 /** Só entra quem a equipe publicou na ficha ("Publicar no site"). */
 export const SITE_BASE_WHERE = {
@@ -93,10 +126,18 @@ export type ItemBusca = {
   pet: boolean;
   mobilia: string | null;
   atualizado: number;
+  // Faixa (índice em FAIXAS_M) do lugar mais perto de cada categoria; vazio
+  // quando o endereço é oculto ou a localização não é confiável
+  perto: Partial<Record<CategoriaLugar, number>>;
 };
 
 export function paraItemBusca(p: Property): ItemBusca {
   const precoAberto = !p.priceOnRequest;
+  const visivel = p.addressVisibility !== "OCULTO";
+  const principal = daCidadePrincipal(p.city);
+  const bairro = p.neighborhood?.trim() || null;
+  const condominio = p.condoName?.trim() || null;
+  const ponto = pontoDoImovel(p);
   return {
     id: p.id,
     refCode: p.refCode,
@@ -105,9 +146,11 @@ export function paraItemBusca(p: Property): ItemBusca {
     aluguel: purposeIncludesRent(p.purpose),
     permuta: p.acceptsTrade,
     tipo: p.propertyType,
-    cidade: p.city,
-    bairro: p.addressVisibility === "OCULTO" ? null : p.neighborhood || null,
-    condominio: p.addressVisibility === "OCULTO" ? null : p.condoName?.trim() || null,
+    cidade: principal ? CIDADE_PRINCIPAL : p.city,
+    // Nome oficial (cadastros antigos podem ter outra grafia)
+    bairro: visivel && bairro ? (principal && bairroPorNome(bairro)?.nome) || bairro : null,
+    condominio:
+      visivel && condominio ? (principal && condominioPorNome(condominio)?.nome) || condominio : null,
     quartos: p.bedrooms ?? 0,
     suites: p.suites ?? 0,
     banheiros: p.bathrooms ?? 0,
@@ -121,6 +164,7 @@ export function paraItemBusca(p: Property): ItemBusca {
     pet: p.acceptsPets,
     mobilia: p.furnished,
     atualizado: p.updatedAt.getTime(),
+    perto: ponto ? faixaPorCategoria(ponto) : {},
   };
 }
 
@@ -142,6 +186,8 @@ export type Busca = {
   fgts: boolean;
   pet: boolean;
   mobilia: string;
+  perto: CategoriaLugar[]; // todos precisam estar a até `distancia`
+  distancia: number; // metros (um de DISTANCIAS_PERTO)
   texto: string;
   ordem: string;
 };
@@ -164,6 +210,8 @@ export const BUSCA_VAZIA: Busca = {
   fgts: false,
   pet: false,
   mobilia: "",
+  perto: [],
+  distancia: 1000,
   texto: "",
   ordem: "recentes",
 };
@@ -189,6 +237,14 @@ function faixa(min: number | null, max: number | null): [number | null, number |
   return min !== null && max !== null && min > max ? [max, min] : [min, max];
 }
 
+/** "Vila Motta, Bragança Paulista" → "Vila Mota, Bragança Paulista". */
+function localOficial(local: string): string {
+  const { cidade, bairro } = separarLocal(local);
+  if (!daCidadePrincipal(cidade)) return local;
+  if (bairro === null) return CIDADE_PRINCIPAL;
+  return `${bairroPorNome(bairro)?.nome ?? bairro}, ${CIDADE_PRINCIPAL}`;
+}
+
 /** Lê a busca da URL, aceitando só valores conhecidos. */
 export function lerBusca(params: Params): Busca {
   const tiposValidos = new Set(PROPERTY_TYPES.map((t) => t.value));
@@ -197,11 +253,14 @@ export function lerBusca(params: Params): Busca {
   const finalidade = um(params.finalidade);
   const ordem = um(params.ordem);
   const mobilia = um(params.mobilia);
+  const distancia = Number.parseInt(um(params.distancia), 10);
   return {
     finalidade: FINALIDADES_BUSCA.some((f) => f.value === finalidade) ? finalidade : "",
     tipos: lista(params.tipo).filter((t) => tiposValidos.has(t)),
-    locais: lista(params.local).slice(0, 40),
-    condominios: lista(params.condominio).slice(0, 40),
+    locais: lista(params.local).slice(0, 40).map(localOficial),
+    condominios: lista(params.condominio)
+      .slice(0, 40)
+      .map((c) => condominioPorNome(c)?.nome ?? c),
     quartos: inteiro(params.quartos, 4),
     suites: inteiro(params.suites, 4),
     banheiros: inteiro(params.banheiros, 4),
@@ -215,6 +274,8 @@ export function lerBusca(params: Params): Busca {
     fgts: um(params.fgts) === "1",
     pet: um(params.pet) === "1",
     mobilia: MOBILIA_BUSCA.some((m) => m.value === mobilia) ? mobilia : "",
+    perto: [...new Set(lista(params.perto).filter(ehCategoriaLugar))],
+    distancia: DISTANCIAS_PERTO.includes(distancia) ? distancia : BUSCA_VAZIA.distancia,
     texto: um(params.busca).slice(0, 80),
     ordem: ORDENS_BUSCA.some((o) => o.value === ordem) ? ordem : "recentes",
   };
@@ -240,6 +301,10 @@ export function paraQuery(b: Busca): string {
   if (b.fgts) q.set("fgts", "1");
   if (b.pet) q.set("pet", "1");
   if (b.mobilia) q.set("mobilia", b.mobilia);
+  for (const c of b.perto) q.append("perto", c);
+  if (b.perto.length && b.distancia !== BUSCA_VAZIA.distancia) {
+    q.set("distancia", String(b.distancia));
+  }
   if (b.texto) q.set("busca", b.texto);
   if (b.ordem !== "recentes") q.set("ordem", b.ordem);
   return q.toString();
@@ -301,6 +366,10 @@ export function combina(i: ItemBusca, b: Busca): boolean {
   if ((b.financiamento && !i.financiamento) || (b.fgts && !i.fgts)) return false;
   if (b.pet && !i.pet) return false;
   if (b.mobilia && i.mobilia !== b.mobilia) return false;
+  if (b.perto.length) {
+    const limite = faixaDe(b.distancia) ?? 0;
+    if (b.perto.some((c) => (i.perto[c] ?? Infinity) > limite)) return false;
+  }
   if (b.texto) {
     const t = semAcento(b.texto);
     // "FC 12", "fc-0012" ou só "12" acham o FC-0012
@@ -338,9 +407,13 @@ export function ordenar(itens: ItemBusca[], b: Busca): ItemBusca[] {
   return lista.sort((x, y) => y.atualizado - x.atualizado);
 }
 
-/** Cidades e bairros que existem nos imóveis publicados (só os visíveis). */
+/**
+ * Cidades e bairros para o "Onde?": a lista oficial de Bragança Paulista
+ * inteira (mesmo sem imóvel publicado) + os bairros visíveis das outras
+ * cidades que têm imóvel.
+ */
 export function locaisDisponiveis(itens: ItemBusca[]): { cidade: string; bairros: string[] }[] {
-  const mapa = new Map<string, Set<string>>();
+  const mapa = new Map<string, Set<string>>([[CIDADE_PRINCIPAL, new Set(NOMES_BAIRROS)]]);
   for (const i of itens) {
     if (!mapa.has(i.cidade)) mapa.set(i.cidade, new Set());
     if (i.bairro) mapa.get(i.cidade)!.add(i.bairro);
@@ -351,29 +424,18 @@ export function locaisDisponiveis(itens: ItemBusca[]): { cidade: string; bairros
     .map(([cidade, bairros]) => ({ cidade, bairros: [...bairros].sort(ordem) }));
 }
 
-// Condomínio principal da imobiliária (pedido da dona): sempre primeiro, com
-// estrela, mesmo antes de ter imóvel publicado lá.
-export const CONDOMINIO_DESTAQUE = "Jardim das Palmeiras";
-
-export function ehCondominioDestaque(nome: string): boolean {
-  return semAcento(nome).includes(semAcento(CONDOMINIO_DESTAQUE));
-}
-
-/** Condomínios dos imóveis publicados (nome como a equipe cadastrou). */
+/**
+ * Condomínios para o "Onde?": a lista oficial inteira + os que a equipe
+ * cadastrou fora dela. Jardim das Palmeiras ★ sempre primeiro.
+ */
 export function condominiosDisponiveis(itens: ItemBusca[]): string[] {
-  const nomes = new Map<string, string>(); // sem acento -> nome exibido
+  const nomes = new Map<string, string>(NOMES_CONDOMINIOS.map((c) => [semAcento(c), c]));
   for (const i of itens) {
     if (i.condominio && !nomes.has(semAcento(i.condominio))) {
       nomes.set(semAcento(i.condominio), i.condominio);
     }
   }
-  const lista = [...nomes.values()];
-  if (!lista.some(ehCondominioDestaque)) lista.push(CONDOMINIO_DESTAQUE);
-  return lista.sort(
-    (a, b) =>
-      Number(ehCondominioDestaque(b)) - Number(ehCondominioDestaque(a)) ||
-      a.localeCompare(b, "pt-BR"),
-  );
+  return [...nomes.values()].sort(ordemCondominios);
 }
 
 /** Rótulo curto de um local escolhido. */
@@ -408,6 +470,11 @@ export function resumoBusca(b: Busca): string[] {
   if (b.pet) partes.push("Aceita pet");
   const mob = MOBILIA_BUSCA.find((m) => m.value === b.mobilia);
   if (mob) partes.push(mob.label);
+  if (b.perto.length) {
+    const faixa = faixaDe(b.distancia) ?? 0;
+    const lugares = b.perto.map((c) => CATEGORIA_POR_VALOR[c].curto).join(", ");
+    partes.push(`Perto de ${lugares} (${rotuloFaixa(faixa)})`);
+  }
   if (b.texto) partes.push(`“${b.texto}”`);
   return partes;
 }

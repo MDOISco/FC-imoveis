@@ -2,11 +2,19 @@
 
 import { useMemo, useRef, useState } from "react";
 import { MapPin } from "lucide-react";
+import { CampoSugestoes } from "@/components/ui/campo-sugestoes";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { RadioCards } from "@/components/ui/radio-cards";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "@/components/ui/toast";
+import { NOMES_BAIRROS, bairroPorNome } from "@/lib/cidade/bairros";
+import {
+  NOMES_CONDOMINIOS,
+  condominioPorNome,
+  ehCondominioDestaque,
+} from "@/lib/cidade/condominios";
+import { chaveNome } from "@/lib/cidade/nomes";
 import { ADDRESS_VISIBILITY_OPTIONS } from "@/lib/constants";
 import { maskCep } from "@/lib/format";
 import { useViaCep } from "@/lib/hooks/use-viacep";
@@ -51,13 +59,39 @@ export function Step2Endereco({ property }: { property: WizardProperty; step?: n
   const set = <K extends keyof Form>(key: K, value: Form[K]) =>
     setForm((f) => ({ ...f, [key]: value }));
 
+  // Avisos de grafia só depois que a pessoa sai do campo
+  const [digitando, setDigitando] = useState<"bairro" | "condo" | null>(null);
+
+  // Lista oficial de bairros e condomínios: só para Bragança Paulista
+  const daLista = chaveNome(form.city) === chaveNome("Bragança Paulista");
+  const bairroOficial = daLista ? bairroPorNome(form.neighborhood) : null;
+  const condoOficial = daLista ? condominioPorNome(form.condoName) : null;
+  // "Jardim das Palmeiras" digitado no bairro: é condomínio, não bairro
+  const bairroEhCondominio =
+    daLista && !bairroOficial ? condominioPorNome(form.neighborhood) : null;
+
+  function ajudaBairro(): string | undefined {
+    if (!daLista || digitando === "bairro" || !form.neighborhood.trim()) return undefined;
+    if (bairroEhCondominio)
+      return form.condoName.trim()
+        ? `“${bairroEhCondominio.nome}” é condomínio, não bairro. Se souber o bairro onde ele fica, pode trocar aqui — se não, pode seguir assim.`
+        : `“${bairroEhCondominio.nome}” é condomínio. Coloque o nome dele também no campo de condomínio, mais abaixo.`;
+    if (!bairroOficial)
+      return "Esse nome não está na lista de bairros de Bragança. Confira a grafia — se estiver certo, pode seguir assim.";
+    return undefined;
+  }
+
   async function handleCepBlurOrComplete(cep: string) {
     const result = await viaCep.lookup(cep);
     if (result) {
       setForm((f) => ({
         ...f,
         street: result.street || f.street,
-        neighborhood: result.neighborhood || f.neighborhood,
+        neighborhood:
+          (chaveNome(result.city) === chaveNome("Bragança Paulista")
+            ? bairroPorNome(result.neighborhood)?.nome
+            : null) ??
+          (result.neighborhood || f.neighborhood),
         city: result.city || f.city,
         state: result.state || f.state,
       }));
@@ -129,11 +163,20 @@ export function Step2Endereco({ property }: { property: WizardProperty; step?: n
           />
         </Field>
         <Field label="Bairro" htmlFor="neighborhood">
-          <Input
+          <CampoSugestoes
             id="neighborhood"
             value={form.neighborhood}
-            onChange={(e) => set("neighborhood", e.target.value)}
+            onChange={(v) => set("neighborhood", v)}
+            // Grafia variante ("Vila Motta") vira o nome oficial ao sair do campo
+            onFocus={() => setDigitando("bairro")}
+            onBlur={() => {
+              setDigitando(null);
+              if (bairroOficial) set("neighborhood", bairroOficial.nome);
+            }}
+            sugestoes={daLista ? NOMES_BAIRROS : []}
+            placeholder={daLista ? "Comece a digitar o bairro…" : undefined}
           />
+          {ajudaBairro() && <p className="text-base text-gold-800">{ajudaBairro()}</p>}
         </Field>
       </div>
 
@@ -160,11 +203,25 @@ export function Step2Endereco({ property }: { property: WizardProperty; step?: n
         help="Se o imóvel fica em condomínio."
         htmlFor="condoName"
       >
-        <Input
+        <CampoSugestoes
           id="condoName"
           value={form.condoName}
-          onChange={(e) => set("condoName", e.target.value)}
+          onChange={(v) => set("condoName", v)}
+          onFocus={() => setDigitando("condo")}
+          onBlur={() => {
+            setDigitando(null);
+            if (condoOficial) set("condoName", condoOficial.nome);
+          }}
+          sugestoes={daLista ? NOMES_CONDOMINIOS : []}
+          destaque={ehCondominioDestaque}
+          placeholder={daLista ? "Comece a digitar o condomínio…" : undefined}
         />
+        {daLista && digitando !== "condo" && form.condoName.trim() && !condoOficial && (
+          <p className="text-base text-gold-800">
+            Esse condomínio não está na nossa lista. Confira a grafia — se
+            estiver certo, pode seguir assim.
+          </p>
+        )}
       </Field>
 
       <Field

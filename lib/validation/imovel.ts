@@ -10,6 +10,9 @@ import {
   purposeIncludesSale,
   purposeIsSeason,
 } from "@/lib/constants";
+import { bairroPorNome } from "@/lib/cidade/bairros";
+import { condominioPorNome } from "@/lib/cidade/condominios";
+import { chaveNome } from "@/lib/cidade/nomes";
 
 const values = (opts: { value: string }[]) =>
   opts.map((o) => o.value) as [string, ...string[]];
@@ -127,9 +130,28 @@ export const updateSchema = z
       .optional(),
     descriptionStyle: optionalTrimmed,
   })
-  .partial();
+  .partial()
+  .transform(nomesOficiais);
 
 export type PropertyUpdateInput = z.infer<typeof updateSchema>;
+
+const CIDADE_DA_LISTA = chaveNome("Bragança Paulista");
+
+/**
+ * Bairro e condomínio de Bragança Paulista são gravados com o nome da lista
+ * oficial ("Jd. Palmeiras" → "Jardim das Palmeiras"), para a busca do site e
+ * o mapa acharem o mesmo lugar. Nome fora da lista fica como foi digitado.
+ */
+function nomesOficiais<
+  T extends { city?: string; neighborhood?: string | null; condoName?: string | null },
+>(d: T): T {
+  // Sem cidade no envio, vale a do cadastro (quase sempre Bragança)
+  if (d.city !== undefined && chaveNome(d.city) !== CIDADE_DA_LISTA) return d;
+  const r = { ...d };
+  if (r.neighborhood) r.neighborhood = bairroPorNome(r.neighborhood)?.nome ?? r.neighborhood;
+  if (r.condoName) r.condoName = condominioPorNome(r.condoName)?.nome ?? r.condoName;
+  return r;
+}
 
 /**
  * Pendências para PUBLICAR (status ATIVO). Lista vazia = pode publicar.

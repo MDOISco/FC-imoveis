@@ -113,6 +113,9 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
   **coordenada do imóvel** também: nunca em prop de componente "use client"
   público, HTML, API pública ou feed — calcule as faixas no servidor (ou
   mande só as faixas, como o ItemBusca).
+  Conferir vazamento SEMPRE no build de produção (`next build` +
+  `next start`): em `next dev` o React manda as props dos componentes de
+  servidor ao navegador (depuração) e parece vazamento sem ser.
 - Descrições por IA: `client.messages.parse()` com modelo
   **claude-opus-5-5** + zodOutputFormat; qualquer erro → fallback silencioso
   para os templates. Chave fica em Settings (mascarada no GET).
