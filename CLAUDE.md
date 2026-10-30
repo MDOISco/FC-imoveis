@@ -40,6 +40,12 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
   guardar IP nem navegador. A lista não atualiza sozinha (decisão da dona).
 - Feito para corretores de mais idade: **letras grandes (base 18px), botões
   grandes, pt-BR em toda a UI**. Manter esse padrão em qualquer tela nova.
+- **Logotipo** = a imagem enviada pela dona, já com fundo transparente e
+  cores originais (`public/logo/`: `fc-logo.png` completo, `fc-marca.png`
+  só a casa; componente `components/ui/logo.tsx`; ícones `app/icon.png` e
+  `app/apple-icon.png`). **Nunca** pôr plaquinha/fundo branco ou creme atrás
+  — ela pediu fundo TRANSPARENTE. Nos cabeçalhos verdes vai só a casa,
+  direto sobre o verde. Não redesenhar, recolorir nem vetorizar sem pedido dela.
 - **Imóvel de cliente (source=LEAD) tem gestão própria** (Permutas → Imóveis
   de clientes): NUNCA operar status/edição pela ficha/wizard do corretor —
   as rotas /api/imoveis bloqueiam source=LEAD de propósito (regressão do bug 1).
@@ -67,11 +73,6 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
   (`--color-brand-*` verde, `--color-gold-*` dourado). **Nunca** montar
   classe dinâmica (`bg-${x}`). Trocar o tema = trocar os tokens desse
   arquivo (a dona pretende pedir isso).
-- **Logo**: PNGs com fundo transparente em `public/logo/` (componente
-  `components/layout/logo.tsx`; ícone da aba em `app/icon.png`). A arte
-  original tem linhas marrom-escuras que somem no verde-escuro: nos
-  cabeçalhos e no login usar as versões `-fundo-escuro` (linhas douradas).
-  **Nunca** pôr quadrado/fundo branco atrás do logo (pedido da dona).
 - Prisma **6** e TypeScript **5 pinados** (não subir para Prisma 7 / TS 7).
   SQLite com WAL + busy_timeout; enums como constantes TS em
   `lib/constants.ts` (tokens pt-BR). Dinheiro em **reais inteiros** (Int).

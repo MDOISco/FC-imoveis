@@ -290,42 +290,40 @@ export default async function SiteHomePage({
         </div>
       </section>
 
-      {/* ===== Permutas ===== */}
-      <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-        <div className="relative overflow-hidden rounded-3xl bg-brand-950 text-white shadow-lg">
-          {/* Autoplay robusto no celular (Modo de Economia, apps, etc.) */}
-          <HeroVideo
-            className="absolute inset-0 size-full object-cover"
-            webm="/videos/braganca-aerea.webm"
-            mp4="/videos/braganca-aerea.mp4"
-            poster="/videos/braganca-aerea-poster.jpg"
-          />
-          <div
-            className="absolute inset-0 bg-gradient-to-b from-brand-950/85 via-brand-950/55 to-brand-950/85"
-            aria-hidden="true"
-          />
-          <div className="relative flex flex-col items-center gap-6 px-6 py-12 text-center sm:px-10 sm:py-16">
-            <span className="flex size-16 items-center justify-center rounded-2xl bg-gold-400 text-gold-950">
-              <KeyRound className="size-9" />
-            </span>
-            <div>
-              <h2 className="font-display text-3xl font-bold sm:text-4xl">
-                Quer trocar de imóvel?
-              </h2>
-              <p className="mx-auto mt-3 max-w-xl text-lg text-brand-100">
-                Cadastre o seu imóvel na nossa página de permutas, veja as
-                opções disponíveis e dê o match. Quando os dois lados combinam,
-                <strong> a chave dourada se abre</strong> — e a gente cuida do
-                resto.
-              </p>
-            </div>
-            <Link
-              href="/permutas"
-              className="inline-flex min-h-14 items-center justify-center rounded-2xl bg-gold-400 px-8 text-lg font-extrabold text-gold-950 shadow-lg transition-colors hover:bg-gold-300"
-            >
-              Conhecer as permutas
-            </Link>
+      {/* ===== Permutas (vídeo da chave dourada em largura total, sem som) ===== */}
+      <section className="relative overflow-hidden bg-brand-950 text-white">
+        {/* Autoplay robusto no celular (Modo de Economia, apps, etc.) */}
+        <HeroVideo
+          className="absolute inset-0 size-full object-cover"
+          webm="/videos/chave-dourada.webm"
+          mp4="/videos/chave-dourada.mp4"
+          poster="/videos/chave-dourada-poster.jpg"
+        />
+        <div
+          className="absolute inset-0 bg-gradient-to-b from-brand-950/85 via-brand-950/55 to-brand-950/85"
+          aria-hidden="true"
+        />
+        <div className="relative mx-auto flex max-w-6xl flex-col items-center gap-6 px-6 py-12 text-center sm:px-10 sm:py-16">
+          <span className="flex size-16 items-center justify-center rounded-2xl bg-gold-400 text-gold-950">
+            <KeyRound className="size-9" />
+          </span>
+          <div>
+            <h2 className="font-display text-3xl font-bold sm:text-4xl">
+              Quer trocar de imóvel?
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-lg text-brand-100">
+              Cadastre o seu imóvel na nossa página de permutas, veja as
+              opções disponíveis e dê o match. Quando os dois lados combinam,
+              <strong> a chave dourada se abre</strong> — e a gente cuida do
+              resto.
+            </p>
           </div>
+          <Link
+            href="/permutas"
+            className="inline-flex min-h-14 items-center justify-center rounded-2xl bg-gold-400 px-8 text-lg font-extrabold text-gold-950 shadow-lg transition-colors hover:bg-gold-300"
+          >
+            Conhecer as permutas
+          </Link>
         </div>
       </section>
     </div>

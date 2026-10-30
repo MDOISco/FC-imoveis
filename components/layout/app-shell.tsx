@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { LogoMarca } from "./logo";
 import { NavLinks } from "./nav-links";
+import { LogoMarca } from "@/components/ui/logo";
 import { Toaster } from "@/components/ui/toast";
 import { authEnabled } from "@/lib/auth";
 

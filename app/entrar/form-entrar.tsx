@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { KeyRound } from "lucide-react";
-import { LogoCompleto } from "@/components/layout/logo";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Logo } from "@/components/ui/logo";
 import { Spinner } from "@/components/ui/spinner";
 import { apiFetch, ApiError } from "@/lib/client-api";
 
@@ -52,14 +52,14 @@ export function FormEntrar() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-brand-950 p-4">
-      <LogoCompleto className="h-36 sm:h-44" />
+    <main className="flex min-h-screen items-center justify-center bg-brand-950 p-4">
       <form
         onSubmit={entrar}
         className="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl"
       >
         <div className="mb-6 text-center">
-          <h1 className="font-display text-4xl font-bold text-stone-900">
+          <Logo className="mx-auto h-56" />
+          <h1 className="mt-4 font-display text-4xl font-bold text-stone-900">
             FC Imóveis
           </h1>
           <p className="mt-1 text-lg text-stone-500">

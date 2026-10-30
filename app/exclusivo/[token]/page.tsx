@@ -1,9 +1,9 @@
 import { cookies } from "next/headers";
 import { Lock, MessageCircle, Sparkles } from "lucide-react";
-import { LogoMarca } from "@/components/layout/logo";
 import { ImovelDetalhes } from "@/components/site/imovel-detalhes";
 import { RastreioAtividade } from "@/components/site/rastreio-atividade";
 import { SenhaExclusiva } from "@/components/site/senha-exclusiva";
+import { LogoMarca } from "@/components/ui/logo";
 import { ACCESS_COOKIE, expectedToken, safeEqual } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { linkCookieName } from "@/lib/exclusivo";

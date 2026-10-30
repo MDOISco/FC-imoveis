@@ -13,7 +13,7 @@ import {
   MessageCircle,
   X,
 } from "lucide-react";
-import { LogoMarca } from "@/components/layout/logo";
+import { LogoMarca } from "@/components/ui/logo";
 import { cn } from "@/lib/cn";
 
 type Item = { href: string; label: string; icon: typeof Home; match: string };
