@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { MapaBraganca } from "@/components/cidade/mapa-braganca";
+import { MapaEstabelecimentos } from "@/components/cidade/mapa-estabelecimentos";
 import { CURIOSIDADES_GERAIS } from "@/lib/cidade/pontos";
 
 export const metadata = {
   title: { absolute: "Conheça Bragança Paulista — FC Imóveis" },
   description:
-    "Mapa interativo com os pontos turísticos e as curiosidades da Cidade Poesia, a Capital Nacional da Linguiça Artesanal.",
+    "Mapa interativo com os pontos turísticos, as curiosidades e onde ficam mercados, farmácias, escolas, hospitais, bancos e outros estabelecimentos da Cidade Poesia, a Capital Nacional da Linguiça Artesanal.",
 };
 
 export default function CidadePage() {
@@ -34,6 +35,17 @@ export default function CidadePage() {
           curiosidades de cada lugar.
         </p>
         <MapaBraganca />
+      </section>
+
+      <section id="estabelecimentos" className="scroll-mt-24">
+        <h2 className="mb-1 text-2xl font-extrabold text-stone-900">
+          🛒 Onde fica cada coisa
+        </h2>
+        <p className="mb-5 text-base text-stone-500">
+          Mercados, farmácias, escolas, hospitais, academias, bancos e mais.
+          Toque numa categoria para ver no mapa.
+        </p>
+        <MapaEstabelecimentos />
       </section>
 
       <section>

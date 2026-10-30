@@ -5,6 +5,7 @@ import { RastreioAtividade } from "@/components/site/rastreio-atividade";
 import { SenhaExclusiva } from "@/components/site/senha-exclusiva";
 import { LogoMarca } from "@/components/ui/logo";
 import { ACCESS_COOKIE, expectedToken, safeEqual } from "@/lib/auth";
+import { centroDoImovel, pertoDoImovel } from "@/lib/cidade/perto";
 import { db } from "@/lib/db";
 import { linkCookieName } from "@/lib/exclusivo";
 import { publicLocation } from "@/lib/property-display";
@@ -179,6 +180,11 @@ export default async function ExclusivoPage({ params }: Params) {
   }
 
   const property = link.property;
+  // "O que tem perto" (só depois da senha): nomes e faixas de distância,
+  // nunca a coordenada do imóvel. Sem link para o mapa: esta página não
+  // leva ao resto do site.
+  const perto = pertoDoImovel(property);
+  const centro = centroDoImovel(property);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -194,6 +200,9 @@ export default async function ExclusivoPage({ params }: Params) {
           property={property}
           whatsapp={settings.whatsapp}
           whatsappText={`Olá! Sou ${link.clientName}. Vi a apresentação exclusiva do imóvel ${property.refCode} (${publicLocation(property)}) e gostaria de conversar.`}
+          perto={perto}
+          centro={centro}
+          linkMapa={false}
         />
         <p className="mt-8 text-center text-sm text-stone-500">
           Para a equipe atender você melhor, registramos quando esta

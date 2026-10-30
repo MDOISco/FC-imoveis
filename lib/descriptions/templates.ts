@@ -1,5 +1,6 @@
 // Gerador de descrições por templates: 3 estilos, frases sorteadas de pools,
 // composição em parágrafos. Nenhuma frase cita fato ausente dos facts.
+import { rotuloFaixa } from "@/lib/cidade/perto";
 import { formatArea, formatBRL } from "@/lib/format";
 import type { DescriptionFacts } from "./facts";
 import { createRng, type Rng } from "./rng";
@@ -53,10 +54,42 @@ function allAmenities(f: DescriptionFacts): string[] {
   return [...f.amenities.lazer, ...f.amenities.seguranca, ...f.amenities.conforto];
 }
 
+/** "a, b e c" sem mexer na caixa (serve para nomes próprios). */
+function juntarPt(items: string[]): string {
+  if (items.length <= 1) return items[0] ?? "";
+  return `${items.slice(0, -1).join(", ")} e ${items[items.length - 1]}`;
+}
+
 function listPt(items: string[]): string {
-  const lower = items.map((s) => s.toLowerCase());
-  if (lower.length === 1) return lower[0];
-  return `${lower.slice(0, -1).join(", ")} e ${lower[lower.length - 1]}`;
+  return juntarPt(items.map((s) => s.toLowerCase()));
+}
+
+/**
+ * "supermercado (União Supermercados, até 500 m) e escola (…, até 1 km)".
+ * Nome e faixa exatamente como vieram; só o parêntese do próprio nome vira
+ * travessão, para não ficar parêntese dentro de parêntese.
+ */
+function pertoText(f: DescriptionFacts): string | null {
+  if (f.proximidades.length === 0) return null;
+  return juntarPt(
+    f.proximidades.map((l) => {
+      const nome = l.nome.replace(/\s*\(([^)]*)\)/g, " – $1");
+      return `${l.categoria} (${nome}, ${l.distancia})`;
+    }),
+  );
+}
+
+// "Tudo à mão" só quando todos os lugares estão a até 1 km
+const FAIXAS_PERTINHO = [rotuloFaixa(0), rotuloFaixa(1)];
+function tudoPertinho(f: DescriptionFacts): boolean {
+  return f.proximidades.every((l) => FAIXAS_PERTINHO.includes(l.distancia));
+}
+
+/** Só vale a frase do Centro quando ele não está ali do lado. */
+function centroLonge(f: DescriptionFacts): f is DescriptionFacts & {
+  distanciaCentro: string;
+} {
+  return Boolean(f.distanciaCentro?.includes("km do Centro"));
 }
 
 function priceText(f: DescriptionFacts): string | null {
@@ -119,6 +152,14 @@ const objetiva: StyleTemplate = [
         ? `Conforto e extras: ${listPt(f.amenities.conforto)}.`
         : null,
     (f) => (f.acceptsPets ? "Aceita animais de estimação." : null),
+  ],
+  [
+    (f, rng) => {
+      const perto = pertoText(f);
+      if (!perto) return null;
+      return rng.pick([`Por perto: ${perto}.`, `Nas proximidades: ${perto}.`]);
+    },
+    (f) => (centroLonge(f) ? `Fica a ${f.distanciaCentro}.` : null),
   ],
   [
     (f) => {
@@ -237,6 +278,21 @@ const emocional: StyleTemplate = [
         `${f.city} tem aquele ritmo de interior que faz bem: ar puro, gente conhecida e qualidade de vida${f.neighborhood ? ` — e o ${f.neighborhood} é um dos cantos mais queridos da cidade` : ""}.`,
         `Morar em ${f.city} é escolher viver melhor${f.neighborhood ? `, e o bairro ${f.neighborhood} traduz isso no dia a dia` : ""}.`,
       ]),
+    (f, rng) => {
+      const perto = pertoText(f);
+      if (!perto) return null;
+      return rng.pick(
+        tudoPertinho(f)
+          ? [
+              `E tudo fica à mão: ${perto}.`,
+              `A rotina fica mais leve, com tudo pertinho: ${perto}.`,
+            ]
+          : [
+              `E o essencial fica por perto: ${perto}.`,
+              `Para facilitar a rotina, há por perto: ${perto}.`,
+            ],
+      );
+    },
   ],
   [
     (f, rng) =>
@@ -300,6 +356,15 @@ const investidor: StyleTemplate = [
       f.amenities.seguranca.length || f.condoName
         ? `Atributos que seguram valor de revenda: ${listPt([...(f.condoName ? ["condomínio consolidado"] : []), ...f.amenities.seguranca])}.`
         : null,
+    (f, rng) => {
+      const perto = pertoText(f);
+      if (!perto) return null;
+      return rng.pick([
+        `Localização com serviços ao redor, o que ajuda na liquidez: ${perto}.`,
+        `Infraestrutura no entorno, um ponto a favor na hora de revender ou alugar: ${perto}.`,
+      ]);
+    },
+    (f) => (centroLonge(f) ? `Localização: ${f.distanciaCentro}.` : null),
   ],
   [
     (f, rng) =>

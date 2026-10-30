@@ -24,7 +24,8 @@ Regras obrigatórias:
 2. Nunca cite rua, número ou CEP. Localização é só bairro e cidade, e apenas se vierem no JSON (neighborhood pode ser null — aí cite só a cidade).
 3. Campos null/false não existem: não os mencione (nem "não tem piscina").
 4. Termine cada descrição convidando a falar com a FC Imóveis e citando o código de referência (refCode).
-5. Tom respeitoso e natural, sem exageros ("IMPERDÍVEL!!!") e sem emojis.`;
+5. Tom respeitoso e natural, sem exageros ("IMPERDÍVEL!!!") e sem emojis.
+6. "proximidades" (lugares perto do imóvel) e "distanciaCentro" podem ser citados, com os nomes e as faixas EXATAMENTE como vieram ("até 500 m", "até 10 km do Centro"). Nunca transforme a faixa em distância exata ("a 350 metros"), em tempo ("5 minutos a pé", "10 minutos de carro") nem cite endereço ou rua do estabelecimento. Lista vazia ou null: não fale de proximidades nem de distância.`;
 
 export async function generateWithAI(
   facts: DescriptionFacts,
