@@ -81,7 +81,7 @@ uma linha em `lib/cidade/estabelecimentos.ts`.
   navegador. É a mesma regra nos dois lados, por isso o número ao vivo
   bate com o resultado.
 - `components/site/busca-imoveis.tsx`: a caixa interativa, logo abaixo do
-  banner de `/site`.
+  banner do site (`/`).
 - Privacidade que já está valendo:
   - bairro e condomínio de imóvel marcado como "não mostrar nem o bairro"
     não entram na busca (e o "O que tem perto" também não aparece);

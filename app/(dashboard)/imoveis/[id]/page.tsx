@@ -87,7 +87,7 @@ export default async function FichaImovelPage({
     <div className="space-y-6">
       <div>
         <Link
-          href="/"
+          href="/painel"
           className="inline-flex items-center gap-1.5 text-base font-semibold text-stone-500 hover:text-brand-800"
         >
           <ArrowLeft className="size-5" /> Voltar ao painel
@@ -384,7 +384,7 @@ export default async function FichaImovelPage({
                   propertyId={property.id}
                   publishedOnSite={property.publishedOnSite}
                   propertyStatus={property.status}
-                  publicUrl={`${base}/site/imovel/${property.id}`}
+                  publicUrl={`${base}/imovel/${property.id}`}
                 />
               </CardSection>
 

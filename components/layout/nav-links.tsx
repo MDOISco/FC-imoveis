@@ -15,7 +15,7 @@ import { ChatNaoLidasBadge } from "@/components/chat/nao-lidas-badge";
 import { cn } from "@/lib/cn";
 
 const links = [
-  { href: "/", label: "Imóveis", icon: Building2 },
+  { href: "/painel", label: "Imóveis", icon: Building2 },
   { href: "/permutas-admin", label: "Permutas", icon: KeyRound },
   { href: "/agenda", label: "Agenda", icon: CalendarDays },
   { href: "/conversas", label: "Conversas", icon: MessageCircle },
@@ -37,8 +37,8 @@ export function NavLinks({ showLogout = false }: { showLogout?: boolean }) {
     <nav className="flex items-center gap-1 sm:gap-2" aria-label="Principal">
       {links.map(({ href, label, icon: Icon }) => {
         const active =
-          href === "/"
-            ? pathname === "/" || pathname.startsWith("/imoveis")
+          href === "/painel"
+            ? pathname === "/painel" || pathname.startsWith("/imoveis")
             : pathname.startsWith(href);
         return (
           <Link

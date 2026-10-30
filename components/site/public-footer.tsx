@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Building2, CalendarDays, KeyRound, MapPin } from "lucide-react";
 
 const LINKS = [
-  { href: "/site", label: "Imóveis", icon: Building2 },
+  { href: "/", label: "Imóveis", icon: Building2 },
   { href: "/permutas", label: "Permutas", icon: KeyRound },
   { href: "/agendar", label: "Agendar visita", icon: CalendarDays },
   { href: "/cidade", label: "Conheça a cidade", icon: MapPin },

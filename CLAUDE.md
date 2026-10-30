@@ -7,7 +7,8 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
 
 ## O que é
 
-- **Dashboard interno** (`/`, protegido por senha única da equipe): cadastro
+- **Painel dos corretores** (`/painel`, protegido por senha única da equipe;
+  a raiz `/` é o SITE público): cadastro
   de imóveis em wizard de 8 etapas, fotos com tratamento + marca d'água,
   vídeo, 3 descrições geradas (templates determinísticos ou IA), publicação
   automática nos portais via feeds XML VRSync, gestão de permutas.
@@ -47,14 +48,15 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
   cadastro, nome oficial gravado também no servidor (lib/validation/imovel.ts)
   e o "Onde?" da busca mostra todos. `CONDOMINIO_DESTAQUE` mora em
   condominios.ts (busca-site.ts reexporta).
-- **Busca do site** (caixa logo abaixo do banner de `/site`): regras em
+- **Busca do site** (caixa logo abaixo do banner de `/`): regras em
   `lib/busca-site.ts` (mesma função no servidor e na contagem ao vivo do
   navegador), tela em `components/site/busca-imoveis.tsx`. Condomínio
   **Jardim das Palmeiras** sempre primeiro, com estrela (é condomínio, o
   principal da imobiliária). Bairro/condomínio de imóvel OCULTO e valor
   "sob consulta" nunca entram na busca.
-- **Site público** (`/site`, prévia com noindex): página do imóvel em
-  `/site/imovel/[id]` só para imóvel ATIVO + "Publicar no site" ligado na
+- **Site público** = página inicial (`/`, arquivos em `app/(publico)/(site)/`,
+  liberado no Google; `app/robots.ts` + `app/sitemap.ts`): página do imóvel em
+  `/imovel/[id]` só para imóvel ATIVO + "Publicar no site" ligado na
   ficha. **Link exclusivo** (`/exclusivo/[token]`, senha por cliente criada na
   ficha; só o HMAC fica no banco; sem menu, sem acesso ao resto do site).
 - **Atividade** (`/atividade`, equipe): registro das visitas às páginas do
@@ -81,7 +83,12 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
 ## Produção (está NO AR)
 
 - URL: **https://fcimoveis.duckdns.org** (DuckDNS aponta para a VPS KVM1 da
-  Hostinger; domínio oficial virá depois — trocar com `sudo fc-dominio`).
+  Hostinger, IP 179.199.157.44). Domínio oficial: DNS no Registro.br e troca
+  com `sudo fc-dominio dominio.com.br` (= `deploy/dominio.sh`: confere o DNS,
+  põe `www` e os endereços antigos redirecionando para o novo, atualiza
+  APP_URL e Configurações → Portais).
+- Links antigos `/site` e `/site/imovel/[id]` redirecionam (next.config.ts)
+  para `/` e `/imovel/[id]`. Painel: `/painel` (antes era `/`).
 - Servidor Ubuntu 22.04; app em `/opt/fc-imoveis` como serviço systemd
   `fc-imoveis` (porta 3000) atrás do **Caddy** (HTTPS automático; no servidor
   atual o Caddy é binário em `/usr/local/bin/caddy` porque o repositório apt
@@ -127,8 +134,7 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
 - **Próxima sessão**: ver `PROXIMA-SESSAO.md` (lugares do relatório que
   ficaram sem posição — a dona pode mandar as coordenadas do Google Maps —
   e ideias para depois).
-- Trocar para o domínio oficial quando chegar (Hostinger) + atualizar
-  "Endereço público do sistema" em Configurações → Portais.
+- Trocar para o domínio oficial (Registro.br → `sudo fc-dominio`).
 - Cadastrar os feeds nos painéis dos portais (Canal Pro, Chaves na Mão,
   Imovelweb) — de preferência já com o domínio oficial.
 - Possíveis próximos passos já previstos: login por corretor, site público

@@ -68,7 +68,7 @@ function Linha({
 
 /**
  * Apresentação COMPLETA e pública de um imóvel: usada na página do site
- * (/site/imovel/[id]) e no link exclusivo do cliente (/exclusivo/[token]).
+ * (/imovel/[id]) e no link exclusivo do cliente (/exclusivo/[token]).
  * Privacidade: só cidade/bairro (publicLocation) — nunca rua, número ou CEP,
  * e nenhum dado interno (proprietário, comissão, anotações). "O que tem
  * perto" chega pronto da página (pertoDoImovel/centroDoImovel no servidor):

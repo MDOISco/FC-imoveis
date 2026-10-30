@@ -138,7 +138,7 @@ export default async function DashboardPage({
       if (value) q.set(key, value);
     }
     const s = q.toString();
-    return s ? `/?${s}` : "/";
+    return s ? `/painel?${s}` : "/painel";
   }
 
   const hasFilters = busca || status || tipo || finalidade || corretor;

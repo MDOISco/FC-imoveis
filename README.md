@@ -1,8 +1,11 @@
 # FC Imóveis — Dashboard + Permutas
 
-Sistema da FC Imóveis (Bragança Paulista/SP) com duas áreas:
+Sistema da FC Imóveis (Bragança Paulista/SP):
 
-- **Dashboard** (`/`) — uso interno dos corretores: cadastro completo de
+- **Site** (`/`, página inicial do domínio) — vitrine pública dos imóveis,
+  com a página de cada imóvel em `/imovel/[id]`, mapa da cidade (`/cidade`)
+  e agendamento de visitas (`/agendar`).
+- **Painel dos corretores** (`/painel`, com senha) — uso interno: cadastro completo de
   imóveis em 8 etapas, fotos com tratamento e marca d'água, vídeo, 3 sugestões
   de descrição (automáticas ou por IA), publicação automática nos portais por
   feed XML e gestão das permutas.

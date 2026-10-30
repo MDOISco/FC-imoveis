@@ -73,7 +73,7 @@ export default async function ImovelPublicoPage({ params }: Params) {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
       <Link
-        href="/site#imoveis"
+        href="/#imoveis"
         className="inline-flex min-h-12 items-center gap-1.5 text-lg font-semibold text-stone-500 hover:text-brand-800"
       >
         <ArrowLeft className="size-5" /> Ver todos os imóveis

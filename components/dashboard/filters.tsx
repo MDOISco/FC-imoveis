@@ -35,7 +35,7 @@ export function Filters({
   return (
     <form
       method="GET"
-      action="/"
+      action="/painel"
       className="grid grid-cols-1 items-end gap-3 rounded-2xl border border-stone-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-6"
     >
       {visao && <input type="hidden" name="visao" value={visao} />}
@@ -135,7 +135,7 @@ export function Filters({
         </Button>
         {hasFilters && (
           <Link
-            href="/"
+            href="/painel"
             className="inline-flex min-h-12 items-center rounded-xl px-4 font-semibold text-stone-500 hover:text-stone-800"
           >
             Limpar filtros

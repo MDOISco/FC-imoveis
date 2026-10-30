@@ -78,7 +78,7 @@ export default function CidadePage() {
         </p>
         <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
           <Link
-            href="/site"
+            href="/"
             className="inline-flex min-h-14 items-center justify-center rounded-2xl bg-brand-700 px-8 text-lg font-extrabold text-white hover:bg-brand-800"
           >
             Ver imóveis

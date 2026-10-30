@@ -104,7 +104,7 @@ function alterna<T>(lista: T[], item: T): T[] {
 /**
  * Caixa de busca do site: tudo o que o cadastro do corretor tem de público,
  * com contagem ao vivo (mesma regra do servidor, em lib/busca-site.ts).
- * Ao buscar, vai para /site?…#imoveis — o link da busca pode ser enviado.
+ * Ao buscar, vai para /?…#imoveis — o link da busca pode ser enviado.
  */
 export function BuscaImoveis({
   itens,
@@ -233,7 +233,7 @@ export function BuscaImoveis({
   function buscar(e: React.FormEvent) {
     e.preventDefault();
     const q = paraQuery(busca);
-    startTransition(() => router.push(`/site${q ? `?${q}` : ""}#imoveis`));
+    startTransition(() => router.push(`/${q ? `?${q}` : ""}#imoveis`));
   }
 
   const zapSemResultado = waHref(

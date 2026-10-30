@@ -2,10 +2,12 @@ import { NextResponse, type NextRequest } from "next/server";
 import { ACCESS_COOKIE, expectedToken, safeEqual } from "@/lib/auth";
 
 /**
- * Proteção do dashboard por senha de equipe (DASHBOARD_SENHA).
+ * Proteção do painel da equipe por senha (DASHBOARD_SENHA).
  * - Sem a variável definida: tudo aberto (desenvolvimento local).
- * - Páginas/APIs PÚBLICAS (fora do matcher): /permutas*, /api/permutas (lead),
- *   /api/feeds (portais), /api/arquivos (fotos), /entrar e /api/entrar.
+ * - O painel mora em /painel; a raiz "/" é o SITE público (com /imovel/[id]).
+ * - Páginas/APIs PÚBLICAS (fora do matcher): "/", /imovel/*, /cidade,
+ *   /agendar*, /permutas*, /exclusivo/*, /api/permutas (lead), /api/feeds
+ *   (portais), /api/arquivos (fotos), /entrar e /api/entrar.
  */
 export async function middleware(request: NextRequest) {
   const expected = await expectedToken();
@@ -29,7 +31,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/",
+    "/painel",
     "/imoveis/:path*",
     "/configuracoes",
     "/permutas-admin",
