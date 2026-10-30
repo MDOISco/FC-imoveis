@@ -26,25 +26,25 @@ export function StatsCards({
       label: "Imóveis na carteira",
       value: total,
       icon: Building2,
-      href: "/",
+      href: "/painel",
     },
     {
       label: "Anunciados (ativos)",
       value: ativos,
       icon: CheckCircle2,
-      href: "/?status=ATIVO",
+      href: "/painel?status=ATIVO",
     },
     {
       label: "Rascunhos para concluir",
       value: rascunhos,
       icon: FileEdit,
-      href: "/?status=RASCUNHO",
+      href: "/painel?status=RASCUNHO",
     },
     {
       label: "Vendidos / Alugados",
       value: negociados,
       icon: CheckCircle2,
-      href: "/?status=VENDIDO",
+      href: "/painel?status=VENDIDO",
     },
   ];
   return (

@@ -271,7 +271,7 @@ export function Step8Revisao({
           variant="secondary"
           size="lg"
           disabled={publishing}
-          onClick={() => router.push(isActive ? `/imoveis/${property.id}` : "/")}
+          onClick={() => router.push(isActive ? `/imoveis/${property.id}` : "/painel")}
         >
           {isActive ? "Voltar à ficha" : "Concluir como rascunho"}
         </Button>

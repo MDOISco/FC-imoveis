@@ -25,9 +25,9 @@ export function ImovelCard({
     property.photos.find((f) => f.isCover) ?? property.photos[0] ?? null;
   const parking = totalParking(property);
   const area = property.usableArea ?? property.totalArea;
-  // Página individual: só imóveis da imobiliária têm (/site/imovel/[id])
+  // Página individual: só imóveis da imobiliária têm (/imovel/[id])
   const detalhesHref =
-    property.source === "CORRETOR" ? `/site/imovel/${property.id}` : null;
+    property.source === "CORRETOR" ? `/imovel/${property.id}` : null;
 
   const foto = cover ? (
     // eslint-disable-next-line @next/next/no-img-element

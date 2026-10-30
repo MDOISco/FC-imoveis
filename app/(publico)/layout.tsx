@@ -9,8 +9,8 @@ import { waHref } from "@/lib/whatsapp";
  * Chrome compartilhado de TODAS as páginas públicas: menu de navegação único
  * (só acessos públicos), rodapé com os mesmos links, bate-papo e avisos.
  * Cada seção (site/permutas/agendar/cidade) cuida só do seu conteúdo.
- * Atenção: nada de "noindex" aqui — permutas/agendar/cidade já estão no ar
- * e aparecem no Google. O noindex de prévia fica só em site/layout.tsx.
+ * Atenção: nada de "noindex" aqui — site/permutas/agendar/cidade estão no
+ * ar e aparecem no Google (o que não deve aparecer está em app/robots.ts).
  */
 export default async function PublicoLayout({
   children,

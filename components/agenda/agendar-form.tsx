@@ -293,7 +293,7 @@ export function AgendarForm({ imovelId }: { imovelId: string | null }) {
             Você conversa com a nossa equipe pessoalmente, na sede da ACIBRAG.
             Se preferir visitar
             um imóvel específico, escolha-o na{" "}
-            <Link href="/site" className="font-semibold text-brand-700 underline">
+            <Link href="/" className="font-semibold text-brand-700 underline">
               vitrine do site
             </Link>{" "}
             e toque em “Agendar visita”.

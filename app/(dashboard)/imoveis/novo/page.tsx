@@ -21,7 +21,7 @@ export default async function NovoImovelPage() {
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
         <Link
-          href="/"
+          href="/painel"
           className="inline-flex items-center gap-1.5 text-base font-semibold text-stone-500 hover:text-brand-800"
         >
           <ArrowLeft className="size-5" /> Voltar ao painel

@@ -44,7 +44,7 @@ export function StatusActions({
   async function remove() {
     await apiFetch(`/api/imoveis/${propertyId}`, { method: "DELETE" });
     toast("Imóvel excluído.");
-    router.push("/");
+    router.push("/painel");
     router.refresh();
   }
 

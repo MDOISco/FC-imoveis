@@ -69,25 +69,41 @@ curl -fsSL https://raw.githubusercontent.com/MDOISco/FC-imoveis/claude/happy-mei
 
 - `--demo` carrega os imóveis de exemplo (bom para a equipe explorar).
   Para começar vazio, é só tirar o `--demo`.
-3. Ao terminar, abra **https://fcimoveis.duckdns.org** → digite a senha →
-   pronto! Os corretores já podem usar de qualquer lugar. 🎉
-   A página pública de permutas fica em `/permutas` (sem senha).
+3. Ao terminar, abra **https://fcimoveis.duckdns.org/painel** → digite a
+   senha → pronto! Os corretores já podem usar de qualquer lugar. 🎉
+   O site público fica no endereço principal (`/`, sem senha).
 
-## Quando chegar o domínio oficial (Hostinger)
+## Domínio oficial (ex.: fcimoveis.com.br, registrado no Registro.br)
 
-1. No painel da Hostinger, crie um registro **DNS tipo A** do domínio
-   (ex.: `sistema.fcimoveis.com.br`) apontando para o **IP público da VM**.
-2. No servidor, rode: `sudo fc-dominio sistema.fcimoveis.com.br`
-3. Pronto — mesmo servidor, mesmos dados, HTTPS automático no novo
-   endereço. Atualize também o "Endereço público do sistema" em
-   Configurações → Portais.
+Como fica: **`https://dominio.com.br`** = site público (página inicial) e
+**`https://dominio.com.br/painel`** = painel dos corretores (com senha).
+
+1. **Registro.br** → entre → clique no domínio → seção **DNS**.
+   - Se aparecer "Servidores DNS" de outra empresa (ex.: Hostinger), clique
+     em **"Utilizar os DNS do Registro.br"** e espere alguns minutos.
+   - Clique em **"Configurar zona DNS"** (se pedir, ative o **modo
+     avançado** e espere uns minutos).
+2. Crie 2 entradas (botão **"Nova entrada"**):
+   - Tipo **A** · Nome: *(deixe vazio)* · Dados: **IP do servidor**
+   - Tipo **A** · Nome: **www** · Dados: **o mesmo IP**
+   Salve ("Salvar alterações").
+3. Espere o DNS valer (normalmente minutos; às vezes até 2 horas).
+4. No servidor:
+   ```bash
+   sudo fc-atualizar
+   sudo bash /opt/fc-imoveis/deploy/dominio.sh fcimoveis.com.br
+   ```
+   (Da 2ª vez em diante basta `sudo fc-dominio NOVO.DOMINIO`.) O comando
+   confere se o DNS já chegou, liga o HTTPS, faz o `www` e o endereço
+   antigo (DuckDNS) levarem ao novo e atualiza o "Endereço público do
+   sistema" em Configurações → Portais. Nenhum dado é perdido.
 
 ## Comandos do dia a dia (no servidor)
 
 | Comando | O que faz |
 |---|---|
 | `sudo fc-atualizar` | Instala a versão mais nova do sistema (GitHub) |
-| `sudo fc-dominio NOVO.DOMINIO` | Troca o domínio |
+| `sudo fc-dominio NOVO.DOMINIO` | Troca o domínio (confere o DNS antes) |
 | `sudo fc-senha "NOVA SENHA"` | Troca a senha da equipe (todos entram de novo) |
 | `sudo systemctl status fc-imoveis` | Vê se o sistema está rodando |
 | `sudo journalctl -u fc-imoveis -f` | Acompanha os logs ao vivo |

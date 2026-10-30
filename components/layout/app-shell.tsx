@@ -11,7 +11,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <header className="border-b-2 border-gold-500 bg-brand-950 text-white shadow-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
           <Link
-            href="/"
+            href="/painel"
             className="flex items-center gap-3 rounded-xl px-2 py-1"
           >
             <LogoMarca />

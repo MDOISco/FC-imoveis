@@ -20,13 +20,15 @@ type Item = { href: string; label: string; icon: typeof Home; match: string };
 
 // Só destinos PÚBLICOS entram aqui (nada do painel da equipe).
 const ITEMS: Item[] = [
-  { href: "/site", label: "Imóveis", icon: Building2, match: "/site" },
+  { href: "/", label: "Imóveis", icon: Building2, match: "/" },
   { href: "/permutas", label: "Permutas", icon: KeyRound, match: "/permutas" },
   { href: "/agendar", label: "Agendar visita", icon: CalendarDays, match: "/agendar" },
   { href: "/cidade", label: "Conheça a cidade", icon: MapPin, match: "/cidade" },
 ];
 
 function isActive(pathname: string, match: string): boolean {
+  // "/" (página inicial) também marca as páginas de cada imóvel (/imovel/…).
+  if (match === "/") return pathname === "/" || pathname.startsWith("/imovel/");
   return pathname === match || pathname.startsWith(`${match}/`);
 }
 
@@ -44,7 +46,7 @@ export function PublicNav({
     <header className="sticky top-0 z-40 border-b-2 border-gold-500 bg-brand-950 text-white shadow-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
         <Link
-          href="/site"
+          href="/"
           className="flex items-center gap-3"
           onClick={() => setAberto(false)}
         >

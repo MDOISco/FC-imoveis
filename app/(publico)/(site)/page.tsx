@@ -176,7 +176,7 @@ export default async function SiteHomePage({
               </span>
             ))}
             <Link
-              href="/site#busca"
+              href="/#busca"
               className="inline-flex min-h-10 items-center rounded-full px-3 text-base font-bold text-brand-700 underline hover:text-brand-900"
             >
               Limpar busca

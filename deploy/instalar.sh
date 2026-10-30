@@ -213,16 +213,11 @@ echo "Atualizado!"
 EOF
 chmod +x /usr/local/bin/fc-atualizar
 
-# fc-dominio: troca o domínio (ex.: quando chegar o domínio da Hostinger)
-cat > /usr/local/bin/fc-dominio <<'EOF'
+# fc-dominio: troca o domínio (confere o DNS, põe www e endereços antigos
+# redirecionando para o novo) — a lógica fica em deploy/dominio.sh.
+cat > /usr/local/bin/fc-dominio <<EOF
 #!/usr/bin/env bash
-set -e
-NOVO="$1"
-if [[ -z "$NOVO" ]]; then echo "Uso: fc-dominio novo.dominio.com.br"; exit 1; fi
-sed -i "1s/.*/$NOVO {/" /etc/caddy/Caddyfile
-sed -i "s|^APP_URL=.*|APP_URL=\"https://$NOVO\"|" /etc/fc-imoveis.env
-systemctl restart fc-imoveis caddy
-echo "Domínio trocado para https://$NOVO (lembre de apontar o DNS para este servidor)."
+exec bash $DIR/deploy/dominio.sh "\$@"
 EOF
 chmod +x /usr/local/bin/fc-dominio
 
@@ -243,8 +238,8 @@ echo ""
 echo "============================================================"
 echo "  ✅ FC Imóveis instalado!"
 echo ""
-echo "  Painel da equipe:   https://$DOMINIO  (senha configurada)"
-echo "  Permutas (público): https://$DOMINIO/permutas"
+echo "  Site (público):     https://$DOMINIO"
+echo "  Painel da equipe:   https://$DOMINIO/painel  (senha configurada)"
 echo ""
 echo "  Comandos úteis:"
 echo "    sudo fc-atualizar               # instala a versão mais nova"
