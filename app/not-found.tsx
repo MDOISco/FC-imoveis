@@ -21,7 +21,7 @@ export default function NotFound() {
             Ir para a página de Permutas
           </Link>
           <Link
-            href="/"
+            href="/painel"
             className="inline-flex min-h-12 items-center justify-center rounded-2xl px-6 text-base font-bold text-brand-800 hover:underline"
           >
             Painel da equipe
