@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Home, KeyRound } from "lucide-react";
+import { KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Logo } from "@/components/ui/logo";
 import { Spinner } from "@/components/ui/spinner";
 import { apiFetch, ApiError } from "@/lib/client-api";
 
@@ -57,9 +58,7 @@ export function FormEntrar() {
         className="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl"
       >
         <div className="mb-6 text-center">
-          <span className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-gold-400 text-gold-950">
-            <Home className="size-9" />
-          </span>
+          <Logo className="mx-auto size-40 rounded-2xl" />
           <h1 className="mt-4 font-display text-4xl font-bold text-stone-900">
             FC Imóveis
           </h1>
