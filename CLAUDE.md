@@ -83,8 +83,9 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
 ## Produção (está NO AR)
 
 - URL: **https://fcimoveis.duckdns.org** (DuckDNS aponta para a VPS KVM1 da
-  Hostinger, IP 179.199.157.44). Domínio oficial: DNS no Registro.br e troca
-  com `sudo fc-dominio dominio.com.br` (= `deploy/dominio.sh`: confere o DNS,
+  Hostinger, IP 179.199.157.44). Domínio oficial: **fcbragancaimoveis.com.br**
+  (DNS no Registro.br, registros A de `@` e `www` → IP acima) e troca com
+  `sudo fc-dominio fcbragancaimoveis.com.br` (= `deploy/dominio.sh`: confere o DNS,
   põe `www` e os endereços antigos redirecionando para o novo, atualiza
   APP_URL e Configurações → Portais).
 - Links antigos `/site` e `/site/imovel/[id]` redirecionam (next.config.ts)
@@ -134,7 +135,9 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
 - **Próxima sessão**: ver `PROXIMA-SESSAO.md` (lugares do relatório que
   ficaram sem posição — a dona pode mandar as coordenadas do Google Maps —
   e ideias para depois).
-- Trocar para o domínio oficial (Registro.br → `sudo fc-dominio`).
+- Trocar para o domínio oficial fcbragancaimoveis.com.br (Registro.br →
+  `sudo fc-dominio fcbragancaimoveis.com.br`) — depois disso, atualizar a
+  URL de produção acima.
 - Cadastrar os feeds nos painéis dos portais (Canal Pro, Chaves na Mão,
   Imovelweb) — de preferência já com o domínio oficial.
 - Possíveis próximos passos já previstos: login por corretor, site público
