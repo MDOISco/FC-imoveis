@@ -57,6 +57,17 @@ export function maskPhone(s: string): string {
   return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
 }
 
+/** "69870684000189" -> "69.870.684/0001-89" (formata enquanto digita) */
+export function maskCnpj(s: string): string {
+  const d = onlyDigits(s).slice(0, 14);
+  if (d.length <= 2) return d;
+  if (d.length <= 5) return `${d.slice(0, 2)}.${d.slice(2)}`;
+  if (d.length <= 8) return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5)}`;
+  if (d.length <= 12)
+    return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8)}`;
+  return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8, 12)}-${d.slice(12)}`;
+}
+
 /** "R$ 450.000" | "450000" | "450.000,00" -> 450000 (reais inteiros) */
 export function parseMoneyInput(s: string): number | null {
   const cleaned = s.replace(/[^\d]/g, "");
