@@ -81,6 +81,16 @@ model Property {
   condoName         String?
   addressVisibility String  @default("BAIRRO") // COMPLETO|BAIRRO|OCULTO — padrão: só cidade/bairro ao público
 
+  // Localização no mapa (lib/geo): calculada sozinha a partir do endereço
+  // ou ajustada pela equipe na ficha. SÓ NO BANCO — nunca vai para página
+  // pública nem para os portais; o público vê só faixas de distância
+  // ("até 500 m") até os estabelecimentos de lib/cidade.
+  latitude     Float?
+  longitude    Float?
+  geoPrecision String? // ENDERECO|RUA|CONDOMINIO|BAIRRO (automático) | MANUAL (equipe)
+  geoKey       String? // endereço usado na última localização (muda → localiza de novo)
+  geocodedAt   DateTime? // última tentativa (nulo = ainda não tentou)
+
   // Etapa 3 — características
   bedrooms         Int?
   suites           Int?

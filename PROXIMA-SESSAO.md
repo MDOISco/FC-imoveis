@@ -1,67 +1,72 @@
-# Próxima sessão — pedidos já combinados com a dona
+# Próxima sessão — o que ficou combinado com a dona
 
-Anotado em 30/10/2026, na sessão que fez o logo e a busca do site.
+Atualizado em 30/10/2026, na sessão dos estabelecimentos próximos.
 Leia junto com o `CLAUDE.md`.
 
-## 1. Mapear os pontos de Bragança Paulista
+## Feito nesta sessão (30/10/2026)
 
-A dona vai pedir para mapear **todos** estes lugares da cidade:
+1. **Estabelecimentos da cidade** em `lib/cidade/estabelecimentos.ts`
+   (117 lugares com coordenada real): a planilha do Google Maps da dona
+   inteira (mercados, postos, academias, restaurantes, padarias, clínicas,
+   laboratórios, creches) + hospitais, UPAs, postos de saúde, escolas,
+   creches municipais, faculdades, shoppings, farmácias e bancos do
+   relatório, localizados no OpenStreetMap e conferidos um a um (nome e
+   bairro/rua precisavam bater; o que não bateu ficou de fora).
+2. **Segundo mapa em Conheça Bragança** (`/cidade#estabelecimentos`), com
+   botões por categoria e os condomínios (Jardim das Palmeiras ★ primeiro).
+3. **"O que tem perto" na página do imóvel** (site e link exclusivo), só
+   em faixas de distância, e na **busca do site** ("Perto de").
+4. **Localização automática dos imóveis** (`lib/geo/`): ao salvar o
+   endereço; os antigos se localizam sozinhos. Na ficha, a equipe confere
+   e arrasta o marcador. A coordenada fica só no banco.
+5. **Lugares próximos nas descrições geradas** (templates e IA).
+6. **Lista oficial de bairros (180) e condomínios (91)** em
+   `lib/cidade/bairros.ts` e `lib/cidade/condominios.ts`: sugestões no
+   cadastro, grafia única e a busca mostra todos.
 
-- escolas
-- faculdades
-- creches
-- hospitais (incluir UPA e posto de saúde)
-- mercados e supermercados
-- padarias
+## Pendente: lugares do relatório que ficaram SEM posição
 
-Ela também vai trazer mais ideias. Algumas para sugerir: farmácias,
-academias, bancos/lotéricas, rodoviária, parques e praças, shopping.
+Não deu para localizar com segurança no mapa aberto. Se a dona mandar a
+latitude/longitude do Google Maps (como fez na planilha), é só acrescentar
+uma linha em `lib/cidade/estabelecimentos.ts`.
 
-Como fazer:
-- Usar o OpenStreetMap (API Overpass, não precisa de chave) e conferir os
-  nomes.
-- Guardar em `lib/cidade/`, no mesmo formato de `lib/cidade/pontos.ts`
-  (nome, categoria, emoji, latitude e longitude reais).
-- O mapa `/cidade` pode mostrar os pontos por categoria.
+- **Faculdade:** IFSP (o mapa aberto ainda mostra o endereço antigo, na
+  FESB; o oficial é Av. Major Fernando Valle, 2013 – São Miguel).
+- **Hospitais:** Hospital de Olhos Bragança, Hospital São Pedro.
+- **Postos de saúde:** ESF Planejada I, CDHU Saada Nader, Água Clara I,
+  São Francisco de Assis, UBS Vila Aparecida, Madre Paulina, Casa de
+  Jesus, Cidade Jardim, Nilda Colli, Henedina Cortez, Penha, Toró, UBS
+  Santa Luzia, Vila Bianchi, Vila Motta e as rurais (Água Comprida, Arara
+  dos Mori, Biriçá do Valado, Mãe dos Homens, Morro Grande).
+- **Escolas:** EE Alcindo Bueno de Assis, Bruno Florenzano, Cásper Líbero,
+  Dom Bruno Gamberini, Cel. Francisco de Assis Gonçalves, Inaldo Manta,
+  Ismael Aguiar Leme, Sebastião Ferraz de Campos; EM Augusto Vasconcellos
+  (IDEB 7,0), Antonio Dorival, Arline Menin, Carlos Frederico, Creusa
+  Gomes, Lucy Alvarez, Dalva Carmignotto, José Murillo Arruda; Colégio
+  Adventista, AZ, Guimarães Rosa, Santa Bárbara, Santa Terezinha, Maple
+  Bear, APAE; Colégio Integrado (mesmo endereço do Objetivo — confirmar se
+  é o mesmo colégio).
+- **Creches municipais:** Adalmir Duaik, Affonso Risi, Padre Aldo Bolini,
+  Antonietta Lisa, Célia Grasson, Marice Suarez, Marilis Abi Chedid,
+  Therezinha Bellotto.
+- **Outros:** Rodoviária, Farmácias Pague Menos (R. Felipe Siqueira, 213),
+  Drogaria São Paulo da Av. dos Imigrantes, 900 (no mapa só aparece a da
+  Av. JK), Caixa da R. Tupy.
+- **Planilha:** "Vivendo e Aprendendo" e "Educare Little Kids" estão no
+  mesmo endereço; ficou só o Educare (nome confirmado no Censo Escolar
+  2025). Confirmar com a dona.
 
-## 2. Usar esses pontos nos imóveis e na busca
+## Ideias para depois
 
-- **Na página do imóvel**, mostrar automaticamente o que tem perto, por
-  exemplo "🥖 Padaria X a 350 m" ou "🏫 Escola Y a 1,2 km". Também dá para
-  usar nas descrições geradas.
-- **Na busca do site** (`components/site/busca-imoveis.tsx`), incluir
-  "Perto de": um ponto específico ou uma categoria (perto de escola,
-  perto de mercado), com uma distância máxima.
-- Para isso, cada imóvel precisa de latitude/longitude. Hoje o banco não
-  tem esse dado: criar um campo novo e calcular a partir do endereço
-  completo no cadastro (geocodificação, uma vez só).
+- Mais farmácias, padarias e mercados (a planilha é uma amostra; cada
+  busca do Google Maps devolve só 10).
+- "Perto de" um lugar específico na busca (ex.: perto da USF ou do HUSF).
+- Usar a lista oficial de bairros também no cadastro do cliente
+  (`/permutas/cadastrar`) e nas preferências de troca.
+- Conferir no mapa os agrupamentos por região de `lib/cidade/bairros.ts`
+  (são indicativos, a Prefeitura não tem divisão oficial).
 
-**Regra da casa (privacidade):** a coordenada do imóvel fica **só no
-banco**. Nunca vai para página pública nem para os portais. Para o
-público, mostrar só distâncias arredondadas e em faixas (até 500 m, até
-1 km…). Com distâncias exatas até vários pontos, dá para descobrir onde o
-imóvel fica.
-
-## 3. Lista completa de bairros, ruas e condomínios
-
-- A dona vai mandar o site de uma imobiliária de Bragança como referência,
-  para ver quantos bairros, ruas e condomínios existem.
-- A lista precisa ter **todos os condomínios**.
-- O **Jardim das Palmeiras é um CONDOMÍNIO** (não é bairro) e é o
-  principal da imobiliária: fica **em primeiro, com uma estrela ★**.
-  - Na busca isso já está feito: `CONDOMINIO_DESTAQUE` em
-    `lib/busca-site.ts`.
-  - Hoje a lista de condomínios e de bairros da busca vem só dos imóveis
-    publicados (campo `condoName` e `neighborhood` do cadastro).
-- Ideia: transformar a lista oficial em constante (como as de
-  `lib/constants.ts`) e usar em dois lugares:
-  1. no cadastro do corretor, como lista de escolha em vez de texto livre.
-     Isso evita "Jd. Palmeiras" e "Jardim das Palmeiras" como se fossem
-     dois lugares diferentes;
-  2. na busca, mostrando todos os bairros e condomínios, mesmo sem imóvel
-     publicado.
-
-## Como a busca do site funciona hoje (para não reinventar)
+## Como a busca do site funciona (para não reinventar)
 
 - `lib/busca-site.ts`: as regras da busca, usadas no servidor e no
   navegador. É a mesma regra nos dois lados, por isso o número ao vivo
@@ -70,5 +75,7 @@ imóvel fica.
   banner de `/site`.
 - Privacidade que já está valendo:
   - bairro e condomínio de imóvel marcado como "não mostrar nem o bairro"
-    não entram na busca;
-  - valor "sob consulta" não entra no filtro nem na ordenação por preço.
+    não entram na busca (e o "O que tem perto" também não aparece);
+  - valor "sob consulta" não entra no filtro nem na ordenação por preço;
+  - o item de busca leva só a FAIXA de distância por categoria, nunca a
+    coordenada.

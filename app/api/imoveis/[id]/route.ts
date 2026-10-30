@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { firstZodMessage, jsonError, readJson } from "@/lib/api-helpers";
+import { atualizarLocalizacao } from "@/lib/geo/imovel";
 import { removePath } from "@/lib/storage";
 import {
   publicationPendencias,
@@ -128,6 +129,14 @@ export async function PATCH(request: Request, { params }: Params) {
   }
 
   const property = await db.property.update({ where: { id }, data: update });
+
+  // Endereço salvo → localiza no mapa depois de responder (só no banco; o
+  // público vê apenas as faixas de distância do "O que tem perto").
+  const CAMPOS_ENDERECO = ["street", "streetNumber", "neighborhood", "city", "state", "condoName"];
+  if (existing.source !== "LEAD" && CAMPOS_ENDERECO.some((k) => k in update)) {
+    after(() => atualizarLocalizacao(id).then(() => undefined));
+  }
+
   return NextResponse.json({
     ok: true,
     status: property.status,
