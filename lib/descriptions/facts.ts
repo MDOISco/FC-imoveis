@@ -1,7 +1,11 @@
 // Fatos TIPADOS do imóvel para gerar descrições. Regra de ouro: só entra aqui
 // o que está cadastrado — nenhum gerador pode inventar fato que não exista.
 // Dados internos (proprietário, comissão, notas) NUNCA entram.
+// Coordenada do imóvel também não: de localização só vão nomes de lugares e
+// FAIXAS de distância, que podem ser publicadas.
 import type { Property } from "@prisma/client";
+import { CATEGORIA_POR_VALOR } from "@/lib/cidade/categorias";
+import { centroDoImovel, pertoDoImovel } from "@/lib/cidade/perto";
 import {
   AMENITY_BY_KEY,
   parseAmenities,
@@ -46,6 +50,9 @@ export type DescriptionFacts = {
   iptuValue: number | null;
   iptuPeriod: string;
   pricePerM2: number | null;
+  // O que tem perto (vazio quando o endereço é oculto ou sem posição boa)
+  proximidades: { categoria: string; nome: string; distancia: string }[];
+  distanciaCentro: string | null; // "até 10 km do Centro"
 };
 
 export function buildFacts(p: Property): DescriptionFacts {
@@ -66,6 +73,15 @@ export function buildFacts(p: Property): DescriptionFacts {
     p.salePrice && area && !p.priceOnRequest
       ? Math.round(p.salePrice / area)
       : null;
+
+  // Um lugar por categoria, no máximo 5, já em faixas ("até 500 m")
+  const proximidades = pertoDoImovel(p, { porCategoria: 1, maximo: 5 }).map(
+    (item) => ({
+      categoria: CATEGORIA_POR_VALOR[item.categoria].curto,
+      nome: item.nome,
+      distancia: item.rotulo,
+    }),
+  );
 
   return {
     refCode: p.refCode,
@@ -104,5 +120,7 @@ export function buildFacts(p: Property): DescriptionFacts {
     iptuValue: p.iptuValue,
     iptuPeriod: p.iptuPeriod,
     pricePerM2,
+    proximidades,
+    distanciaCentro: centroDoImovel(p),
   };
 }

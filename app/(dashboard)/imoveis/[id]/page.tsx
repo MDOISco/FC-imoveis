@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { after } from "next/server";
 import { ArrowLeft, Lock, Repeat } from "lucide-react";
 import { Galeria } from "@/components/ficha/galeria";
 import {
   LinksPrivados,
   type LinkPrivadoDto,
 } from "@/components/ficha/links-privados";
+import { LocalizacaoImovel } from "@/components/ficha/localizacao-imovel";
 import { PortalToggles } from "@/components/ficha/portal-toggles";
 import { SitePublicacao } from "@/components/ficha/site-publicacao";
 import { StatusActions } from "@/components/ficha/status-actions";
@@ -26,6 +28,7 @@ import {
 import { db } from "@/lib/db";
 import { linkToDto } from "@/lib/exclusivo";
 import { formatArea, formatBRL, formatDate } from "@/lib/format";
+import { atualizarLocalizacao, chaveEndereco } from "@/lib/geo/imovel";
 import { displayTitle, priceLabel } from "@/lib/property-display";
 import { getSettings, publicBaseUrl } from "@/lib/settings";
 import { toWizardProperty } from "@/lib/wizard-dto";
@@ -72,6 +75,13 @@ export default async function FichaImovelPage({
   const parking =
     (property.parkingCovered ?? 0) + (property.parkingUncovered ?? 0);
   const amenities = dto.amenities;
+
+  // Imóvel antigo, nunca procurado no mapa: localiza ao abrir a ficha
+  // (depois de responder; a equipe recarrega para ver).
+  const temEndereco = chaveEndereco(property) !== "";
+  if (property.source !== "LEAD" && !property.geocodedAt && temEndereco) {
+    after(() => atualizarLocalizacao(property.id).then(() => undefined));
+  }
 
   return (
     <div className="space-y-6">
@@ -151,6 +161,21 @@ export default async function FichaImovelPage({
                   </span>
                 ))}
               </div>
+            </CardSection>
+          )}
+
+          {/* Só a equipe (a ficha é protegida): aqui a posição pode ir ao navegador */}
+          {property.source !== "LEAD" && (
+            <CardSection title="📍 Localização no mapa (só a equipe vê)">
+              <LocalizacaoImovel
+                propertyId={property.id}
+                latitude={property.latitude}
+                longitude={property.longitude}
+                geoPrecision={property.geoPrecision}
+                addressVisibility={property.addressVisibility}
+                tentou={property.geocodedAt !== null}
+                temEndereco={temEndereco}
+              />
             </CardSection>
           )}
         </div>

@@ -12,7 +12,9 @@ import {
 } from "lucide-react";
 import type { Photo, Property, Video } from "@prisma/client";
 import { Galeria } from "@/components/ficha/galeria";
+import { PertoDoImovel } from "@/components/site/perto-do-imovel";
 import { Badge } from "@/components/ui/badge";
+import type { ItemPerto } from "@/lib/cidade/perto";
 import {
   AMENITY_BY_KEY,
   FURNISHED_OPTIONS,
@@ -68,16 +70,24 @@ function Linha({
  * Apresentação COMPLETA e pública de um imóvel: usada na página do site
  * (/site/imovel/[id]) e no link exclusivo do cliente (/exclusivo/[token]).
  * Privacidade: só cidade/bairro (publicLocation) — nunca rua, número ou CEP,
- * e nenhum dado interno (proprietário, comissão, anotações).
+ * e nenhum dado interno (proprietário, comissão, anotações). "O que tem
+ * perto" chega pronto da página (pertoDoImovel/centroDoImovel no servidor):
+ * a coordenada do imóvel nunca é passada adiante.
  */
 export function ImovelDetalhes({
   property,
   whatsapp,
   whatsappText,
+  perto = [],
+  centro = null,
+  linkMapa = false,
 }: {
   property: DetalheProperty;
   whatsapp: string | null; // número salvo em Configurações
   whatsappText: string;
+  perto?: ItemPerto[]; // lugares perto, só com FAIXA de distância
+  centro?: string | null; // "até 10 km do Centro"
+  linkMapa?: boolean; // mostra o link para o mapa da cidade
 }) {
   const zap = waHref(whatsapp, whatsappText);
   const parking = totalParking(property);
@@ -245,6 +255,8 @@ export function ImovelDetalhes({
               </div>
             </section>
           )}
+
+          <PertoDoImovel itens={perto} centro={centro} linkMapa={linkMapa} />
         </div>
 
         {/* Coluna lateral: preço, contato e detalhes */}

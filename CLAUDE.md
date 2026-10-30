@@ -25,6 +25,28 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
   ChatThread/ChatMessage, polling leve (sem lib externa), bolinha de não lidas.
 - **Mapa da cidade** (`/cidade`): Leaflet + OpenStreetMap (sem chave), pontos
   reais em lib/cidade/pontos.ts. Componente só-cliente (Leaflet usa window).
+  Dois mapas: o turístico e, em `#estabelecimentos`, o de "Onde fica cada
+  coisa" (components/cidade/mapa-estabelecimentos.tsx).
+- **Estabelecimentos e "O que tem perto"**: `lib/cidade/estabelecimentos.ts`
+  (lugares reais: planilha Google Maps da dona + relatório de out/2026
+  conferido no OSM — é AMOSTRA, não inventário), categorias em
+  `lib/cidade/categorias.ts`, regra única em `lib/cidade/perto.ts` (servidor
+  e navegador): página do imóvel, prévia da ficha, descrições geradas e
+  filtro "Perto de" da busca. Para o público só FAIXAS (até 500 m, 1 km,
+  2 km, 3 km, 5 km; Centro em faixas largas) — nunca distância exata. Não
+  aparece quando o endereço é OCULTO nem com precisão BAIRRO.
+- **Localização dos imóveis** (`lib/geo/`): campos latitude/longitude/
+  geoPrecision/geoKey/geocodedAt. Automática ao salvar o endereço (after()
+  no PATCH), ao abrir a ficha e, para os antigos, ao iniciar o servidor e a
+  cada 6 h (instrumentation.ts). Nominatim (fila única, 1 consulta/s,
+  pausa de 10 min se recusar) com Photon de reserva; a rua só vale se bater
+  com o bairro/condomínio. Na ficha, a equipe arrasta o marcador (MANUAL,
+  vale até o endereço mudar). source=LEAD não é localizado.
+- **Lista oficial de bairros (182) e condomínios (91)**: `lib/cidade/bairros.ts`
+  e `lib/cidade/condominios.ts` (grafias variantes = apelidos). Sugestões no
+  cadastro, nome oficial gravado também no servidor (lib/validation/imovel.ts)
+  e o "Onde?" da busca mostra todos. `CONDOMINIO_DESTAQUE` mora em
+  condominios.ts (busca-site.ts reexporta).
 - **Busca do site** (caixa logo abaixo do banner de `/site`): regras em
   `lib/busca-site.ts` (mesma função no servidor e na contagem ao vivo do
   navegador), tela em `components/site/busca-imoveis.tsx`. Condomínio
@@ -87,7 +109,10 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
   `/api/arquivos/...` (nunca `public/`). Vídeo: PUT raw stream (nunca
   formData). Imóveis de clientes (source=LEAD) **nunca** entram nos feeds.
 - **Privacidade de endereço (regra da casa)**: público só vê cidade/bairro;
-  rua/número/CEP jamais em página pública ou feed (displayAddress).
+  rua/número/CEP jamais em página pública ou feed (displayAddress). A
+  **coordenada do imóvel** também: nunca em prop de componente "use client"
+  público, HTML, API pública ou feed — calcule as faixas no servidor (ou
+  mande só as faixas, como o ItemBusca).
 - Descrições por IA: `client.messages.parse()` com modelo
   **claude-opus-5-5** + zodOutputFormat; qualquer erro → fallback silencioso
   para os templates. Chave fica em Settings (mascarada no GET).
@@ -96,8 +121,9 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
 
 ## Pendências conhecidas
 
-- **Próxima sessão já combinada**: ver `PROXIMA-SESSAO.md` (pontos da
-  cidade, distâncias nos imóveis, lista completa de bairros/condomínios).
+- **Próxima sessão**: ver `PROXIMA-SESSAO.md` (lugares do relatório que
+  ficaram sem posição — a dona pode mandar as coordenadas do Google Maps —
+  e ideias para depois).
 - Trocar para o domínio oficial quando chegar (Hostinger) + atualizar
   "Endereço público do sistema" em Configurações → Portais.
 - Cadastrar os feeds nos painéis dos portais (Canal Pro, Chaves na Mão,

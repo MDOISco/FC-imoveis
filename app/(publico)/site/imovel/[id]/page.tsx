@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { ImovelDetalhes } from "@/components/site/imovel-detalhes";
 import { RastreioAtividade } from "@/components/site/rastreio-atividade";
+import { centroDoImovel, pertoDoImovel } from "@/lib/cidade/perto";
 import { db } from "@/lib/db";
 import {
   publicLocation,
@@ -64,6 +65,11 @@ export default async function ImovelPublicoPage({ params }: Params) {
   ]);
   if (!property) notFound();
 
+  // "O que tem perto": calculado aqui no servidor — para a tela vão só nomes
+  // e faixas de distância, nunca a coordenada do imóvel.
+  const perto = pertoDoImovel(property);
+  const centro = centroDoImovel(property);
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
       <Link
@@ -77,6 +83,9 @@ export default async function ImovelPublicoPage({ params }: Params) {
           property={property}
           whatsapp={settings.whatsapp}
           whatsappText={`Olá! Tenho interesse no imóvel ${property.refCode} (${publicLocation(property)}) que vi no site da FC Imóveis.`}
+          perto={perto}
+          centro={centro}
+          linkMapa
         />
       </div>
       <p className="mt-8 text-center text-sm text-stone-500">
