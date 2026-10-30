@@ -12,6 +12,7 @@ import {
   Car,
   Check,
   ChevronDown,
+  ChevronUp,
   Fence,
   Gem,
   Home,
@@ -22,6 +23,7 @@ import {
   Map as MapIcon,
   MapPin,
   MessageCircle,
+  Navigation,
   RotateCcw,
   Search,
   SlidersHorizontal,
@@ -35,12 +37,16 @@ import {
 } from "lucide-react";
 import { MoneyInput } from "@/components/ui/money-input";
 import { Spinner } from "@/components/ui/spinner";
+import { CATEGORIAS_LUGAR } from "@/lib/cidade/categorias";
 import {
   BUSCA_VAZIA,
+  CIDADE_PRINCIPAL,
+  DISTANCIAS_PERTO,
   FINALIDADES_BUSCA,
   GRUPOS_TIPO,
   MOBILIA_BUSCA,
   ORDENS_BUSCA,
+  REGIAO_DO_BAIRRO,
   combina,
   condominiosDisponiveis,
   ehCondominioDestaque,
@@ -125,7 +131,9 @@ export function BuscaImoveis({
       inicial.suites > 0 ||
       inicial.banheiros > 0,
   );
-  const [filtroBairro, setFiltroBairro] = useState("");
+  const [filtroLocal, setFiltroLocal] = useState("");
+  const [todosBairros, setTodosBairros] = useState(false);
+  const [todosCondominios, setTodosCondominios] = useState(false);
   const [buscando, startTransition] = useTransition();
 
   const muda = (parcial: Partial<Busca>) => setBusca((b) => ({ ...b, ...parcial }));
@@ -138,8 +146,73 @@ export function BuscaImoveis({
   );
   const locais = useMemo(() => locaisDisponiveis(itens), [itens]);
   const condominios = useMemo(() => condominiosDisponiveis(itens), [itens]);
+  const destaques = useMemo(
+    () => new Set(condominios.filter(ehCondominioDestaque)),
+    [condominios],
+  );
+  // O que tem imóvel publicado aparece sempre, sem precisar abrir a lista
+  const comImovel = useMemo(
+    () =>
+      new Set(
+        itens.flatMap((i) => [
+          ...(i.bairro ? [`${i.bairro}, ${i.cidade}`] : []),
+          ...(i.condominio ? [i.condominio] : []),
+        ]),
+      ),
+    [itens],
+  );
+  const temPerto =
+    busca.perto.length > 0 || itens.some((i) => Object.keys(i.perto).length > 0);
   const variasCidades = locais.length > 1;
   const totalBairros = locais.reduce((n, l) => n + l.bairros.length, 0);
+
+  const termoLocal = semAcento(filtroLocal.trim());
+  const procurando = termoLocal.length > 0;
+  const confere = (nome: string) => semAcento(nome).includes(termoLocal);
+  const condominiosVisiveis = condominios.filter((c) =>
+    procurando
+      ? confere(c)
+      : todosCondominios ||
+        destaques.has(c) ||
+        comImovel.has(c) ||
+        busca.condominios.includes(c),
+  );
+  const gruposBairros: { chave: string; titulo: string | null; opcoes: string[] }[] = locais.flatMap(({ cidade, bairros }) => {
+    const visiveis = bairros.filter((b) => {
+      const local = `${b}, ${cidade}`;
+      return procurando
+        ? confere(b)
+        : todosBairros || comImovel.has(local) || busca.locais.includes(local);
+    });
+    const cidadeInteira = variasCidades && (!procurando || confere(cidade)) ? [cidade] : [];
+    if (visiveis.length + cidadeInteira.length === 0) return [];
+    const titulo = variasCidades ? cidade : null;
+    // Lista completa de Bragança: agrupada por região (indicativa)
+    if (cidade === CIDADE_PRINCIPAL && todosBairros && !procurando) {
+      const porRegiao = new Map<string, string[]>();
+      for (const b of visiveis) {
+        const r = REGIAO_DO_BAIRRO[b] ?? "Outros bairros";
+        porRegiao.set(r, [...(porRegiao.get(r) ?? []), `${b}, ${cidade}`]);
+      }
+      return [
+        ...(cidadeInteira.length
+          ? [{ chave: cidade, titulo, opcoes: cidadeInteira }]
+          : []),
+        ...[...porRegiao].map(([r, opcoes]) => ({
+          chave: `${cidade}-${r}`,
+          titulo: variasCidades ? `${cidade} · ${r}` : r,
+          opcoes,
+        })),
+      ];
+    }
+    return [
+      { chave: cidade, titulo, opcoes: [...cidadeInteira, ...visiveis.map((b) => `${b}, ${cidade}`)] },
+    ];
+  });
+  const bairrosVisiveis = gruposBairros.reduce(
+    (n, g) => n + g.opcoes.filter((o) => o.includes(", ")).length,
+    0,
+  );
   const resumo = resumoBusca(busca);
   const indiceFinalidade = Math.max(
     0,
@@ -324,7 +397,10 @@ export function BuscaImoveis({
             </div>
           </fieldset>
 
-          {/* Onde: bairros (e cidades) que existem nos imóveis publicados */}
+          {/* Onde: lista oficial de bairros e condomínios de Bragança (mais os
+              das outras cidades com imóvel publicado). Para não virar um
+              paredão, mostra primeiro os que têm imóvel; o resto em "Ver todos"
+              ou digitando. */}
           <fieldset className="mt-7">
             <legend className="flex w-full items-center justify-between text-lg font-bold text-stone-900">
               <span className="inline-flex items-center gap-2">
@@ -340,86 +416,147 @@ export function BuscaImoveis({
                 </button>
               )}
             </legend>
-            <p className="mb-2 mt-3 text-sm font-bold uppercase tracking-wider text-stone-400">
+            <input
+              type="search"
+              value={filtroLocal}
+              onChange={(e) => setFiltroLocal(e.target.value)}
+              placeholder="Digite o bairro ou o condomínio…"
+              aria-label="Procurar bairro ou condomínio"
+              className="mt-3 w-full min-h-12 rounded-xl border-2 border-stone-300 bg-white px-4 text-stone-900 placeholder:text-stone-400 focus:border-brand-600 focus:outline-none sm:max-w-md"
+            />
+
+            <p className="mb-2 mt-5 text-sm font-bold uppercase tracking-wider text-stone-400">
               Condomínios
             </p>
-            <div className="flex flex-wrap gap-2">
-              {condominios.map((c) => {
-                const destaque = ehCondominioDestaque(c);
-                return (
-                  <Pilula
-                    key={c}
-                    ativo={busca.condominios.includes(c)}
-                    onClick={() => muda({ condominios: alterna(busca.condominios, c) })}
-                    contagem={conta({ locais: [], condominios: [c] })}
-                    destaque={destaque}
-                  >
-                    {destaque && (
-                      <span aria-label="Condomínio principal" className="text-lg text-gold-500">
-                        ★
-                      </span>
-                    )}
-                    {c}
-                  </Pilula>
-                );
-              })}
-            </div>
-            <p className="mb-2 mt-5 text-sm font-bold uppercase tracking-wider text-stone-400">
-              Bairros
-            </p>
-            {totalBairros > 10 && (
-              <input
-                type="search"
-                value={filtroBairro}
-                onChange={(e) => setFiltroBairro(e.target.value)}
-                placeholder="Digite para achar o bairro…"
-                aria-label="Procurar bairro"
-                className="mb-3 w-full min-h-12 rounded-xl border-2 border-stone-300 bg-white px-4 text-stone-900 placeholder:text-stone-400 focus:border-brand-600 focus:outline-none sm:max-w-sm"
-              />
-            )}
-            {locais.length === 0 ? (
-              <p className="text-base text-stone-500">
-                Os bairros aparecem aqui conforme os imóveis são publicados.
-              </p>
-            ) : (
-              <div className="space-y-3">
-                {locais.map(({ cidade, bairros }) => {
-                  const visiveis = bairros.filter((b) =>
-                    semAcento(b).includes(semAcento(filtroBairro.trim())),
-                  );
-                  const opcoes = [
-                    ...(variasCidades ? [cidade] : []),
-                    ...visiveis.map((b) => `${b}, ${cidade}`),
-                  ];
-                  if (opcoes.length === 0) return null;
+            {condominiosVisiveis.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {condominiosVisiveis.map((c) => {
+                  const destaque = destaques.has(c);
                   return (
-                    <div key={cidade}>
-                      {variasCidades && (
-                        <p className="mb-2 text-sm font-bold uppercase tracking-wider text-stone-400">
-                          {cidade}
-                        </p>
+                    <Pilula
+                      key={c}
+                      ativo={busca.condominios.includes(c)}
+                      onClick={() => muda({ condominios: alterna(busca.condominios, c) })}
+                      contagem={conta({ locais: [], condominios: [c] })}
+                      destaque={destaque}
+                    >
+                      {destaque && (
+                        <span aria-label="Condomínio principal" className="text-lg text-gold-500">
+                          ★
+                        </span>
                       )}
-                      <div className="flex flex-wrap gap-2">
-                        {opcoes.map((local) => {
-                          const ativo = busca.locais.includes(local);
-                          return (
-                            <Pilula
-                              key={local}
-                              ativo={ativo}
-                              onClick={() => muda({ locais: alterna(busca.locais, local) })}
-                              contagem={conta({ locais: [local], condominios: [] })}
-                            >
-                              {rotuloLocal(local)}
-                            </Pilula>
-                          );
-                        })}
-                      </div>
-                    </div>
+                      {c}
+                    </Pilula>
                   );
                 })}
               </div>
+            ) : (
+              <p className="text-base text-stone-500">Nenhum condomínio com esse nome.</p>
+            )}
+            {!procurando && (todosCondominios || condominiosVisiveis.length < condominios.length) && (
+              <VerTodos
+                aberto={todosCondominios}
+                onClick={() => setTodosCondominios((v) => !v)}
+                texto={`Ver todos os ${condominios.length} condomínios`}
+              />
+            )}
+
+            <p className="mb-2 mt-6 text-sm font-bold uppercase tracking-wider text-stone-400">
+              Bairros
+            </p>
+            {gruposBairros.length > 0 ? (
+              <div className="space-y-4">
+                {gruposBairros.map(({ chave, titulo, opcoes }) => (
+                  <div key={chave}>
+                    {titulo && (
+                      <p className="mb-2 text-sm font-bold uppercase tracking-wider text-stone-400">
+                        {titulo}
+                      </p>
+                    )}
+                    <div className="flex flex-wrap gap-2">
+                      {opcoes.map((local) => (
+                        <Pilula
+                          key={local}
+                          ativo={busca.locais.includes(local)}
+                          onClick={() => muda({ locais: alterna(busca.locais, local) })}
+                          contagem={conta({ locais: [local], condominios: [] })}
+                        >
+                          {rotuloLocal(local)}
+                        </Pilula>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-base text-stone-500">
+                {procurando
+                  ? "Nenhum bairro com esse nome."
+                  : "Ainda não há imóvel publicado com bairro. Veja a lista completa:"}
+              </p>
+            )}
+            {!procurando && (todosBairros || bairrosVisiveis < totalBairros) && (
+              <VerTodos
+                aberto={todosBairros}
+                onClick={() => setTodosBairros((v) => !v)}
+                texto={`Ver todos os ${totalBairros} bairros`}
+              />
             )}
           </fieldset>
+
+          {/* Perto de: só faixas de distância (calculadas no servidor) */}
+          {temPerto && (
+            <fieldset className="mt-7">
+              <legend className="flex w-full items-center justify-between text-lg font-bold text-stone-900">
+                <span className="inline-flex items-center gap-2">
+                  <Navigation className="size-5 text-brand-700" /> Perto de
+                </span>
+                {busca.perto.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => muda({ perto: [] })}
+                    className="text-base font-semibold text-brand-700 hover:underline"
+                  >
+                    Tanto faz
+                  </button>
+                )}
+              </legend>
+              <p className="mt-1 text-base text-stone-600">
+                O que você quer ter por perto do imóvel?
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {CATEGORIAS_LUGAR.map((c) => (
+                  <Pilula
+                    key={c.value}
+                    ativo={busca.perto.includes(c.value)}
+                    onClick={() => muda({ perto: alterna(busca.perto, c.value) })}
+                    contagem={conta({ perto: [c.value] })}
+                  >
+                    <span aria-hidden="true">{c.emoji}</span>
+                    {c.label}
+                  </Pilula>
+                ))}
+              </div>
+              {busca.perto.length > 0 && (
+                <div className="anim-entra mt-4 flex flex-wrap items-center gap-2">
+                  <span className="text-base font-semibold text-stone-700">A no máximo:</span>
+                  {DISTANCIAS_PERTO.map((m) => (
+                    <Pilula
+                      key={m}
+                      ativo={busca.distancia === m}
+                      onClick={() => muda({ distancia: m })}
+                      contagem={conta({ distancia: m })}
+                    >
+                      {m < 1000 ? `${m} m` : `${m / 1000} km`}
+                    </Pilula>
+                  ))}
+                </div>
+              )}
+              <p className="mt-2 text-sm text-stone-500">
+                Distância aproximada, em linha reta.
+              </p>
+            </fieldset>
+          )}
 
           {/* Quartos e vagas (os principais); suítes e banheiros em "Mais filtros" */}
           <div className="mt-7 grid gap-5 lg:grid-cols-2">
@@ -674,7 +811,7 @@ export function BuscaImoveis({
               type="button"
               onClick={() => {
                 setBusca(BUSCA_VAZIA);
-                setFiltroBairro("");
+                setFiltroLocal("");
               }}
               disabled={resumo.length === 0}
               className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl px-4 text-lg font-semibold text-stone-500 transition-colors hover:text-stone-900 disabled:invisible"
@@ -774,7 +911,8 @@ function chipsAtivos(
   for (const rotulo of resumoBusca(b)) {
     if (ja.has(rotulo)) continue;
     let parcial: Partial<Busca> | undefined;
-    if (/quarto/.test(rotulo)) parcial = removedores.quartos;
+    if (rotulo.startsWith("Perto de ")) parcial = { perto: [] };
+    else if (/quarto/.test(rotulo)) parcial = removedores.quartos;
     else if (/suíte/.test(rotulo)) parcial = removedores["suíte"];
     else if (/banheiro/.test(rotulo)) parcial = removedores.banheiro;
     else if (/vaga/.test(rotulo)) parcial = removedores.vaga;
@@ -795,6 +933,29 @@ function chipsAtivos(
     }
   }
   return chips;
+}
+
+function VerTodos({
+  aberto,
+  onClick,
+  texto,
+}: {
+  aberto: boolean;
+  onClick: () => void;
+  texto: string;
+}) {
+  const Icone = aberto ? ChevronUp : ChevronDown;
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-expanded={aberto}
+      className="mt-3 inline-flex min-h-12 items-center gap-2 rounded-full px-2 text-base font-bold text-brand-700 hover:underline"
+    >
+      <Icone className="size-5" />
+      {aberto ? "Mostrar menos" : texto}
+    </button>
+  );
 }
 
 function Pilula({
