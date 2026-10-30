@@ -77,7 +77,9 @@ const REGIOES: { regiao: string; bairros: Entrada[] }[] = [
     bairros: [
       "Jardim Santa Helena",
       "Lagos de Santa Helena",
-      "Residencial Santa Helena",
+      "Residencial Santa Helena I",
+      "Residencial Santa Helena II",
+      "Residencial Santa Helena III",
       "Pinheiral de Santa Helena",
       "Jardim Lago do Moinho",
       "Tanque do Moinho",

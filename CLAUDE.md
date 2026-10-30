@@ -42,7 +42,7 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
   pausa de 10 min se recusar) com Photon de reserva; a rua só vale se bater
   com o bairro/condomínio. Na ficha, a equipe arrasta o marcador (MANUAL,
   vale até o endereço mudar). source=LEAD não é localizado.
-- **Lista oficial de bairros (180) e condomínios (91)**: `lib/cidade/bairros.ts`
+- **Lista oficial de bairros (182) e condomínios (91)**: `lib/cidade/bairros.ts`
   e `lib/cidade/condominios.ts` (grafias variantes = apelidos). Sugestões no
   cadastro, nome oficial gravado também no servidor (lib/validation/imovel.ts)
   e o "Onde?" da busca mostra todos. `CONDOMINIO_DESTAQUE` mora em

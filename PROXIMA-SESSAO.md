@@ -6,9 +6,10 @@ Leia junto com o `CLAUDE.md`.
 ## Feito nesta sessão (30/10/2026)
 
 1. **Estabelecimentos da cidade** em `lib/cidade/estabelecimentos.ts`
-   (117 lugares com coordenada real): a planilha do Google Maps da dona
-   inteira (mercados, postos, academias, restaurantes, padarias, clínicas,
-   laboratórios, creches) + hospitais, UPAs, postos de saúde, escolas,
+   (163 lugares com coordenada real): a planilha do Google Maps da dona
+   (2ª versão, com 38 mercados e hortifrútis, 24 padarias, postos,
+   academias, restaurantes, clínicas, laboratórios, lojas e parte das
+   escolas e creches) + hospitais, UPAs, postos de saúde, escolas,
    creches municipais, faculdades, shoppings, farmácias e bancos do
    relatório, localizados no OpenStreetMap e conferidos um a um (nome e
    bairro/rua precisavam bater; o que não bateu ficou de fora).
@@ -20,7 +21,7 @@ Leia junto com o `CLAUDE.md`.
    endereço; os antigos se localizam sozinhos. Na ficha, a equipe confere
    e arrasta o marcador. A coordenada fica só no banco.
 5. **Lugares próximos nas descrições geradas** (templates e IA).
-6. **Lista oficial de bairros (180) e condomínios (91)** em
+6. **Lista oficial de bairros (182) e condomínios (91)** em
    `lib/cidade/bairros.ts` e `lib/cidade/condominios.ts`: sugestões no
    cadastro, grafia única e a busca mostra todos.
 
@@ -42,19 +43,27 @@ uma linha em `lib/cidade/estabelecimentos.ts`.
   Dom Bruno Gamberini, Cel. Francisco de Assis Gonçalves, Inaldo Manta,
   Ismael Aguiar Leme, Sebastião Ferraz de Campos; EM Augusto Vasconcellos
   (IDEB 7,0), Antonio Dorival, Arline Menin, Carlos Frederico, Creusa
-  Gomes, Lucy Alvarez, Dalva Carmignotto, José Murillo Arruda; Colégio
-  Adventista, AZ, Guimarães Rosa, Santa Bárbara, Santa Terezinha, Maple
-  Bear, APAE; Colégio Integrado (mesmo endereço do Objetivo — confirmar se
-  é o mesmo colégio).
+  Gomes, Lucy Alvarez, José Murillo Arruda, Maria José de Campos Dorigo e
+  as escolas rurais; Colégio Adventista, AZ, Guimarães Rosa, Santa Bárbara
+  (unidade da R. Sete de Setembro — a de educação infantil já está), Maple
+  Bear, APAE, São Matheus, Santo Agostinho; Colégio Integrado (mesmo
+  endereço do Objetivo — confirmar se é o mesmo colégio); Inst. Santa
+  Terezinha (no Google, o endereço dele aparece como Colégio Educare, que
+  já está no mapa — confirmar).
 - **Creches municipais:** Adalmir Duaik, Affonso Risi, Padre Aldo Bolini,
   Antonietta Lisa, Célia Grasson, Marice Suarez, Marilis Abi Chedid,
   Therezinha Bellotto.
+- **Faculdades e cursos:** Polo UAB (R. Alexandre Berbari, 101), Centro
+  Paulista de Estudos Agropecuários (R. João Siriani, 313), Esatec,
+  Instituto Técnico Profissionalizante, Colégio Técnico N. Sra. das Graças,
+  Nova Biotec.
 - **Outros:** Rodoviária, Farmácias Pague Menos (R. Felipe Siqueira, 213),
   Drogaria São Paulo da Av. dos Imigrantes, 900 (no mapa só aparece a da
   Av. JK), Caixa da R. Tupy.
 - **Planilha:** "Vivendo e Aprendendo" e "Educare Little Kids" estão no
   mesmo endereço; ficou só o Educare (nome confirmado no Censo Escolar
-  2025). Confirmar com a dona.
+  2025). Confirmar com a dona. A coordenada da EM Sylvia Olmo no Google
+  caiu a 2 km da R. Treze de Maio; foi usado o ponto da rua.
 
 ## Ideias para depois
 
