@@ -1,11 +1,14 @@
 import type { MetadataRoute } from "next";
 import { getSettings, publicBaseUrl } from "@/lib/settings";
+import { siteFechado } from "@/lib/site-fechado";
 
 export const dynamic = "force-dynamic";
 
 /** O que o Google pode ler: o site público sim; painel da equipe, login,
  *  links exclusivos de clientes e APIs não (as fotos continuam liberadas). */
 export default async function robots(): Promise<MetadataRoute.Robots> {
+  // Site fechado com senha: o Google não deve ler nada por enquanto.
+  if (siteFechado()) return { rules: { userAgent: "*", disallow: "/" } };
   const base = publicBaseUrl(await getSettings());
   return {
     rules: {

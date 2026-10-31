@@ -63,7 +63,7 @@ export function FormEntrar() {
             FC Imóveis
           </h1>
           <p className="mt-1 text-lg text-stone-500">
-            Painel da equipe — acesso restrito
+            Acesso restrito à equipe
           </p>
         </div>
 

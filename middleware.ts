@@ -1,22 +1,64 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { ACCESS_COOKIE, expectedToken, safeEqual } from "@/lib/auth";
+import { siteFechado } from "@/lib/site-fechado";
 
 /**
- * Proteção do painel da equipe por senha (DASHBOARD_SENHA).
+ * Proteção por senha (DASHBOARD_SENHA).
  * - Sem a variável definida: tudo aberto (desenvolvimento local).
  * - O painel mora em /painel; a raiz "/" é o SITE público (com /imovel/[id]).
- * - Páginas/APIs PÚBLICAS (fora do matcher): "/", /imovel/*, /cidade,
- *   /agendar*, /permutas*, /exclusivo/*, /api/permutas (lead), /api/feeds
- *   (portais), /api/arquivos (fotos), /entrar e /api/entrar.
+ * - Páginas/APIs da EQUIPE (EQUIPE abaixo) sempre pedem a senha.
+ * - Com o site FECHADO (lib/site-fechado.ts), todo o resto também pede,
+ *   menos SEMPRE_LIVRE: tela de entrar, feeds dos portais, fotos e links
+ *   exclusivos de clientes. Com o site aberto, o resto é público.
  */
+const EQUIPE = [
+  "/painel",
+  "/imoveis",
+  "/configuracoes",
+  "/permutas-admin",
+  "/agenda",
+  "/conversas",
+  "/atividade",
+  "/api/imoveis",
+  "/api/corretores",
+  "/api/configuracoes",
+  "/api/permutas/admin",
+  "/api/agenda/admin",
+  "/api/chat/admin",
+];
+
+const SEMPRE_LIVRE = [
+  "/entrar",
+  "/api/entrar",
+  "/api/sair",
+  "/api/feeds",
+  "/api/arquivos",
+  "/exclusivo",
+  "/api/exclusivo",
+  "/api/atividade",
+];
+
+/** "/agenda" vale para /agenda e /agenda/..., mas não para /agendar. */
+function comeca(pathname: string, lista: string[]): boolean {
+  return lista.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+}
+
+function precisaSenha(pathname: string): boolean {
+  if (comeca(pathname, EQUIPE)) return true;
+  if (!siteFechado()) return false;
+  return !comeca(pathname, SEMPRE_LIVRE);
+}
+
 export async function middleware(request: NextRequest) {
+  const { pathname, search } = request.nextUrl;
+  if (!precisaSenha(pathname)) return NextResponse.next();
+
   const expected = await expectedToken();
   if (!expected) return NextResponse.next();
 
   const cookie = request.cookies.get(ACCESS_COOKIE)?.value;
   if (safeEqual(cookie, expected)) return NextResponse.next();
 
-  const { pathname, search } = request.nextUrl;
   if (pathname.startsWith("/api/")) {
     return NextResponse.json(
       { error: "Acesso restrito à equipe. Entre pelo painel." },
@@ -30,19 +72,9 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
+  // Tudo, menos arquivos do próprio Next, ícones, logotipo e robots.txt
+  // (a tela de entrar precisa deles antes da senha).
   matcher: [
-    "/painel",
-    "/imoveis/:path*",
-    "/configuracoes",
-    "/permutas-admin",
-    "/agenda",
-    "/conversas",
-    "/atividade",
-    "/api/imoveis/:path*",
-    "/api/corretores/:path*",
-    "/api/configuracoes/:path*",
-    "/api/permutas/admin/:path*",
-    "/api/agenda/admin/:path*",
-    "/api/chat/admin/:path*",
+    "/((?!_next/static|_next/image|favicon\\.ico|icon\\.png|apple-icon\\.png|logo/|robots\\.txt).*)",
   ],
 };

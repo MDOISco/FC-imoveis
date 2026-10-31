@@ -7,6 +7,12 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
 
 ## O que é
 
+- **SITE FECHADO COM SENHA por enquanto** (pedido da dona, out/2026): todo
+  o site público pede a mesma senha do painel (`lib/site-fechado.ts` +
+  `middleware.ts`; robots.txt bloqueia o Google). Livres: /entrar, feeds,
+  fotos (/api/arquivos) e links exclusivos. Reabrir = `FECHADO_NO_CODIGO =
+  false` (ou `SITE_ABERTO=1` no /etc/fc-imoveis.env + restart).
+
 - **Painel dos corretores** (`/painel`, protegido por senha única da equipe;
   a raiz `/` é o SITE público): cadastro
   de imóveis em wizard de 8 etapas, fotos com tratamento + marca d'água,
