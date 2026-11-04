@@ -249,7 +249,7 @@ export function BuscaImoveis({
     >
       <form
         onSubmit={buscar}
-        className="anim-entra relative overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-stone-200"
+        className="anim-entra sombra-branca relative overflow-hidden rounded-3xl bg-white"
       >
         {/* Faixa dourada animada no topo */}
         <div className="busca-faixa h-1.5" aria-hidden="true" />

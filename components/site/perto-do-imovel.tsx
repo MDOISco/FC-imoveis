@@ -70,9 +70,8 @@ export function PertoDoImovel({
 
       <p className="mt-6 text-base text-stone-500">
         Distâncias aproximadas, em linha reta. Por segurança, mostramos só
-        faixas de distância — a Cátia ou o Francisco passam a localização
-        exata no atendimento. A lista traz alguns lugares de referência, não
-        todos.
+        faixas de distância — o Francisco passa a localização exata no
+        atendimento. A lista traz alguns lugares de referência, não todos.
       </p>
 
       {linkMapa && (

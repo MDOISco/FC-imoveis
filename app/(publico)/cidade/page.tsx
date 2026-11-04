@@ -73,8 +73,7 @@ export default function CidadePage() {
           Quer morar nessa cidade boa? 🏡
         </h2>
         <p className="mx-auto mt-2 max-w-lg text-lg text-stone-600">
-          A FC Imóveis é daqui e conhece cada bairro. Fale com a Cátia e o
-          Francisco!
+          A FC Imóveis é daqui e conhece cada bairro. Fale com o Francisco!
         </p>
         <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
           <Link
