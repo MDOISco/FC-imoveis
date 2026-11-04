@@ -198,18 +198,12 @@ ls -1t "$DEST"/backup-*.tar.gz 2>/dev/null | tail -n +15 | xargs -r rm -f
 EOF
 chmod +x /etc/cron.daily/fc-imoveis-backup
 
-# fc-atualizar: puxa a versão nova do GitHub e reinicia
+# fc-atualizar: puxa a versão nova do GitHub e reinicia — a lógica mora em
+# deploy/atualizar.sh (guarda o build no ar e volta sozinho se o novo falhar),
+# assim melhorias do script chegam junto com o git pull.
 cat > /usr/local/bin/fc-atualizar <<EOF
 #!/usr/bin/env bash
-set -e
-cd $DIR
-git pull --ff-only origin $BRANCH
-npm ci
-npm run build
-systemctl stop fc-imoveis
-npx prisma migrate deploy
-systemctl start fc-imoveis
-echo "Atualizado!"
+exec bash $DIR/deploy/atualizar.sh "\$@"
 EOF
 chmod +x /usr/local/bin/fc-atualizar
 
