@@ -29,6 +29,9 @@ export default async function PublicoLayout({
       <main className="flex-1">{children}</main>
       <PublicFooter
         agencyName={settings.agencyName}
+        tradeName={settings.tradeName}
+        cnpj={settings.cnpj}
+        responsibleBroker={settings.responsibleBroker}
         creci={settings.creci}
         phone={settings.phone}
         whatsapp={settings.whatsapp}

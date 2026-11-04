@@ -91,7 +91,10 @@ async function main() {
     create: {
       id: 1,
       agencyName: "FC Imóveis",
-      creci: "00000-J",
+      tradeName: "F C Bragança Imóveis",
+      cnpj: "69.870.684/0001-89",
+      responsibleBroker: "Francisco A. D'Errico",
+      creci: "152813-F",
       phone: "(11) 4034-0000",
       whatsapp: "(11) 99999-0000",
       email: "contato@fcimoveis.com.br",

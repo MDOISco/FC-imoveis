@@ -61,6 +61,9 @@ export default async function ConfiguracoesPage({
           <FormAgencia
             initial={{
               agencyName: settings.agencyName,
+              tradeName: settings.tradeName ?? "",
+              cnpj: settings.cnpj ?? "",
+              responsibleBroker: settings.responsibleBroker ?? "",
               creci: settings.creci ?? "",
               phone: settings.phone ?? "",
               whatsapp: settings.whatsapp ?? "",

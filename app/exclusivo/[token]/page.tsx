@@ -1,6 +1,8 @@
+import type { Settings } from "@prisma/client";
 import { cookies } from "next/headers";
 import { Lock, MessageCircle, Sparkles } from "lucide-react";
 import { ImovelDetalhes } from "@/components/site/imovel-detalhes";
+import { DadosLegais } from "@/components/site/public-footer";
 import { RastreioAtividade } from "@/components/site/rastreio-atividade";
 import { SenhaExclusiva } from "@/components/site/senha-exclusiva";
 import { LogoMarca } from "@/components/ui/logo";
@@ -39,25 +41,23 @@ function Cabecalho({ agencyName }: { agencyName: string }) {
   );
 }
 
-function Rodape({
-  agencyName,
-  creci,
-  phone,
-  whatsapp,
-}: {
-  agencyName: string;
-  creci: string | null;
-  phone: string | null;
-  whatsapp: string | null;
-}) {
+function Rodape({ settings }: { settings: Settings }) {
   const contato =
-    [creci && `CRECI ${creci}`, phone, whatsapp && `WhatsApp ${whatsapp}`]
+    [settings.phone, settings.whatsapp && `WhatsApp ${settings.whatsapp}`]
       .filter(Boolean)
       .join(" · ") || "Bragança Paulista/SP";
   return (
-    <footer className="mt-10 border-t-2 border-gold-500 bg-brand-950 py-8 text-center text-brand-100">
-      <p className="font-display text-xl font-bold text-white">{agencyName}</p>
-      <p className="mt-2 px-4 text-base">{contato}</p>
+    <footer className="mt-10 space-y-2 border-t-2 border-gold-500 bg-brand-950 px-4 py-8 text-center text-brand-100">
+      <p className="font-display text-xl font-bold text-white">
+        {settings.agencyName}
+      </p>
+      <p className="text-base">{contato}</p>
+      <DadosLegais
+        tradeName={settings.tradeName}
+        cnpj={settings.cnpj}
+        responsibleBroker={settings.responsibleBroker}
+        creci={settings.creci}
+      />
     </footer>
   );
 }
@@ -115,12 +115,7 @@ export default async function ExclusivoPage({ params }: Params) {
             </a>
           )}
         </main>
-        <Rodape
-          agencyName={settings.agencyName}
-          creci={settings.creci}
-          phone={settings.phone}
-          whatsapp={settings.whatsapp}
-        />
+        <Rodape settings={settings} />
       </div>
     );
   }
@@ -151,12 +146,7 @@ export default async function ExclusivoPage({ params }: Params) {
             </div>
           </div>
         </main>
-        <Rodape
-          agencyName={settings.agencyName}
-          creci={settings.creci}
-          phone={settings.phone}
-          whatsapp={settings.whatsapp}
-        />
+        <Rodape settings={settings} />
       </div>
     );
   }
@@ -212,12 +202,7 @@ export default async function ExclusivoPage({ params }: Params) {
       </main>
       {/* Registro silencioso da visita (só depois da senha; não conta a equipe). */}
       <RastreioAtividade origem="EXCLUSIVO" token={token} />
-      <Rodape
-        agencyName={settings.agencyName}
-        creci={settings.creci}
-        phone={settings.phone}
-        whatsapp={settings.whatsapp}
-      />
+      <Rodape settings={settings} />
     </div>
   );
 }
