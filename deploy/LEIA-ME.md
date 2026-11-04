@@ -102,7 +102,7 @@ Como fica: **`https://dominio.com.br`** = site público (página inicial) e
 
 | Comando | O que faz |
 |---|---|
-| `sudo fc-atualizar` | Instala a versão mais nova do sistema (GitHub) |
+| `sudo fc-atualizar` | Instala a versão mais nova do sistema (GitHub). Se o build falhar, volta sozinho para a versão que estava no ar |
 | `sudo fc-dominio NOVO.DOMINIO` | Troca o domínio (confere o DNS antes) |
 | `sudo fc-senha "NOVA SENHA"` | Troca a senha da equipe (todos entram de novo) |
 | `sudo systemctl status fc-imoveis` | Vê se o sistema está rodando |

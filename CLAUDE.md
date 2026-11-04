@@ -88,12 +88,14 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
 
 ## Produção (está NO AR)
 
-- URL: **https://fcimoveis.duckdns.org** (DuckDNS aponta para a VPS KVM1 da
-  Hostinger, IP 179.199.157.44). Domínio oficial: **fcbragancaimoveis.com.br**
-  (DNS no Registro.br, registros A de `@` e `www` → IP acima) e troca com
-  `sudo fc-dominio fcbragancaimoveis.com.br` (= `deploy/dominio.sh`: confere o DNS,
-  põe `www` e os endereços antigos redirecionando para o novo, atualiza
-  APP_URL e Configurações → Portais).
+- URL: **https://fcbragancaimoveis.com.br** (domínio oficial no Registro.br,
+  `@` e `www` → VPS KVM1 da Hostinger, IP 179.199.157.44; troca de domínio já
+  feita em nov/2026). O endereço antigo **fcimoveis.duckdns.org** estava com o
+  certificado TLS quebrado em nov/2026 (não abre) — se precisar dele de volta,
+  rodar `sudo fc-dominio fcbragancaimoveis.com.br` regrava o Caddy com os
+  redirecionamentos (= `deploy/dominio.sh`: confere o DNS, põe `www` e os
+  endereços antigos redirecionando para o novo, atualiza APP_URL e
+  Configurações → Portais).
 - **Atalho `fc-dominio` antigo** (out/2026): o servidor ainda tinha o da 1ª
   versão do instalador (só trocava a 1ª linha do Caddy, sem conferir DNS) e
   derrubou o DuckDNS. `deploy/dominio.sh` agora recupera o endereço antigo
@@ -109,6 +111,13 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
 - **Atualizar produção** = commit + push aqui e, no servidor,
   `sudo fc-atualizar` (git pull, build, migrate com o serviço parado,
   restart). Backups diários em `/var/backups/fc-imoveis`.
+- **Atalho `fc-atualizar` antigo** (nov/2026): a 1ª versão rodava o build com
+  o site no ar e, se o build falhasse, deixava o site QUEBRADO (HTML de um
+  build, arquivos de outro → "Application error" e estáticos 400) sem
+  reiniciar nada. `deploy/atualizar.sh` agora guarda o `.next` no ar e volta
+  sozinho se o build ou a migração falharem; o atalho se regrava ao rodar.
+  Num servidor com o atalho antigo: `sudo fc-atualizar` (puxa o git) e depois
+  `sudo bash /opt/fc-imoveis/deploy/atualizar.sh` uma vez.
 - Instalador completo e idempotente: `deploy/instalar.sh` (guia em
   `deploy/LEIA-ME.md`). `deploy/fc.sh` = atalho zero-decisões.
 - O repositório é **PÚBLICO**: nunca commitar senhas, chaves ou dados reais.
@@ -147,10 +156,9 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
 - **Próxima sessão**: ver `PROXIMA-SESSAO.md` (lugares do relatório que
   ficaram sem posição — a dona pode mandar as coordenadas do Google Maps —
   e ideias para depois).
-- Trocar para o domínio oficial fcbragancaimoveis.com.br (Registro.br →
-  `sudo fc-dominio fcbragancaimoveis.com.br`) — depois disso, atualizar a
-  URL de produção acima.
 - Cadastrar os feeds nos painéis dos portais (Canal Pro, Chaves na Mão,
-  Imovelweb) — de preferência já com o domínio oficial.
+  Imovelweb) — já com o domínio oficial fcbragancaimoveis.com.br.
+- Conferir/recuperar o endereço antigo fcimoveis.duckdns.org (certificado
+  quebrado em nov/2026 — ver seção Produção).
 - Possíveis próximos passos já previstos: login por corretor, site público
   completo, avisos WhatsApp/e-mail, Termos de Uso/LGPD da página de permutas.
