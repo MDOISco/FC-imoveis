@@ -109,15 +109,20 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
   atual o Caddy é binário em `/usr/local/bin/caddy` porque o repositório apt
   estava fora do ar). Senha/segredo em `/etc/fc-imoveis.env` (600).
 - **Atualizar produção** = commit + push aqui e, no servidor,
-  `sudo fc-atualizar` (git pull, build, migrate com o serviço parado,
-  restart). Backups diários em `/var/backups/fc-imoveis`.
-- **Atalho `fc-atualizar` antigo** (nov/2026): a 1ª versão rodava o build com
-  o site no ar e, se o build falhasse, deixava o site QUEBRADO (HTML de um
-  build, arquivos de outro → "Application error" e estáticos 400) sem
-  reiniciar nada. `deploy/atualizar.sh` agora guarda o `.next` no ar e volta
-  sozinho se o build ou a migração falharem; o atalho se regrava ao rodar.
-  Num servidor com o atalho antigo: `sudo fc-atualizar` (puxa o git) e depois
-  `sudo bash /opt/fc-imoveis/deploy/atualizar.sh` uma vez.
+  `sudo fc-atualizar` (= `deploy/atualizar.sh`: git pull, npm ci, PARA o
+  serviço, migrate, build, inicia — o site fica fora do ar só durante o
+  build). Backups diários em `/var/backups/fc-imoveis`.
+- **Atalho `fc-atualizar` antigo** (nov/2026): a 1ª versão fazia build →
+  migrate com o site no ar. O build lê o banco (o layout público chama
+  getSettings ao montar /cidade); quando a versão nova trazia coluna nova
+  (ex.: Settings.tradeName), o build quebrava ANTES do migrate e o `next
+  build` já tinha apagado a versão antiga → site no ar só com "Application
+  error" (chunks 400) e o script parava sem avisar. `deploy/atualizar.sh`
+  agora migra ANTES do build (nunca inverter), guarda o `.next` no ar em
+  `.next-anterior` e volta sozinho se migrate, build ou o start falharem; o
+  atalho se regrava ao rodar. Num servidor com o atalho antigo ou já
+  quebrado: `sudo git -C /opt/fc-imoveis pull --ff-only origin <branch>` e
+  depois `sudo bash /opt/fc-imoveis/deploy/atualizar.sh` uma vez.
 - Instalador completo e idempotente: `deploy/instalar.sh` (guia em
   `deploy/LEIA-ME.md`). `deploy/fc.sh` = atalho zero-decisões.
 - O repositório é **PÚBLICO**: nunca commitar senhas, chaves ou dados reais.

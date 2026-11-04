@@ -98,11 +98,23 @@ Como fica: **`https://dominio.com.br`** = site público (página inicial) e
    antigo (DuckDNS) levarem ao novo e atualiza o "Endereço público do
    sistema" em Configurações → Portais. Nenhum dado é perdido.
 
+## Se o site mostrar "Application error" em toda página
+
+Foi uma atualização que falhou no meio (versão antiga do `fc-atualizar`,
+que montava o site antes de atualizar o banco). Rode no servidor:
+
+```bash
+sudo git -C /opt/fc-imoveis pull --ff-only origin claude/happy-meitner-2lkcyr
+sudo bash /opt/fc-imoveis/deploy/atualizar.sh
+```
+
+Isso conserta e já deixa o `fc-atualizar` na versão nova.
+
 ## Comandos do dia a dia (no servidor)
 
 | Comando | O que faz |
 |---|---|
-| `sudo fc-atualizar` | Instala a versão mais nova do sistema (GitHub). Se o build falhar, volta sozinho para a versão que estava no ar |
+| `sudo fc-atualizar` | Instala a versão mais nova do sistema (GitHub). O site fica fora do ar uns minutos; se algo falhar, volta sozinho para a versão que estava no ar |
 | `sudo fc-dominio NOVO.DOMINIO` | Troca o domínio (confere o DNS antes) |
 | `sudo fc-senha "NOVA SENHA"` | Troca a senha da equipe (todos entram de novo) |
 | `sudo systemctl status fc-imoveis` | Vê se o sistema está rodando |
