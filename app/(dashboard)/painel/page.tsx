@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Building2, LayoutGrid, Plus, Rows3 } from "lucide-react";
+import { Building2, EyeOff, LayoutGrid, Plus, Rows3 } from "lucide-react";
 import type { Prisma } from "@prisma/client";
 import { BrokerChips } from "@/components/dashboard/broker-chips";
 import { Filters } from "@/components/dashboard/filters";
@@ -33,6 +33,8 @@ export default async function DashboardPage({
   const corretor = first(params.corretor);
   const ordem = first(params.ordem) || "recentes";
   const visao = first(params.visao) === "lista" ? "lista" : "cards";
+  // "fora" = só os imóveis ativos que ainda não aparecem no site
+  const site = first(params.site) === "fora" ? "fora" : "";
 
   const where: Prisma.PropertyWhereInput = { source: "CORRETOR" };
   if (status === "VENDIDO") {
@@ -44,6 +46,10 @@ export default async function DashboardPage({
   if (finalidade === "PERMUTA") where.acceptsTrade = true;
   else if (finalidade) where.purpose = finalidade;
   if (corretor) where.brokerId = corretor;
+  if (site === "fora") {
+    where.status = "ATIVO";
+    where.publishedOnSite = false;
+  }
   if (busca) {
     where.OR = [
       { refCode: { contains: busca } },
@@ -84,6 +90,7 @@ export default async function DashboardPage({
     brokers,
     countsByBroker,
     totalCarteira,
+    foraDoSite,
   ] = await Promise.all([
     db.property.findMany({
       where,
@@ -115,6 +122,9 @@ export default async function DashboardPage({
       _count: { _all: true },
     }),
     db.property.count({ where: { source: "CORRETOR" } }),
+    db.property.count({
+      where: { ...statsBase, status: "ATIVO", publishedOnSite: false },
+    }),
   ]);
 
   const countByBrokerId = new Map(
@@ -133,6 +143,7 @@ export default async function DashboardPage({
       corretor,
       ordem: ordem === "recentes" ? "" : ordem,
       visao: visao === "cards" ? "" : visao,
+      site,
     };
     for (const [key, value] of Object.entries({ ...current, ...overrides })) {
       if (value) q.set(key, value);
@@ -141,7 +152,7 @@ export default async function DashboardPage({
     return s ? `/painel?${s}` : "/painel";
   }
 
-  const hasFilters = busca || status || tipo || finalidade || corretor;
+  const hasFilters = busca || status || tipo || finalidade || corretor || site;
 
   return (
     <div className="space-y-6">
@@ -181,6 +192,40 @@ export default async function DashboardPage({
           />
         </div>
       </section>
+
+      {(foraDoSite > 0 || site === "fora") && (
+        <div className="flex flex-col gap-3 rounded-2xl border-2 border-amber-300 bg-amber-50 p-5 sm:flex-row sm:items-center sm:justify-between">
+          <p className="flex items-start gap-3 text-lg font-semibold text-amber-900">
+            <EyeOff className="mt-0.5 size-6 shrink-0" />
+            <span>
+              {foraDoSite === 0
+                ? "Pronto: todos os imóveis ativos já estão no site."
+                : foraDoSite === 1
+                  ? "1 imóvel ativo ainda não aparece no site."
+                  : `${foraDoSite} imóveis ativos ainda não aparecem no site.`}
+              <span className="block text-base font-normal">
+                Para colocar: abra o imóvel e ligue “Publicar no site”, no
+                quadro “Site da FC Imóveis”.
+              </span>
+            </span>
+          </p>
+          {site === "fora" ? (
+            <Link
+              href={buildHref({ site: "" })}
+              className={buttonClasses("secondary", "lg") + " shrink-0"}
+            >
+              Ver todos os imóveis
+            </Link>
+          ) : (
+            <Link
+              href={buildHref({ site: "fora" })}
+              className={buttonClasses("gold", "lg") + " shrink-0"}
+            >
+              Ver quais são
+            </Link>
+          )}
+        </div>
+      )}
 
       <BrokerChips
         brokers={brokers.map((b) => ({

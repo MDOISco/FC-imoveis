@@ -90,9 +90,16 @@ export function PropertyTable({ properties }: { properties: Row[] }) {
                   {p.broker?.name?.split(" ")[0] ?? "—"}
                 </td>
                 <td className="px-4 py-3">
-                  <Badge className={STATUS_BADGE_CLASSES[p.status]}>
-                    {STATUS_LABELS[p.status]}
-                  </Badge>
+                  <div className="flex flex-wrap gap-1.5">
+                    <Badge className={STATUS_BADGE_CLASSES[p.status]}>
+                      {STATUS_LABELS[p.status]}
+                    </Badge>
+                    {p.status === "ATIVO" && !p.publishedOnSite && (
+                      <Badge className="bg-amber-100 text-amber-900">
+                        Fora do site
+                      </Badge>
+                    )}
+                  </div>
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-2">

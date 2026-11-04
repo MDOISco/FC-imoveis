@@ -16,12 +16,14 @@ export function CopyButton({
     <Button
       variant="secondary"
       onClick={async () => {
+        // Caminho relativo ("/imovel/...") vira o endereço completo do site
+        const full = text.startsWith("/") ? window.location.origin + text : text;
         try {
-          await navigator.clipboard.writeText(text);
+          await navigator.clipboard.writeText(full);
         } catch {
           // Fallback para contextos sem clipboard API
           const el = document.createElement("textarea");
-          el.value = text;
+          el.value = full;
           document.body.appendChild(el);
           el.select();
           document.execCommand("copy");

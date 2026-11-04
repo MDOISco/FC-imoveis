@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Camera, Pencil, Repeat, UserRound } from "lucide-react";
+import { Camera, EyeOff, Pencil, Repeat, UserRound } from "lucide-react";
 import type { Broker, Photo, PortalPublication, Property } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
 import { buttonClasses } from "@/components/ui/button";
@@ -53,6 +53,11 @@ export function PropertyCard({ property }: { property: PropertyWithRelations }) 
             <Badge className={STATUS_BADGE_CLASSES[property.status]}>
               {STATUS_LABELS[property.status]}
             </Badge>
+            {property.status === "ATIVO" && !property.publishedOnSite && (
+              <Badge className="bg-amber-100 text-amber-900">
+                <EyeOff className="size-4" /> Fora do site
+              </Badge>
+            )}
             {property.acceptsTrade && (
               <Badge className="bg-gold-100 text-gold-900">
                 <Repeat className="size-4" /> Permuta
