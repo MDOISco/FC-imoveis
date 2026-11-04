@@ -4,6 +4,7 @@ import type { Broker, Photo, PortalPublication, Property } from "@prisma/client"
 import { Badge } from "@/components/ui/badge";
 import { buttonClasses } from "@/components/ui/button";
 import { DeleteDraftButton } from "@/components/dashboard/delete-draft-button";
+import { PublicarSiteButton } from "@/components/dashboard/publicar-site-button";
 import {
   PORTAL_LABELS,
   PROPERTY_TYPE_LABELS,
@@ -104,6 +105,14 @@ export function PropertyCard({ property }: { property: PropertyWithRelations }) 
                 {PORTAL_LABELS[p.portal]}
               </span>
             ))}
+          </div>
+        )}
+        {property.status === "ATIVO" && (
+          <div className="mt-2">
+            <PublicarSiteButton
+              propertyId={property.id}
+              publishedOnSite={property.publishedOnSite}
+            />
           </div>
         )}
         {isDraft && (

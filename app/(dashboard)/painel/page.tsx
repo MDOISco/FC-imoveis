@@ -204,8 +204,8 @@ export default async function DashboardPage({
                   ? "1 imóvel ativo ainda não aparece no site."
                   : `${foraDoSite} imóveis ativos ainda não aparecem no site.`}
               <span className="block text-base font-normal">
-                Para colocar: abra o imóvel e ligue “Publicar no site”, no
-                quadro “Site da FC Imóveis”.
+                Para colocar no ar, é só clicar no botão “Publicar no site”
+                que aparece junto de cada imóvel, aqui no painel.
               </span>
             </span>
           </p>
