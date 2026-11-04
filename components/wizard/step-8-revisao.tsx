@@ -19,6 +19,8 @@ import { formatArea, formatBRL } from "@/lib/format";
 import { publicationPendencias } from "@/lib/validation/imovel";
 import type { WizardProperty } from "@/lib/wizard-dto";
 import { PortalToggles } from "@/components/ficha/portal-toggles";
+import { SitePublicacao } from "@/components/ficha/site-publicacao";
+import { Toggle } from "@/components/ui/toggle";
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   if (value === null || value === undefined || value === "" || value === "—")
@@ -66,6 +68,10 @@ export function Step8Revisao({
 }) {
   const router = useRouter();
   const [publishing, setPublishing] = useState(false);
+  // Site já vem LIGADO ao publicar (a equipe vê e pode desligar antes).
+  // Antes ficava só na ficha, desligado, e o imóvel "publicado" não aparecia
+  // no site.
+  const [noSite, setNoSite] = useState(true);
 
   const pendencias = publicationPendencias({
     ...property,
@@ -79,9 +85,13 @@ export function Step8Revisao({
     try {
       await apiFetch(`/api/imoveis/${property.id}`, {
         method: "PATCH",
-        body: { status: "ATIVO", wizardStep: 8 },
+        body: { status: "ATIVO", wizardStep: 8, publishedOnSite: noSite },
       });
-      toast("🎉 Imóvel publicado! Ele já entra nos feeds dos portais ligados.");
+      toast(
+        noSite
+          ? "🎉 Imóvel publicado! Já está no site e entra nos portais ligados."
+          : "🎉 Imóvel publicado! Ele entra nos portais ligados (fora do site).",
+      );
       router.push(`/imoveis/${property.id}`);
       router.refresh();
     } catch (e) {
@@ -253,6 +263,40 @@ export function Step8Revisao({
           <p className="text-stone-500">Ainda sem descrição.</p>
         )}
       </Section>
+
+      <section className="rounded-2xl border-2 border-stone-200 p-4">
+        <h3 className="mb-3 text-lg font-bold text-stone-900">
+          Aparecer no site da FC Imóveis?
+        </h3>
+        {isActive ? (
+          <SitePublicacao
+            propertyId={property.id}
+            publishedOnSite={property.publishedOnSite}
+            propertyStatus={property.status}
+            publicUrl={`/imovel/${property.id}`}
+          />
+        ) : (
+          <div className="space-y-2">
+            <div className="rounded-xl border-2 border-stone-200 bg-white px-4 py-3">
+              <Toggle
+                checked={noSite}
+                disabled={publishing}
+                onChange={setNoSite}
+                label="Publicar no site"
+              />
+            </div>
+            <p
+              className={`text-base font-semibold ${
+                noSite ? "text-brand-700" : "text-stone-500"
+              }`}
+            >
+              {noSite
+                ? "Ligado: ao clicar em “Publicar imóvel”, ele já aparece no site."
+                : "Desligado: o imóvel não aparece no site (dá para ligar depois na ficha)."}
+            </p>
+          </div>
+        )}
+      </section>
 
       <section className="rounded-2xl border-2 border-stone-200 p-4">
         <h3 className="mb-3 text-lg font-bold text-stone-900">

@@ -38,6 +38,7 @@ export type WizardProperty = {
   id: string;
   refCode: string;
   status: string;
+  publishedOnSite: boolean;
   wizardStep: number;
   source: string;
   purpose: string | null;
@@ -104,6 +105,7 @@ export function toWizardProperty(
     id: p.id,
     refCode: p.refCode,
     status: p.status,
+    publishedOnSite: p.publishedOnSite,
     wizardStep: p.wizardStep,
     source: p.source,
     purpose: p.purpose,
