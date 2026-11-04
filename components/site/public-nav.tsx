@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -41,16 +41,34 @@ export function PublicNav({
 }) {
   const pathname = usePathname();
   const [aberto, setAberto] = useState(false);
+  const [rolou, setRolou] = useState(false);
+
+  // Na página inicial o cabeçalho começa TRANSPARENTE, fundido ao vídeo do
+  // banner (pedido da dona). Ao rolar (ou abrir o menu) volta ao verde sólido.
+  useEffect(() => {
+    const aoRolar = () => setRolou(window.scrollY > 16);
+    aoRolar();
+    window.addEventListener("scroll", aoRolar, { passive: true });
+    return () => window.removeEventListener("scroll", aoRolar);
+  }, []);
+  const sobreVideo = pathname === "/" && !rolou && !aberto;
 
   return (
-    <header className="sticky top-0 z-40 border-b-2 border-gold-500 bg-brand-950 text-white shadow-md">
+    <header
+      className={cn(
+        "sticky top-0 z-40 text-white transition-all duration-500",
+        sobreVideo
+          ? "border-b-2 border-transparent bg-clip-padding bg-gradient-to-b from-brand-950/60 via-brand-950/25 to-brand-950/0"
+          : "border-b-2 border-gold-500 bg-brand-950 shadow-md",
+      )}
+    >
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
         <Link
           href="/"
           className="flex items-center gap-3"
           onClick={() => setAberto(false)}
         >
-          <LogoMarca />
+          <LogoMarca className="logo-destaque" />
           <span>
             <span className="block whitespace-nowrap font-display text-xl font-bold tracking-tight sm:text-2xl">
               {agencyName}

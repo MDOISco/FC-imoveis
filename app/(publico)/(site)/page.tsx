@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Building2, CalendarDays, KeyRound, MessageCircle } from "lucide-react";
 import { BuscaImoveis } from "@/components/site/busca-imoveis";
+import { BuscaPerfil } from "@/components/site/busca-perfil";
 import { HeroVideo } from "@/components/site/hero-video";
 import { ImovelCard, type SiteProperty } from "@/components/site/imovel-card";
 import {
@@ -72,8 +73,12 @@ export default async function SiteHomePage({
 
   return (
     <div>
-      {/* ===== Hero (vídeo aéreo de Bragança em largura total) ===== */}
-      <section className="relative overflow-hidden bg-brand-950 text-white">
+      {/* ===== Hero (vídeo aéreo de Bragança em largura total) =====
+          A margem negativa puxa o vídeo para DEBAIXO do cabeçalho (que fica
+          transparente no topo da página inicial — components/site/public-nav);
+          83px/92px é a altura do cabeçalho (logo h-12/h-14 + py-3 + borda),
+          compensada no padding do conteúdo logo abaixo. */}
+      <section className="relative -mt-[83px] overflow-hidden bg-brand-950 text-white sm:-mt-[92px]">
         {/* Vídeo direto em HTML: o React não escreve o atributo "muted" no
             HTML do servidor, e sem ele o autoplay falha no celular. */}
         <div
@@ -84,10 +89,10 @@ export default async function SiteHomePage({
           }}
         />
         <div
-          className="absolute inset-0 bg-gradient-to-b from-brand-950/90 via-brand-950/65 to-brand-950/90"
+          className="absolute inset-0 bg-gradient-to-b from-brand-950/75 via-brand-950/50 to-brand-950/85"
           aria-hidden="true"
         />
-        <div className="relative mx-auto max-w-6xl px-4 pb-10 pt-14 text-center sm:px-6 sm:pt-20">
+        <div className="relative mx-auto max-w-6xl px-4 pb-10 pt-[146px] text-center sm:px-6 sm:pt-[182px]">
           <p className="text-sm font-bold uppercase tracking-[0.22em] text-gold-300">
             Imobiliária em Bragança Paulista · SP
           </p>
@@ -154,6 +159,9 @@ export default async function SiteHomePage({
         inicial={busca}
         whatsapp={settings.whatsapp}
       />
+
+      {/* ===== Busca personalizada: o cliente conta como mora ===== */}
+      <BuscaPerfil itens={itens} />
 
       {/* ===== Vitrine / resultado da busca ===== */}
       <section id="imoveis" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-12 sm:px-6">
@@ -251,7 +259,7 @@ export default async function SiteHomePage({
           poster="/videos/chave-dourada-poster.jpg"
         />
         <div
-          className="absolute inset-0 bg-gradient-to-b from-brand-950/85 via-brand-950/55 to-brand-950/85"
+          className="absolute inset-0 bg-gradient-to-b from-brand-950/75 via-brand-950/45 to-brand-950/80"
           aria-hidden="true"
         />
         <div className="relative mx-auto flex max-w-6xl flex-col items-center gap-6 px-6 py-12 text-center sm:px-10 sm:py-16">

@@ -20,7 +20,7 @@ export function Logo({ className }: { className?: string }) {
 }
 
 /** Só a casa com o "FC": nos cabeçalhos, direto sobre o verde. */
-export function LogoMarca() {
+export function LogoMarca({ className }: { className?: string }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
@@ -28,7 +28,7 @@ export function LogoMarca() {
       alt=""
       width={141}
       height={192}
-      className="h-12 w-auto shrink-0 sm:h-14"
+      className={cn("h-12 w-auto shrink-0 sm:h-14", className)}
     />
   );
 }

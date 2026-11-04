@@ -325,8 +325,8 @@ export function ImovelDetalhes({
               </Link>
             </div>
             <p className="mt-4 rounded-xl bg-white/10 p-3 text-base text-brand-100">
-              Por segurança, mostramos apenas cidade e bairro. A Cátia ou o
-              Francisco informam a localização exata no atendimento.
+              Por segurança, mostramos apenas cidade e bairro. O Francisco
+              informa a localização exata no atendimento.
             </p>
           </section>
 
