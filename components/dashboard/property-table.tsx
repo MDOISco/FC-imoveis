@@ -9,6 +9,8 @@ import {
 } from "@/lib/constants";
 import { displayTitle, priceLabel, specsSummary } from "@/lib/property-display";
 import { DeleteDraftButton } from "./delete-draft-button";
+import { PublicarSiteButton } from "./publicar-site-button";
+import { SituacaoMenu } from "./situacao-menu";
 import type { PropertyWithRelations } from "./property-card";
 import type { Broker } from "@prisma/client";
 
@@ -103,6 +105,20 @@ export function PropertyTable({ properties }: { properties: Row[] }) {
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-2">
+                    {p.status === "ATIVO" && (
+                      <PublicarSiteButton
+                        propertyId={p.id}
+                        publishedOnSite={p.publishedOnSite}
+                        compact
+                      />
+                    )}
+                    {!isDraft && (
+                      <SituacaoMenu
+                        propertyId={p.id}
+                        status={p.status}
+                        compact
+                      />
+                    )}
                     <Link
                       href={href}
                       className={

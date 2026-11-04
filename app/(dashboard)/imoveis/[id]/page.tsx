@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { after } from "next/server";
 import { ArrowLeft, Lock, Repeat } from "lucide-react";
+import { DocumentosChecklist } from "@/components/ficha/documentos-checklist";
 import { Galeria } from "@/components/ficha/galeria";
 import {
   LinksPrivados,
@@ -75,6 +76,13 @@ export default async function FichaImovelPage({
   const parking =
     (property.parkingCovered ?? 0) + (property.parkingUncovered ?? 0);
   const amenities = dto.amenities;
+  let docsMarcados: string[] = [];
+  try {
+    const lidos = JSON.parse(property.docsChecklist);
+    if (Array.isArray(lidos)) docsMarcados = lidos.map(String);
+  } catch {
+    // valor antigo/corrompido no banco: começa desmarcado
+  }
 
   // Imóvel antigo, nunca procurado no mapa: localiza ao abrir a ficha
   // (depois de responder; a equipe recarrega para ver).
@@ -379,6 +387,13 @@ export default async function FichaImovelPage({
 
           {property.source === "CORRETOR" && (
             <>
+              <CardSection title="Documentos do imóvel">
+                <DocumentosChecklist
+                  propertyId={property.id}
+                  marcadosIniciais={docsMarcados}
+                />
+              </CardSection>
+
               <CardSection title="Site da FC Imóveis">
                 <SitePublicacao
                   propertyId={property.id}

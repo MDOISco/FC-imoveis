@@ -130,6 +130,7 @@ model Property {
   ownerEmail    String?
   commissionPct Float?
   docsStatus    String? // REGULAR|PENDENTE|EM_REGULARIZACAO
+  docsChecklist String  @default("[]") // chaves marcadas (lib/constants DOCUMENTOS_IMOVEL)
   internalNotes String?
 
   // Etapa 7 — descrição

@@ -122,6 +122,31 @@ export const DOCS_STATUS_OPTIONS: Option[] = [
   { value: "EM_REGULARIZACAO", label: "Em regularização" },
 ];
 
+// Checklist de documentos do imóvel (ficha; Property.docsChecklist guarda as
+// chaves marcadas em JSON). help = quando o item se aplica.
+export const DOCUMENTOS_IMOVEL: (Option & { help?: string })[] = [
+  { value: "MATRICULA", label: "Matrícula atualizada" },
+  { value: "IPTU", label: "IPTU em dia (carnê ou certidão)" },
+  { value: "ESCRITURA", label: "Escritura" },
+  { value: "DOCS_PROPRIETARIO", label: "RG e CPF do proprietário" },
+  {
+    value: "CERTIDAO_CASAMENTO",
+    label: "Certidão de casamento",
+    help: "Quando o proprietário é casado",
+  },
+  { value: "AUTORIZACAO", label: "Autorização de venda/locação assinada" },
+  {
+    value: "QUITACAO_CONDOMINIO",
+    label: "Declaração de quitação do condomínio",
+    help: "Só para imóvel em condomínio",
+  },
+  {
+    value: "PROCURACAO",
+    label: "Procuração",
+    help: "Quando outra pessoa assina pelo proprietário",
+  },
+];
+
 /* ============================ Descrições ========================== */
 
 export const DESCRIPTION_STYLES: Option[] = [

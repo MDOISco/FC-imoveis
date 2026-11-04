@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Pencil } from "lucide-react";
+import { Pencil, Printer } from "lucide-react";
 import { Button, buttonClasses } from "@/components/ui/button";
 import { ConfirmButton } from "@/components/ui/confirm-dialog";
 import { toast } from "@/components/ui/toast";
@@ -55,6 +55,13 @@ export function StatusActions({
         className={buttonClasses("secondary", "md")}
       >
         <Pencil className="size-5" /> Editar
+      </Link>
+      <Link
+        href={`/imoveis/${propertyId}/imprimir`}
+        target="_blank"
+        className={buttonClasses("secondary", "md")}
+      >
+        <Printer className="size-5" /> Imprimir ficha
       </Link>
       {status === "ATIVO" && (
         <>
