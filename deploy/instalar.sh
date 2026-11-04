@@ -124,11 +124,13 @@ else
 fi
 cd "$DIR"
 npm ci
-npm run build
-# Migração com o serviço parado: o SQLite trava se o sistema estiver no ar
-# (acontece ao rodar o instalador de novo para atualizar/consertar).
+# Banco ANTES do build (mesma ordem do deploy/atualizar.sh): o build lê o
+# banco, e com uma coluna nova ainda não migrada ele quebrava no meio.
+# Serviço parado durante a migração: o SQLite trava se o sistema estiver no
+# ar (acontece ao rodar o instalador de novo para atualizar/consertar).
 systemctl stop fc-imoveis >/dev/null 2>&1 || true
 npx prisma migrate deploy
+npm run build
 if [[ "$DEMO" == "--demo" ]]; then
   echo "==> Carregando dados de demonstração"
   npx prisma db seed || true
