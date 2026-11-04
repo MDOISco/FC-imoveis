@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { firstZodMessage, jsonError, readJson } from "@/lib/api-helpers";
 import { atualizarLocalizacao } from "@/lib/geo/imovel";
 import { removePath } from "@/lib/storage";
+import { DOCUMENTOS_IMOVEL } from "@/lib/constants";
 import {
   publicationPendencias,
   updateSchema,
@@ -51,10 +52,23 @@ export async function PATCH(request: Request, { params }: Params) {
     wizardStep?: unknown;
     status?: unknown;
     publishedOnSite?: unknown;
+    docsChecklist?: unknown;
   } | null;
   if (!body) return jsonError("Requisição inválida");
 
   const update: Record<string, unknown> = {};
+
+  if (body.docsChecklist !== undefined) {
+    // Checklist de documentos (ficha): só as chaves do catálogo, sem repetir.
+    if (!Array.isArray(body.docsChecklist)) {
+      return jsonError("Checklist inválido");
+    }
+    const validas = new Set(DOCUMENTOS_IMOVEL.map((d) => d.value));
+    const marcadas = [
+      ...new Set(body.docsChecklist.map(String).filter((k) => validas.has(k))),
+    ];
+    update.docsChecklist = JSON.stringify(marcadas);
+  }
 
   if (body.publishedOnSite !== undefined) {
     // Publicação no site é decisão da equipe sobre imóveis da imobiliária.

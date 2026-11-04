@@ -84,7 +84,7 @@ export function PublicarSiteButton({
           : "flex flex-wrap items-center justify-between gap-2 rounded-xl border border-brand-200 bg-brand-50 px-3 py-2"
       }
     >
-      <span className="inline-flex items-center gap-1.5 text-sm font-bold text-brand-800">
+      <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-sm font-bold text-brand-800">
         <CheckCircle2 className="size-5 shrink-0" /> No ar no site
       </span>
       <span className="flex items-center gap-2">
@@ -92,7 +92,7 @@ export function PublicarSiteButton({
           href={`/imovel/${propertyId}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex min-h-11 items-center rounded-lg px-3 text-base font-semibold text-brand-800 underline underline-offset-2 hover:text-brand-950"
+          className="inline-flex min-h-11 items-center whitespace-nowrap rounded-lg px-3 text-base font-semibold text-brand-800 underline underline-offset-2 hover:text-brand-950"
         >
           Ver página
         </a>
@@ -100,7 +100,7 @@ export function PublicarSiteButton({
           type="button"
           disabled={busy}
           onClick={() => setPublished(false)}
-          className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-stone-300 bg-white px-3.5 text-base font-semibold text-stone-600 hover:border-amber-500 hover:text-amber-800 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex min-h-11 items-center gap-1.5 whitespace-nowrap rounded-lg border border-stone-300 bg-white px-3.5 text-base font-semibold text-stone-600 hover:border-amber-500 hover:text-amber-800 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <EyeOff className="size-4" />
           {busy ? "Salvando…" : "Tirar do site"}

@@ -8,9 +8,11 @@ import {
   type PropertyWithRelations,
 } from "@/components/dashboard/property-card";
 import { PropertyTable } from "@/components/dashboard/property-table";
+import { ResumoDoDia } from "@/components/dashboard/resumo-do-dia";
 import { StatsCards } from "@/components/dashboard/stats-cards";
 import { buttonClasses } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { dataSP, partesSP } from "@/lib/agenda/slots";
 import { cn } from "@/lib/cn";
 import { db } from "@/lib/db";
 
@@ -78,6 +80,11 @@ export default async function DashboardPage({
   const statsBase: Prisma.PropertyWhereInput = { source: "CORRETOR" };
   if (corretor) statsBase.brokerId = corretor;
 
+  // "Hoje" em horário de Brasília (lib/agenda/slots — não reinventar fuso)
+  const hojeSP = partesSP(new Date());
+  const inicioHoje = dataSP(hojeSP.ano, hojeSP.mes, hojeSP.dia);
+  const fimHoje = dataSP(hojeSP.ano, hojeSP.mes, hojeSP.dia + 1);
+
   const [
     properties,
     total,
@@ -91,6 +98,8 @@ export default async function DashboardPage({
     countsByBroker,
     totalCarteira,
     foraDoSite,
+    visitasHoje,
+    conversasSemResposta,
   ] = await Promise.all([
     db.property.findMany({
       where,
@@ -124,6 +133,18 @@ export default async function DashboardPage({
     db.property.count({ where: { source: "CORRETOR" } }),
     db.property.count({
       where: { ...statsBase, status: "ATIVO", publishedOnSite: false },
+    }),
+    db.appointment.count({
+      where: {
+        startsAt: { gte: inicioHoje, lt: fimHoje },
+        status: { in: ["AGENDADO", "CONFIRMADO"] },
+      },
+    }),
+    db.chatThread.count({
+      where: {
+        status: "ABERTO",
+        messages: { some: { from: "CLIENTE", readByTeam: false } },
+      },
     }),
   ]);
 
@@ -192,6 +213,12 @@ export default async function DashboardPage({
           />
         </div>
       </section>
+
+      <ResumoDoDia
+        visitasHoje={visitasHoje}
+        conversasSemResposta={conversasSemResposta}
+        permutasParaAprovar={permutasPendentes}
+      />
 
       {(foraDoSite > 0 || site === "fora") && (
         <div className="flex flex-col gap-3 rounded-2xl border-2 border-amber-300 bg-amber-50 p-5 sm:flex-row sm:items-center sm:justify-between">

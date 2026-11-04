@@ -10,6 +10,7 @@ import {
 import { displayTitle, priceLabel, specsSummary } from "@/lib/property-display";
 import { DeleteDraftButton } from "./delete-draft-button";
 import { PublicarSiteButton } from "./publicar-site-button";
+import { SituacaoMenu } from "./situacao-menu";
 import type { PropertyWithRelations } from "./property-card";
 import type { Broker } from "@prisma/client";
 
@@ -108,6 +109,13 @@ export function PropertyTable({ properties }: { properties: Row[] }) {
                       <PublicarSiteButton
                         propertyId={p.id}
                         publishedOnSite={p.publishedOnSite}
+                        compact
+                      />
+                    )}
+                    {!isDraft && (
+                      <SituacaoMenu
+                        propertyId={p.id}
+                        status={p.status}
                         compact
                       />
                     )}

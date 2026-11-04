@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { buttonClasses } from "@/components/ui/button";
 import { DeleteDraftButton } from "@/components/dashboard/delete-draft-button";
 import { PublicarSiteButton } from "@/components/dashboard/publicar-site-button";
+import { SituacaoMenu } from "@/components/dashboard/situacao-menu";
+import { WhatsappShare } from "@/components/dashboard/whatsapp-share";
 import {
   PORTAL_LABELS,
   PROPERTY_TYPE_LABELS,
@@ -15,6 +17,8 @@ import {
 import {
   displayTitle,
   priceLabel,
+  publicLocation,
+  publicTitle,
   specsSummary,
 } from "@/lib/property-display";
 
@@ -32,6 +36,16 @@ export function PropertyCard({ property }: { property: PropertyWithRelations }) 
     ? `/imoveis/${property.id}/editar?etapa=${Math.min(property.wizardStep + 1, 8)}`
     : `/imoveis/${property.id}`;
   const enabledPortals = property.publications.filter((p) => p.enabled);
+  // Texto do WhatsApp: só o que é público (nunca rua/número — regra da casa).
+  const textoWhatsapp = [
+    "Olá! Veja este imóvel da FC Imóveis:",
+    publicTitle(property),
+    publicLocation(property),
+    specsSummary(property),
+    priceLabel(property),
+  ]
+    .filter(Boolean)
+    .join("\n");
 
   return (
     <div className="flex flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm transition-shadow hover:shadow-lg">
@@ -108,11 +122,19 @@ export function PropertyCard({ property }: { property: PropertyWithRelations }) 
           </div>
         )}
         {property.status === "ATIVO" && (
-          <div className="mt-2">
+          <div className="mt-2 flex flex-col gap-2">
             <PublicarSiteButton
               propertyId={property.id}
               publishedOnSite={property.publishedOnSite}
             />
+            {property.publishedOnSite && (
+              <WhatsappShare propertyId={property.id} texto={textoWhatsapp} />
+            )}
+          </div>
+        )}
+        {!isDraft && (
+          <div className="mt-2">
+            <SituacaoMenu propertyId={property.id} status={property.status} />
           </div>
         )}
         {isDraft && (
