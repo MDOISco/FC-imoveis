@@ -11,6 +11,7 @@ import {
   Ruler,
 } from "lucide-react";
 import type { Photo, Property, Video } from "@prisma/client";
+import { MapaEstabelecimentos } from "@/components/cidade/mapa-estabelecimentos";
 import { Galeria } from "@/components/ficha/galeria";
 import { PertoDoImovel } from "@/components/site/perto-do-imovel";
 import { Badge } from "@/components/ui/badge";
@@ -80,14 +81,14 @@ export function ImovelDetalhes({
   whatsappText,
   perto = [],
   centro = null,
-  linkMapa = false,
+  mapaDaCidade = false,
 }: {
   property: DetalheProperty;
   whatsapp: string | null; // número salvo em Configurações
   whatsappText: string;
   perto?: ItemPerto[]; // lugares perto, só com FAIXA de distância
   centro?: string | null; // "até 10 km do Centro"
-  linkMapa?: boolean; // mostra o link para o mapa da cidade
+  mapaDaCidade?: boolean; // mapa da cidade embutido (o link exclusivo não tem)
 }) {
   const zap = waHref(whatsapp, whatsappText);
   const parking = totalParking(property);
@@ -256,7 +257,30 @@ export function ImovelDetalhes({
             </section>
           )}
 
-          <PertoDoImovel itens={perto} centro={centro} linkMapa={linkMapa} />
+          <PertoDoImovel itens={perto} centro={centro} />
+
+          {/* Mapa da cidade embutido (pedido da dona, nov/2026): mercados,
+              escolas, farmácias e condomínios — NUNCA a posição deste imóvel
+              (privacidade do endereço). */}
+          {mapaDaCidade && (
+            <section
+              data-secao="Mapa da cidade"
+              className="rounded-2xl border border-stone-200 bg-white p-6 sm:p-8"
+            >
+              <h2 className="font-display text-2xl font-bold text-stone-900">
+                <span aria-hidden="true">🗺️ </span>O mapa da cidade
+              </h2>
+              <div className="mb-1 mt-2 h-0.5 w-12 bg-gold-400" aria-hidden="true" />
+              <p className="mt-4 text-lg text-stone-600">
+                Veja onde ficam mercados, farmácias, escolas, hospitais e os
+                condomínios de Bragança Paulista. Por segurança, o mapa não
+                mostra a posição deste imóvel.
+              </p>
+              <div className="mt-5">
+                <MapaEstabelecimentos compacto />
+              </div>
+            </section>
+          )}
         </div>
 
         {/* Coluna lateral: preço, contato e detalhes */}

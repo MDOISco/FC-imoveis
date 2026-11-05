@@ -19,8 +19,11 @@ export function Logo({ className }: { className?: string }) {
   );
 }
 
-/** Só a casa com o "FC": nos cabeçalhos, direto sobre o verde. */
+/** Só a casa com o "FC": nos cabeçalhos, direto sobre o verde.
+ *  Se `className` já definir a altura (h-...), a altura padrão não entra —
+ *  o site usa o logo maior; o painel e o link exclusivo ficam no padrão. */
 export function LogoMarca({ className }: { className?: string }) {
+  const temAltura = /(?:^|\s)(?:[a-z]+:)?h-/.test(className ?? "");
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
@@ -28,7 +31,7 @@ export function LogoMarca({ className }: { className?: string }) {
       alt=""
       width={141}
       height={192}
-      className={cn("h-12 w-auto shrink-0 sm:h-14", className)}
+      className={cn(!temAltura && "h-12 sm:h-14", "w-auto shrink-0", className)}
     />
   );
 }
