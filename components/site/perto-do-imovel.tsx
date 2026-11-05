@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { CATEGORIAS_LUGAR } from "@/lib/cidade/categorias";
 import type { ItemPerto } from "@/lib/cidade/perto";
 
@@ -6,15 +5,14 @@ import type { ItemPerto } from "@/lib/cidade/perto";
  * Seção pública "O que tem perto" da página do imóvel (site e link
  * exclusivo). Componente de SERVIDOR: recebe só a lista pronta (nomes e
  * FAIXAS de distância) — a coordenada do imóvel nunca chega aqui.
+ * O mapa da cidade fica numa seção própria (imovel-detalhes.tsx).
  */
 export function PertoDoImovel({
   itens,
   centro,
-  linkMapa = false,
 }: {
   itens: ItemPerto[];
   centro: string | null; // "até 10 km do Centro" (centroDoImovel)
-  linkMapa?: boolean; // link para o mapa da cidade (o link exclusivo não tem)
 }) {
   if (itens.length === 0 && !centro) return null;
 
@@ -73,15 +71,6 @@ export function PertoDoImovel({
         faixas de distância — o Francisco passa a localização exata no
         atendimento. A lista traz alguns lugares de referência, não todos.
       </p>
-
-      {linkMapa && (
-        <Link
-          href="/cidade#estabelecimentos"
-          className="mt-3 inline-flex min-h-12 items-center gap-2 text-lg font-semibold text-brand-800 underline-offset-4 hover:text-brand-950 hover:underline"
-        >
-          <span aria-hidden="true">🗺️</span> Ver o mapa da cidade
-        </Link>
-      )}
     </section>
   );
 }

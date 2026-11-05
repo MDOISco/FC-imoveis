@@ -14,6 +14,7 @@ import {
   Search,
   Wand2,
 } from "lucide-react";
+import { MapaEstabelecimentos } from "@/components/cidade/mapa-estabelecimentos";
 import { Spinner } from "@/components/ui/spinner";
 import {
   OPCOES_MORADORES,
@@ -306,6 +307,27 @@ export function BuscaPerfil({ itens }: { itens: ItemBusca[] }) {
                   para afinar.
                 </p>
               )}
+            </div>
+          </div>
+
+          {/* ===== Mapa da cidade embutido (pedido da dona, nov/2026):
+              o mapa "Onde fica cada coisa" do /cidade, dentro da busca —
+              o cliente vê mercados, escolas, farmácias e os condomínios
+              enquanto decide onde quer morar. Só lugares públicos: nunca a
+              posição de um imóvel. ===== */}
+          <div className="mt-10 border-t-2 border-stone-100 pt-8">
+            <p className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.22em] text-gold-700">
+              <span aria-hidden="true">🗺️</span> Onde fica cada coisa
+            </p>
+            <h3 className="mt-1 font-display text-2xl font-bold text-stone-900 sm:text-3xl">
+              Escolha o lugar olhando o mapa da cidade
+            </h3>
+            <p className="mt-1 max-w-3xl text-lg text-stone-600">
+              Toque numa categoria para ver onde ficam mercados, farmácias,
+              escolas, hospitais e os condomínios de Bragança Paulista.
+            </p>
+            <div className="mt-5">
+              <MapaEstabelecimentos compacto />
             </div>
           </div>
         </div>

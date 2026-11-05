@@ -154,17 +154,47 @@ function htmlPopup(l: Lugar): string {
   return `<div style="max-width:260px;font-size:16px;line-height:1.45">${linhas.join("<br/>")}</div>`;
 }
 
-export function MapaEstabelecimentos() {
+export function MapaEstabelecimentos({
+  compacto = false,
+}: {
+  /** Versão embutida (página inicial e ficha do imóvel): mapa mais baixo. */
+  compacto?: boolean;
+}) {
   const divRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const markersRef = useRef<Record<string, Marker>>({});
   const camadasRef = useRef<Partial<Record<Grupo, LayerGroup>>>({});
+  const [carregar, setCarregar] = useState(false);
   const [pronto, setPronto] = useState(false);
   const [selecao, setSelecao] = useState<Selecao>("TODOS");
   const [ativo, setAtivo] = useState<string | null>(null);
 
+  // O mapa agora aparece também na página inicial e na ficha do imóvel:
+  // só baixa o Leaflet quando a área do mapa se aproxima da tela.
+  useEffect(() => {
+    const el = divRef.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setCarregar(true);
+      return;
+    }
+    const obs = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            setCarregar(true);
+            obs.disconnect();
+          }
+        }),
+      { rootMargin: "400px 0px" },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
   // Cria o mapa e TODOS os marcadores uma vez só (uma camada por categoria).
   useEffect(() => {
+    if (!carregar) return;
     let cancelado = false;
     (async () => {
       const L = await import("leaflet");
@@ -217,7 +247,7 @@ export function MapaEstabelecimentos() {
       markersRef.current = {};
       camadasRef.current = {};
     };
-  }, []);
+  }, [carregar]);
 
   // Troca de categoria: mostra só as camadas certas e enquadra o mapa.
   useEffect(() => {
@@ -283,7 +313,10 @@ export function MapaEstabelecimentos() {
 
       <div
         ref={divRef}
-        className="h-[420px] w-full overflow-hidden rounded-3xl border-2 border-stone-200 sm:h-[520px]"
+        className={cn(
+          "w-full overflow-hidden rounded-3xl border-2 border-stone-200",
+          compacto ? "h-[340px] sm:h-[420px]" : "h-[420px] sm:h-[520px]",
+        )}
         role="application"
         aria-label="Mapa dos estabelecimentos e condomínios de Bragança Paulista"
       >

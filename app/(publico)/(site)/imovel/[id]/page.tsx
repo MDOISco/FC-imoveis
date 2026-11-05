@@ -85,7 +85,7 @@ export default async function ImovelPublicoPage({ params }: Params) {
           whatsappText={`Olá! Tenho interesse no imóvel ${property.refCode} (${publicLocation(property)}) que vi no site da FC Imóveis.`}
           perto={perto}
           centro={centro}
-          linkMapa
+          mapaDaCidade
         />
       </div>
       <p className="mt-8 text-center text-sm text-stone-500">

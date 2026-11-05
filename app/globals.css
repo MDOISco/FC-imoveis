@@ -163,26 +163,96 @@ button {
 
 /* ===== Logo do cabeçalho do site: luz dourada + zoom suave =====
    Pedido da dona (nov/2026): o cabeçalho fica transparente sobre o vídeo
-   do banner e o logo ganha um brilho dourado pulsando para ficar visível. */
+   do banner e o logo ganha um brilho dourado pulsando para ficar visível.
+   Reforçado em nov/2026 ("mais brilho e sombra"): halo dourado mais forte
+   + sombra escura embaixo para dar profundidade sobre o vídeo. */
 @keyframes logo-luz {
   0%,
   100% {
     transform: scale(1);
-    filter: drop-shadow(0 0 5px rgb(205 164 92 / 0.55))
-      drop-shadow(0 0 14px rgb(205 164 92 / 0.3));
+    filter: drop-shadow(0 0 8px rgb(205 164 92 / 0.75))
+      drop-shadow(0 0 22px rgb(205 164 92 / 0.45))
+      drop-shadow(0 4px 10px rgb(0 0 0 / 0.5));
   }
   50% {
-    transform: scale(1.09);
-    filter: drop-shadow(0 0 9px rgb(217 188 122 / 0.9))
-      drop-shadow(0 0 26px rgb(205 164 92 / 0.6));
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 13px rgb(217 188 122 / 0.95))
+      drop-shadow(0 0 34px rgb(205 164 92 / 0.7))
+      drop-shadow(0 5px 12px rgb(0 0 0 / 0.55));
   }
 }
 
 .logo-destaque {
-  filter: drop-shadow(0 0 6px rgb(205 164 92 / 0.6))
-    drop-shadow(0 0 16px rgb(205 164 92 / 0.35));
+  filter: drop-shadow(0 0 8px rgb(205 164 92 / 0.75))
+    drop-shadow(0 0 22px rgb(205 164 92 / 0.45))
+    drop-shadow(0 4px 10px rgb(0 0 0 / 0.5));
   animation: logo-luz 3.6s ease-in-out infinite;
   will-change: transform, filter;
+}
+
+/* ===== Abertura cinematográfica do banner (nov/2026) =====
+   O logo completo entra grande, desfocado e brilhando, e assenta no lugar;
+   depois fica "respirando" com o halo dourado. Os textos surgem em seguida
+   (anim-surge com atrasos no page.tsx). */
+@keyframes logo-abertura {
+  0% {
+    opacity: 0;
+    transform: scale(1.55) translateY(18px);
+    filter: blur(16px);
+  }
+  55% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0);
+  }
+}
+
+.anim-logo-abertura {
+  animation: logo-abertura 1.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes logo-respira {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 12px rgb(205 164 92 / 0.7))
+      drop-shadow(0 0 30px rgb(205 164 92 / 0.4))
+      drop-shadow(0 8px 20px rgb(0 0 0 / 0.5));
+  }
+  50% {
+    transform: scale(1.035);
+    filter: drop-shadow(0 0 18px rgb(217 188 122 / 0.95))
+      drop-shadow(0 0 48px rgb(205 164 92 / 0.65))
+      drop-shadow(0 8px 20px rgb(0 0 0 / 0.5));
+  }
+}
+
+.logo-brilho {
+  filter: drop-shadow(0 0 12px rgb(205 164 92 / 0.7))
+    drop-shadow(0 0 30px rgb(205 164 92 / 0.4))
+    drop-shadow(0 8px 20px rgb(0 0 0 / 0.5));
+  animation: logo-respira 4.2s ease-in-out 1.9s infinite;
+  will-change: transform, filter;
+}
+
+/* Textos do banner surgindo um a um (atraso inline em cada elemento) */
+.anim-surge {
+  animation: busca-entra 0.7s ease-out both;
+}
+
+/* Vídeo do banner mais CLARO (pedido da dona, nov/2026): clareia o próprio
+   vídeo, além dos véus escuros mais leves por cima. */
+.video-claro {
+  filter: brightness(1.22) saturate(1.06);
+}
+
+/* Sombra no texto para continuar legível com o vídeo mais claro */
+.sombra-texto {
+  text-shadow: 0 2px 16px rgb(12 31 27 / 0.6);
 }
 
 /* ===== "Clareada" do site: halo branco no lugar de sombra escura pesada ===== */
@@ -272,6 +342,9 @@ button {
 @media (prefers-reduced-motion: reduce) {
   .anim-entra,
   .anim-pop,
+  .anim-surge,
+  .anim-logo-abertura,
+  .logo-brilho,
   .busca-faixa,
   .logo-destaque,
   .botao-brilho::after {

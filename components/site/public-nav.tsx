@@ -62,13 +62,15 @@ export function PublicNav({
           : "border-b-2 border-gold-500 bg-brand-950 shadow-md",
       )}
     >
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+      {/* py-2 + logo h-16/h-20: cabeçalho com 92px/110px — se mudar aqui,
+          ajustar o -mt e o pt do banner na página inicial (page.tsx). */}
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2 sm:px-6">
         <Link
           href="/"
           className="flex items-center gap-3"
           onClick={() => setAberto(false)}
         >
-          <LogoMarca className="logo-destaque" />
+          <LogoMarca className="logo-destaque h-16 sm:h-20" />
           <span>
             <span className="block whitespace-nowrap font-display text-xl font-bold tracking-tight sm:text-2xl">
               {agencyName}

@@ -192,7 +192,7 @@ export default async function ExclusivoPage({ params }: Params) {
           whatsappText={`Olá! Sou ${link.clientName}. Vi a apresentação exclusiva do imóvel ${property.refCode} (${publicLocation(property)}) e gostaria de conversar.`}
           perto={perto}
           centro={centro}
-          linkMapa={false}
+          mapaDaCidade={false}
         />
         <p className="mt-8 text-center text-sm text-stone-500">
           Para a equipe atender você melhor, registramos quando esta
