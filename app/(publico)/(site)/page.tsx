@@ -3,7 +3,6 @@ import { Building2, CalendarDays, KeyRound, MessageCircle } from "lucide-react";
 import { BuscaImoveis } from "@/components/site/busca-imoveis";
 import { BuscaPerfil } from "@/components/site/busca-perfil";
 import { ContadorAnimado } from "@/components/site/contador-animado";
-import { HeroVideo } from "@/components/site/hero-video";
 import { ImovelCard, type SiteProperty } from "@/components/site/imovel-card";
 import { RevelaAoRolar } from "@/components/site/revela-ao-rolar";
 import { Logo } from "@/components/ui/logo";
@@ -270,14 +269,16 @@ export default async function SiteHomePage({
         )}
       </section>
 
-      {/* ===== Permutas (vídeo da chave dourada em largura total, sem som) ===== */}
+      {/* ===== Permutas (foto do corretor em largura total — substituiu o
+          vídeo da chave dourada a pedido da dona, nov/2026) ===== */}
       <section className="relative overflow-hidden bg-brand-950 text-white">
-        {/* Autoplay robusto no celular (Modo de Economia, apps, etc.) */}
-        <HeroVideo
-          className="video-claro absolute inset-0 size-full object-cover"
-          webm="/videos/chave-dourada.webm"
-          mp4="/videos/chave-dourada.mp4"
-          poster="/videos/chave-dourada-poster.jpg"
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/videos/rodape-corretor.jpg"
+          alt=""
+          aria-hidden="true"
+          className="video-claro absolute inset-0 size-full object-cover object-top"
+          loading="lazy"
         />
         <div
           className="absolute inset-0 bg-gradient-to-b from-brand-950/60 via-brand-950/35 to-brand-950/70"
