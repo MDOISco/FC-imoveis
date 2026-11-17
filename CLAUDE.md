@@ -56,7 +56,12 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
   condominios.ts (busca-site.ts reexporta).
 - **Busca do site** (caixa logo abaixo do banner de `/`): regras em
   `lib/busca-site.ts` (mesma função no servidor e na contagem ao vivo do
-  navegador), tela em `components/site/busca-imoveis.tsx`. Condomínio
+  navegador). Desde nov/2026 (pedido da dona) a caixa começa COMPACTA e vai
+  se abrindo ao interagir, com duas opções lado a lado em
+  `components/site/busca-site.tsx`: a busca com filtros
+  (`busca-imoveis.tsx`) e a "Conte como você mora" (`busca-perfil.tsx`) —
+  a vitrine de imóveis vem logo em seguida. O banner em vídeo NÃO leva
+  logo no meio (pedido dela). Condomínio
   **Jardim das Palmeiras** sempre primeiro, com estrela (é condomínio, o
   principal da imobiliária). Bairro/condomínio de imóvel OCULTO e valor
   "sob consulta" nunca entram na busca.

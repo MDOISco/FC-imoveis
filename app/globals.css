@@ -190,56 +190,8 @@ button {
   will-change: transform, filter;
 }
 
-/* ===== Abertura cinematográfica do banner (nov/2026) =====
-   O logo completo entra grande, desfocado e brilhando, e assenta no lugar;
-   depois fica "respirando" com o halo dourado. Os textos surgem em seguida
-   (anim-surge com atrasos no page.tsx). */
-@keyframes logo-abertura {
-  0% {
-    opacity: 0;
-    transform: scale(1.55) translateY(18px);
-    filter: blur(16px);
-  }
-  55% {
-    opacity: 1;
-    filter: blur(0);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-    filter: blur(0);
-  }
-}
-
-.anim-logo-abertura {
-  animation: logo-abertura 1.8s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-@keyframes logo-respira {
-  0%,
-  100% {
-    transform: scale(1);
-    filter: drop-shadow(0 0 12px rgb(205 164 92 / 0.7))
-      drop-shadow(0 0 30px rgb(205 164 92 / 0.4))
-      drop-shadow(0 8px 20px rgb(0 0 0 / 0.5));
-  }
-  50% {
-    transform: scale(1.035);
-    filter: drop-shadow(0 0 18px rgb(217 188 122 / 0.95))
-      drop-shadow(0 0 48px rgb(205 164 92 / 0.65))
-      drop-shadow(0 8px 20px rgb(0 0 0 / 0.5));
-  }
-}
-
-.logo-brilho {
-  filter: drop-shadow(0 0 12px rgb(205 164 92 / 0.7))
-    drop-shadow(0 0 30px rgb(205 164 92 / 0.4))
-    drop-shadow(0 8px 20px rgb(0 0 0 / 0.5));
-  animation: logo-respira 4.2s ease-in-out 1.9s infinite;
-  will-change: transform, filter;
-}
-
-/* Textos do banner surgindo um a um (atraso inline em cada elemento) */
+/* Textos do banner surgindo um a um (atraso inline em cada elemento).
+   O logo que abria no meio do vídeo saiu em nov/2026 (pedido da dona). */
 .anim-surge {
   animation: busca-entra 0.7s ease-out both;
 }
@@ -343,8 +295,6 @@ button {
   .anim-entra,
   .anim-pop,
   .anim-surge,
-  .anim-logo-abertura,
-  .logo-brilho,
   .busca-faixa,
   .logo-destaque,
   .botao-brilho::after {

@@ -34,8 +34,16 @@ import { cn } from "@/lib/cn";
  * livre) e a gente traduz para os filtros da busca comum — quartos pela
  * quantidade de pessoas, vagas pelos carros, aceita pet etc. (lib/busca-perfil).
  * O botão leva para a mesma URL da busca convencional, que segue valendo.
+ * Fica dentro das abas de components/site/busca-site.tsx (sem <section> aqui);
+ * aoAbrirBuscaCompleta troca para a aba da busca com filtros.
  */
-export function BuscaPerfil({ itens }: { itens: ItemBusca[] }) {
+export function BuscaPerfil({
+  itens,
+  aoAbrirBuscaCompleta,
+}: {
+  itens: ItemBusca[];
+  aoAbrirBuscaCompleta?: () => void;
+}) {
   const router = useRouter();
   const [perfil, setPerfil] = useState<Perfil>(PERFIL_VAZIO);
   const [texto, setTexto] = useState("");
@@ -73,15 +81,11 @@ export function BuscaPerfil({ itens }: { itens: ItemBusca[] }) {
   }
 
   return (
-    <section
-      id="busca-perfil"
+    <form
+      onSubmit={buscar}
       aria-label="Busca personalizada"
-      className="mx-auto max-w-6xl scroll-mt-24 px-4 pt-8 sm:px-6"
+      className="anim-entra sombra-branca relative overflow-hidden rounded-3xl bg-white"
     >
-      <form
-        onSubmit={buscar}
-        className="anim-entra sombra-branca relative overflow-hidden rounded-3xl bg-white"
-      >
         <div className="busca-faixa h-1.5" aria-hidden="true" />
         <div className="p-4 sm:p-8">
           <p className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.22em] text-gold-700">
@@ -301,7 +305,11 @@ export function BuscaPerfil({ itens }: { itens: ItemBusca[] }) {
               {preenchido && total === 0 && (
                 <p className="anim-entra mt-4 rounded-2xl bg-gold-50 p-4 text-lg text-gold-950">
                   Nenhum imóvel com tudo isso agora. Tire alguma opção ou use a{" "}
-                  <a href="#busca" className="font-bold text-brand-800 underline">
+                  <a
+                    href="#busca"
+                    onClick={aoAbrirBuscaCompleta}
+                    className="font-bold text-brand-800 underline"
+                  >
                     busca completa
                   </a>{" "}
                   para afinar.
@@ -331,8 +339,7 @@ export function BuscaPerfil({ itens }: { itens: ItemBusca[] }) {
             </div>
           </div>
         </div>
-      </form>
-    </section>
+    </form>
   );
 }
 
