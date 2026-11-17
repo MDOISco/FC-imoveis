@@ -159,7 +159,7 @@ export function AgendarForm({ imovelId }: { imovelId: string | null }) {
       <div className="mx-auto max-w-lg space-y-5 rounded-3xl border border-stone-200 bg-white p-6 text-center sm:p-8">
         <CalendarCheck2 className="mx-auto size-14 text-brand-700" />
         <h1 className="text-2xl font-extrabold text-stone-900">
-          Visita agendada!
+          Visita Agendada!
         </h1>
         <p className="text-lg text-stone-700">
           {sucesso.resumo.titulo} —{" "}
@@ -226,7 +226,7 @@ export function AgendarForm({ imovelId }: { imovelId: string | null }) {
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
         <h1 className="font-display text-3xl font-bold text-stone-900 sm:text-4xl">
-          Agendar visita
+          Agendar Visita
         </h1>
         <p className="mt-1 text-base text-stone-500">
           Escolha o dia e o horário — é rápido e sem compromisso.
@@ -296,7 +296,7 @@ export function AgendarForm({ imovelId }: { imovelId: string | null }) {
             <Link href="/" className="font-semibold text-brand-700 underline">
               vitrine do site
             </Link>{" "}
-            e toque em “Agendar visita”.
+            e toque em “Agendar Visita”.
           </p>
         </div>
       )}

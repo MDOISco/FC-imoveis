@@ -136,7 +136,7 @@ export function ImovelCard({
             href={`/agendar?imovel=${property.id}`}
             className="mt-2 inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border-2 border-brand-700 px-4 font-semibold text-brand-800 transition-colors hover:bg-brand-50"
           >
-            📅 Agendar visita
+            📅 Agendar Visita
           </Link>
         )}
       </div>

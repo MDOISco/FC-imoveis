@@ -4,8 +4,8 @@ import { Building2, CalendarDays, KeyRound, MapPin } from "lucide-react";
 const LINKS = [
   { href: "/", label: "Imóveis", icon: Building2 },
   { href: "/permutas", label: "Permutas", icon: KeyRound },
-  { href: "/agendar", label: "Agendar visita", icon: CalendarDays },
-  { href: "/cidade", label: "Conheça a cidade", icon: MapPin },
+  { href: "/agendar", label: "Agendar Visita", icon: CalendarDays },
+  { href: "/cidade", label: "Conheça a Cidade", icon: MapPin },
 ];
 
 export type DadosEmpresa = {

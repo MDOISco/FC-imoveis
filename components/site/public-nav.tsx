@@ -22,8 +22,8 @@ type Item = { href: string; label: string; icon: typeof Home; match: string };
 const ITEMS: Item[] = [
   { href: "/", label: "Imóveis", icon: Building2, match: "/" },
   { href: "/permutas", label: "Permutas", icon: KeyRound, match: "/permutas" },
-  { href: "/agendar", label: "Agendar visita", icon: CalendarDays, match: "/agendar" },
-  { href: "/cidade", label: "Conheça a cidade", icon: MapPin, match: "/cidade" },
+  { href: "/agendar", label: "Agendar Visita", icon: CalendarDays, match: "/agendar" },
+  { href: "/cidade", label: "Conheça a Cidade", icon: MapPin, match: "/cidade" },
 ];
 
 function isActive(pathname: string, match: string): boolean {

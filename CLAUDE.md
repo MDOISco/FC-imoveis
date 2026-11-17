@@ -81,6 +81,11 @@ passo curto. Decisões técnicas: explicar em 1 frase e seguir.
   guardar IP nem navegador. A lista não atualiza sozinha (decisão da dona).
 - Feito para corretores de mais idade: **letras grandes (base 18px), botões
   grandes, pt-BR em toda a UI**. Manter esse padrão em qualquer tela nova.
+- **Títulos do site público em padrão comercial** (pedido da dona, nov/2026):
+  iniciais maiúsculas ("Imóveis em Destaque", "Mapa da Cidade", "Busca
+  Personalizada", "Agendar Visita"), sem emoji e sem nome informal em título
+  (ex.: "Onde fica cada coisa" virou "Comércio e Serviços"/"Mapa da Cidade").
+  O texto corrido continua simples e acolhedor.
 - **Logotipo** = a imagem enviada pela dona, já com fundo transparente e
   cores originais (`public/logo/`: `fc-logo.png` completo, `fc-marca.png`
   só a casa; componente `components/ui/logo.tsx`; ícones `app/icon.png` e

@@ -127,13 +127,13 @@ export default async function SiteHomePage({
               href="#imoveis"
               className="botao-brilho relative inline-flex min-h-14 items-center justify-center overflow-hidden rounded-2xl bg-gold-400 px-8 text-lg font-extrabold text-gold-950 shadow-lg transition-all hover:-translate-y-0.5 hover:bg-gold-300 active:scale-95"
             >
-              <Building2 className="mr-2 size-6" /> Ver imóveis
+              <Building2 className="mr-2 size-6" /> Ver Imóveis
             </a>
             <Link
               href="/agendar"
               className="inline-flex min-h-14 items-center justify-center rounded-2xl border-2 border-gold-300/80 bg-white/10 px-8 text-lg font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-white/20"
             >
-              <CalendarDays className="mr-2 size-6" /> Agendar visita
+              <CalendarDays className="mr-2 size-6" /> Agendar Visita
             </Link>
             {zapGeral && (
               <a
@@ -180,12 +180,12 @@ export default async function SiteHomePage({
       {/* ===== Vitrine / resultado da busca (a estrela da página) ===== */}
       <section id="imoveis" className="mx-auto max-w-6xl scroll-mt-24 px-4 pb-14 pt-10 sm:px-6">
         <p className="text-sm font-bold uppercase tracking-[0.22em] text-gold-700">
-          {pesquisando ? "Resultado da busca" : "Vitrine"}
+          {pesquisando ? "Resultado da Busca" : "Vitrine"}
         </p>
         <h2 className="mt-1 font-display text-4xl font-bold text-stone-900 sm:text-5xl">
           {pesquisando
             ? `${encontrados.length} ${encontrados.length === 1 ? "imóvel encontrado" : "imóveis encontrados"}`
-            : "Imóveis em destaque"}
+            : "Imóveis em Destaque"}
         </h2>
         {pesquisando && (
           <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -280,7 +280,7 @@ export default async function SiteHomePage({
           </span>
           <div>
             <h2 className="sombra-texto font-display text-3xl font-bold sm:text-4xl">
-              Quer trocar de imóvel?
+              Permuta de Imóveis
             </h2>
             <p className="sombra-texto mx-auto mt-3 max-w-xl text-lg text-brand-50">
               Cadastre o seu imóvel na nossa página de permutas, veja as
@@ -293,7 +293,7 @@ export default async function SiteHomePage({
             href="/permutas"
             className="botao-brilho relative inline-flex min-h-14 items-center justify-center overflow-hidden rounded-2xl bg-gold-400 px-8 text-lg font-extrabold text-gold-950 shadow-lg transition-all hover:-translate-y-0.5 hover:bg-gold-300 active:scale-95"
           >
-            Conhecer as permutas
+            Conhecer as Permutas
           </Link>
         </RevelaAoRolar>
       </section>
