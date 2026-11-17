@@ -24,11 +24,11 @@ export function PertoDoImovel({
 
   return (
     <section
-      data-secao="O que tem perto"
+      data-secao="Proximidades"
       className="rounded-2xl border border-stone-200 bg-white p-6 sm:p-8"
     >
       <h2 className="font-display text-2xl font-bold text-stone-900">
-        O que tem perto
+        Proximidades
       </h2>
       <div className="mb-1 mt-2 h-0.5 w-12 bg-gold-400" aria-hidden="true" />
 

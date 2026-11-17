@@ -262,12 +262,12 @@ export function BuscaImoveis({
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <h2 className="inline-flex items-center gap-2 font-display text-2xl font-bold text-stone-900 sm:text-3xl">
-                <Sparkles className="size-6 text-gold-600" /> O que você procura?
+                <Sparkles className="size-6 text-gold-600" /> Encontre seu Imóvel
               </h2>
               <p className="mt-1 text-base text-stone-600 sm:text-lg">
                 {aberta
-                  ? "Escolha do seu jeito — o número de imóveis muda na hora."
-                  : "Toque numa opção — a busca vai se abrindo para você."}
+                  ? "Use os filtros — o número de imóveis é atualizado na hora."
+                  : "Selecione uma opção — a busca completa se abre para você."}
               </p>
             </div>
             <div
@@ -346,7 +346,7 @@ export function BuscaImoveis({
           >
             <span className="inline-flex items-center gap-2">
               <SlidersHorizontal className="size-5" />
-              {aberta ? "Busca completa aberta" : "Abrir a busca completa"}
+              {aberta ? "Busca Completa" : "Abrir a Busca Completa"}
             </span>
             <span className="inline-flex items-center gap-2 text-base font-semibold text-brand-700">
               <span className="hidden sm:inline">
@@ -372,7 +372,7 @@ export function BuscaImoveis({
           {/* Tipos de imóvel: cartões com ícone (vários ao mesmo tempo) */}
           <fieldset className="mt-7">
             <legend className="flex w-full items-center justify-between text-lg font-bold text-stone-900">
-              Tipo de imóvel
+              Tipo de Imóvel
               {busca.tipos.length > 0 && (
                 <button
                   type="button"
@@ -441,7 +441,7 @@ export function BuscaImoveis({
           <fieldset className="mt-7">
             <legend className="flex w-full items-center justify-between text-lg font-bold text-stone-900">
               <span className="inline-flex items-center gap-2">
-                <MapPin className="size-5 text-brand-700" /> Onde?
+                <MapPin className="size-5 text-brand-700" /> Localização
               </span>
               {busca.locais.length + busca.condominios.length > 0 && (
                 <button
@@ -546,7 +546,7 @@ export function BuscaImoveis({
             <fieldset className="mt-7">
               <legend className="flex w-full items-center justify-between text-lg font-bold text-stone-900">
                 <span className="inline-flex items-center gap-2">
-                  <Navigation className="size-5 text-brand-700" /> Perto de
+                  <Navigation className="size-5 text-brand-700" /> Proximidades
                 </span>
                 {busca.perto.length > 0 && (
                   <button
@@ -605,7 +605,7 @@ export function BuscaImoveis({
             />
             <Contador
               icone={Car}
-              rotulo="Vagas de garagem"
+              rotulo="Vagas de Garagem"
               valor={busca.vagas}
               onChange={(n) => muda({ vagas: n })}
             />
@@ -614,7 +614,7 @@ export function BuscaImoveis({
           {/* Valor */}
           <fieldset className="mt-7">
             <legend className="text-lg font-bold text-stone-900">
-              Valor {busca.finalidade === "alugar" ? "do aluguel (por mês)" : ""}
+              Valor {busca.finalidade === "alugar" ? "do Aluguel (por mês)" : ""}
             </legend>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               <label className="block">
@@ -665,7 +665,7 @@ export function BuscaImoveis({
             className="mt-7 flex w-full items-center justify-between rounded-2xl border-2 border-dashed border-brand-300 bg-brand-50 px-5 py-4 text-lg font-bold text-brand-900 transition-colors hover:border-brand-500 hover:bg-brand-100"
           >
             <span className="inline-flex items-center gap-2">
-              <SlidersHorizontal className="size-5" /> Mais filtros
+              <SlidersHorizontal className="size-5" /> Mais Filtros
               {avancados > 0 && (
                 <span className="anim-pop rounded-full bg-gold-400 px-2.5 py-0.5 text-sm text-gold-950">
                   {avancados}
@@ -723,7 +723,7 @@ export function BuscaImoveis({
 
                 <fieldset>
                   <legend className="text-lg font-bold text-stone-900">
-                    Condições e mobília
+                    Condições e Mobília
                   </legend>
                   <div className="mt-3 flex flex-wrap gap-2">
                     <Pilula
@@ -792,7 +792,7 @@ export function BuscaImoveis({
                 <div className="grid gap-5 sm:grid-cols-2">
                   <label className="block">
                     <span className="mb-1.5 block text-lg font-bold text-stone-900">
-                      Código ou palavra
+                      Código ou Palavra-chave
                     </span>
                     <input
                       type="search"
@@ -804,7 +804,7 @@ export function BuscaImoveis({
                   </label>
                   <label className="block">
                     <span className="mb-1.5 block text-lg font-bold text-stone-900">
-                      Mostrar primeiro
+                      Ordenar por
                     </span>
                     <select
                       value={busca.ordem}
@@ -828,7 +828,7 @@ export function BuscaImoveis({
           {/* O que foi escolhido (toque no X para tirar) */}
           {resumo.length > 0 && (
             <div className="mt-7 flex flex-wrap items-center gap-2">
-              <span className="text-base font-semibold text-stone-500">Você escolheu:</span>
+              <span className="text-base font-semibold text-stone-500">Filtros selecionados:</span>
               {chipsAtivos(busca, muda).map((c) => (
                 <button
                   key={c.chave}
@@ -855,7 +855,7 @@ export function BuscaImoveis({
               disabled={resumo.length === 0}
               className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl px-4 text-lg font-semibold text-stone-500 transition-colors hover:text-stone-900 disabled:invisible"
             >
-              <RotateCcw className="size-5" /> Limpar tudo
+              <RotateCcw className="size-5" /> Limpar filtros
             </button>
             <button
               type="submit"

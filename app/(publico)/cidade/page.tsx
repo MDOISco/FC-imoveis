@@ -17,7 +17,7 @@ export default function CidadePage() {
           FC Imóveis apresenta
         </p>
         <h1 className="mx-auto mt-2 max-w-2xl text-3xl font-extrabold leading-tight sm:text-4xl">
-          Conheça Bragança Paulista, a Cidade Poesia 💚
+          Conheça Bragança Paulista, a Cidade Poesia
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-lg text-brand-50">
           Navegue pelo mapa, toque nos pontos e descubra por que tanta gente
@@ -28,7 +28,7 @@ export default function CidadePage() {
 
       <section>
         <h2 className="mb-1 text-2xl font-extrabold text-stone-900">
-          🗺️ O mapa da cidade
+          Mapa da Cidade
         </h2>
         <p className="mb-5 text-base text-stone-500">
           Arraste, aproxime e toque nos pontos (ou na lista) para ver as
@@ -39,7 +39,7 @@ export default function CidadePage() {
 
       <section id="estabelecimentos" className="scroll-mt-24">
         <h2 className="mb-1 text-2xl font-extrabold text-stone-900">
-          🛒 Onde fica cada coisa
+          Comércio e Serviços
         </h2>
         <p className="mb-5 text-base text-stone-500">
           Mercados, farmácias, escolas, hospitais, academias, bancos e mais.
@@ -50,7 +50,7 @@ export default function CidadePage() {
 
       <section>
         <h2 className="mb-4 text-2xl font-extrabold text-stone-900">
-          ✨ Curiosidades da nossa cidade
+          Curiosidades da Cidade
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {CURIOSIDADES_GERAIS.map((c) => (
@@ -70,7 +70,7 @@ export default function CidadePage() {
 
       <section className="rounded-3xl bg-gold-50 p-6 text-center sm:p-8">
         <h2 className="text-2xl font-extrabold text-stone-900">
-          Quer morar nessa cidade boa? 🏡
+          Venha Morar em Bragança Paulista
         </h2>
         <p className="mx-auto mt-2 max-w-lg text-lg text-stone-600">
           A FC Imóveis é daqui e conhece cada bairro. Fale com o Francisco!
@@ -80,13 +80,13 @@ export default function CidadePage() {
             href="/"
             className="inline-flex min-h-14 items-center justify-center rounded-2xl bg-brand-700 px-8 text-lg font-extrabold text-white hover:bg-brand-800"
           >
-            Ver imóveis
+            Ver Imóveis
           </Link>
           <Link
             href="/permutas"
             className="inline-flex min-h-14 items-center justify-center rounded-2xl bg-gold-400 px-8 text-lg font-extrabold text-gold-950 hover:bg-gold-300"
           >
-            ♻️ Permutas
+            Permutas
           </Link>
         </div>
       </section>

@@ -221,11 +221,11 @@ export function ImovelDetalhes({
 
           {property.description && (
             <section
-              data-secao="Sobre este imóvel"
+              data-secao="Sobre o Imóvel"
               className="rounded-2xl border border-stone-200 bg-white p-6 sm:p-8"
             >
               <h2 className="font-display text-2xl font-bold text-stone-900">
-                Sobre este imóvel
+                Sobre o Imóvel
               </h2>
               <div className="mt-2 h-0.5 w-12 bg-gold-400" aria-hidden="true" />
               <p className="mt-4 whitespace-pre-line text-lg leading-relaxed text-stone-700">
@@ -268,7 +268,7 @@ export function ImovelDetalhes({
               className="rounded-2xl border border-stone-200 bg-white p-6 sm:p-8"
             >
               <h2 className="font-display text-2xl font-bold text-stone-900">
-                <span aria-hidden="true">🗺️ </span>O mapa da cidade
+                Mapa da Cidade
               </h2>
               <div className="mb-1 mt-2 h-0.5 w-12 bg-gold-400" aria-hidden="true" />
               <p className="mt-4 text-lg text-stone-600">
@@ -345,7 +345,7 @@ export function ImovelDetalhes({
                 data-atividade="AGENDAR"
                 className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl border-2 border-white/40 px-6 text-lg font-bold text-white transition-colors hover:border-gold-300 hover:text-gold-200"
               >
-                <CalendarDays className="size-6" /> Agendar visita
+                <CalendarDays className="size-6" /> Agendar Visita
               </Link>
             </div>
             <p className="mt-4 rounded-xl bg-white/10 p-3 text-base text-brand-100">

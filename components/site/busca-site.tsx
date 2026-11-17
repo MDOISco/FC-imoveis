@@ -39,15 +39,15 @@ export function BuscaSite({
           ativo={modo === "filtros"}
           onClick={() => setModo("filtros")}
           icone={<Search className="size-5 sm:size-6" />}
-          titulo="Buscar imóveis"
+          titulo="Buscar Imóveis"
           descricao="Tipo, bairro, valor…"
         />
         <Aba
           ativo={modo === "perfil"}
           onClick={() => setModo("perfil")}
           icone={<Wand2 className="size-5 sm:size-6" />}
-          titulo="Conte como você mora"
-          descricao="A gente acha para você"
+          titulo="Busca Personalizada"
+          descricao="Conte como você mora"
         />
       </div>
 

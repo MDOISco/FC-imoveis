@@ -123,7 +123,7 @@ export default async function PermutasLandingPage() {
           Vitrine de permutas
         </p>
         <h2 className="mb-1 mt-1 font-display text-3xl font-bold text-stone-900">
-          Imóveis disponíveis para troca
+          Imóveis Disponíveis para Troca
         </h2>
         <p className="mb-5 text-base text-stone-500">
           Por segurança, mostramos apenas cidade e bairro. Cadastre-se para

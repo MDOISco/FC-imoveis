@@ -89,15 +89,15 @@ export function BuscaPerfil({
         <div className="busca-faixa h-1.5" aria-hidden="true" />
         <div className="p-4 sm:p-8">
           <p className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.22em] text-gold-700">
-            <Wand2 className="size-4" /> Busca do seu jeito
+            <Wand2 className="size-4" /> Busca Personalizada
           </p>
           <h2 className="mt-1 font-display text-3xl font-bold text-stone-900 sm:text-4xl">
-            Conte como você mora que a gente acha o imóvel
+            Conte como você mora e nós encontramos o imóvel ideal
           </h2>
           <p className="mt-1 max-w-3xl text-lg text-stone-600">
-            Sem precisar entender de filtros: diga quem vai morar, se tem pets e
-            carros — a gente calcula quartos, vagas e o resto. Pode marcar as
-            opções ou simplesmente escrever.
+            Sem precisar entender de filtros: informe quem vai morar, se tem
+            pets e carros — nós calculamos quartos, vagas e o restante. Marque
+            as opções ou simplesmente escreva.
           </p>
 
           <div className="mt-6 grid gap-8 lg:grid-cols-2">
@@ -209,10 +209,11 @@ export function BuscaPerfil({
             <div className="flex flex-col">
               <label className="block">
                 <span className="text-lg font-bold text-stone-900">
-                  Ou escreva do seu jeito ✍️
+                  Ou descreva com suas palavras
                 </span>
                 <span className="mt-1 block text-base text-stone-600">
-                  Conforme você escreve, as opções ao lado se marcam sozinhas.
+                  Conforme você escreve, as opções ao lado são marcadas
+                  automaticamente.
                 </span>
                 <textarea
                   value={texto}
@@ -226,7 +227,7 @@ export function BuscaPerfil({
               {/* O que a gente entendeu */}
               <div className="mt-5 rounded-2xl bg-brand-50 p-5">
                 <p className="text-base font-bold uppercase tracking-wider text-brand-800">
-                  Entendemos assim
+                  Resumo da Busca
                 </p>
                 {entendido.length || filtros.length ? (
                   <>
@@ -319,16 +320,16 @@ export function BuscaPerfil({
           </div>
 
           {/* ===== Mapa da cidade embutido (pedido da dona, nov/2026):
-              o mapa "Onde fica cada coisa" do /cidade, dentro da busca —
+              o mapa "Mapa da Cidade" (antigo "Onde fica cada coisa") do /cidade —
               o cliente vê mercados, escolas, farmácias e os condomínios
               enquanto decide onde quer morar. Só lugares públicos: nunca a
               posição de um imóvel. ===== */}
           <div className="mt-10 border-t-2 border-stone-100 pt-8">
             <p className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.22em] text-gold-700">
-              <span aria-hidden="true">🗺️</span> Onde fica cada coisa
+              <span aria-hidden="true">🗺️</span> Mapa da Cidade
             </p>
             <h3 className="mt-1 font-display text-2xl font-bold text-stone-900 sm:text-3xl">
-              Escolha o lugar olhando o mapa da cidade
+              Escolha a melhor região para morar
             </h3>
             <p className="mt-1 max-w-3xl text-lg text-stone-600">
               Toque numa categoria para ver onde ficam mercados, farmácias,
