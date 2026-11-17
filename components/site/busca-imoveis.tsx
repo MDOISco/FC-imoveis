@@ -47,6 +47,7 @@ import {
   MOBILIA_BUSCA,
   ORDENS_BUSCA,
   REGIAO_DO_BAIRRO,
+  buscaAtiva,
   combina,
   condominiosDisponiveis,
   ehCondominioDestaque,
@@ -105,6 +106,11 @@ function alterna<T>(lista: T[], item: T): T[] {
  * Caixa de busca do site: tudo o que o cadastro do corretor tem de público,
  * com contagem ao vivo (mesma regra do servidor, em lib/busca-site.ts).
  * Ao buscar, vai para /?…#imoveis — o link da busca pode ser enviado.
+ *
+ * Começa COMPACTA (pedido da dona, nov/2026): só a finalidade e o botão de
+ * buscar aparecem; o resto (tipo, bairro, valor…) abre ao clicar ou ao mexer
+ * na finalidade — assim a vitrine de imóveis fica logo abaixo do banner.
+ * Fica dentro das abas de components/site/busca-site.tsx (sem <section> aqui).
  */
 export function BuscaImoveis({
   itens,
@@ -131,6 +137,8 @@ export function BuscaImoveis({
       inicial.suites > 0 ||
       inicial.banheiros > 0,
   );
+  // Compacta ao chegar; já aberta quando a pessoa veio por um link de busca
+  const [aberta, setAberta] = useState(() => buscaAtiva(inicial));
   const [filtroLocal, setFiltroLocal] = useState("");
   const [todosBairros, setTodosBairros] = useState(false);
   const [todosCondominios, setTodosCondominios] = useState(false);
@@ -242,34 +250,28 @@ export function BuscaImoveis({
   );
 
   return (
-    <section
-      id="busca"
-      aria-label="Buscar imóveis"
-      className="relative z-10 mx-auto max-w-6xl scroll-mt-24 px-4 pt-10 sm:px-6"
+    <form
+      onSubmit={buscar}
+      className="anim-entra sombra-branca relative overflow-hidden rounded-3xl bg-white"
     >
-      <form
-        onSubmit={buscar}
-        className="anim-entra sombra-branca relative overflow-hidden rounded-3xl bg-white"
-      >
         {/* Faixa dourada animada no topo */}
         <div className="busca-faixa h-1.5" aria-hidden="true" />
 
-        <div className="p-4 sm:p-8">
-          {/* Cabeçalho + contador ao vivo */}
-          <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="p-4 sm:p-6">
+          {/* Cabeçalho enxuto + contador ao vivo */}
+          <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <p className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.22em] text-gold-700">
-                <Sparkles className="size-4" /> Busca de imóveis
-              </p>
-              <h2 className="mt-1 font-display text-3xl font-bold text-stone-900 sm:text-4xl">
-                O que você procura?
+              <h2 className="inline-flex items-center gap-2 font-display text-2xl font-bold text-stone-900 sm:text-3xl">
+                <Sparkles className="size-6 text-gold-600" /> O que você procura?
               </h2>
-              <p className="mt-1 text-lg text-stone-600">
-                Escolha do seu jeito — o número de imóveis muda na hora.
+              <p className="mt-1 text-base text-stone-600 sm:text-lg">
+                {aberta
+                  ? "Escolha do seu jeito — o número de imóveis muda na hora."
+                  : "Toque numa opção — a busca vai se abrindo para você."}
               </p>
             </div>
             <div
-              className="flex items-center gap-3 rounded-2xl bg-brand-950 px-5 py-3 text-white shadow-lg"
+              className="flex items-center gap-3 rounded-2xl bg-brand-950 px-4 py-2.5 text-white shadow-lg"
               aria-live="polite"
             >
               <span className="relative flex size-3">
@@ -278,11 +280,11 @@ export function BuscaImoveis({
               </span>
               <span
                 key={total}
-                className="anim-pop font-display text-4xl font-bold leading-none text-gold-300"
+                className="anim-pop font-display text-3xl font-bold leading-none text-gold-300"
               >
                 {total}
               </span>
-              <span className="text-base leading-tight text-brand-100">
+              <span className="text-sm leading-tight text-brand-100 sm:text-base">
                 {total === 1 ? "imóvel" : "imóveis"}
                 <br />
                 {total === 1 ? "combina" : "combinam"}
@@ -290,11 +292,11 @@ export function BuscaImoveis({
             </div>
           </div>
 
-          {/* Finalidade: abas com marcador deslizante */}
+          {/* Finalidade: abas com marcador deslizante (mexer aqui abre a busca) */}
           <div
             role="radiogroup"
             aria-label="Finalidade"
-            className="relative mt-6 grid grid-cols-4 rounded-2xl bg-stone-100 p-1"
+            className="relative mt-5 grid grid-cols-4 rounded-2xl bg-stone-100 p-1"
           >
             <span
               aria-hidden="true"
@@ -312,7 +314,10 @@ export function BuscaImoveis({
                   type="button"
                   role="radio"
                   aria-checked={ativo}
-                  onClick={() => muda({ finalidade: f.value })}
+                  onClick={() => {
+                    muda({ finalidade: f.value });
+                    setAberta(true);
+                  }}
                   className={cn(
                     "relative z-10 flex min-h-14 flex-col items-center justify-center rounded-xl px-0.5 text-sm font-bold transition-colors duration-300 sm:text-lg",
                     ativo ? "text-white" : "text-stone-600 hover:text-brand-800",
@@ -332,6 +337,38 @@ export function BuscaImoveis({
             })}
           </div>
 
+          {/* Abre/fecha a busca completa (começa fechada: a vitrine fica logo abaixo) */}
+          <button
+            type="button"
+            onClick={() => setAberta((v) => !v)}
+            aria-expanded={aberta}
+            className="mt-4 flex w-full items-center justify-between rounded-2xl border-2 border-dashed border-brand-300 bg-brand-50 px-5 py-3.5 text-lg font-bold text-brand-900 transition-colors hover:border-brand-500 hover:bg-brand-100"
+          >
+            <span className="inline-flex items-center gap-2">
+              <SlidersHorizontal className="size-5" />
+              {aberta ? "Busca completa aberta" : "Abrir a busca completa"}
+            </span>
+            <span className="inline-flex items-center gap-2 text-base font-semibold text-brand-700">
+              <span className="hidden sm:inline">
+                {aberta ? "mostrar menos" : "tipo, bairro, quartos, valor…"}
+              </span>
+              <ChevronDown
+                className={cn(
+                  "size-6 transition-transform duration-500",
+                  aberta && "rotate-180",
+                )}
+              />
+            </span>
+          </button>
+
+          {/* Tudo abaixo vai "se abrindo" conforme a pessoa interage */}
+          <div
+            className={cn(
+              "grid transition-[grid-template-rows,opacity] duration-500 ease-out",
+              aberta ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+            )}
+          >
+            <div className="overflow-hidden" inert={!aberta}>
           {/* Tipos de imóvel: cartões com ícone (vários ao mesmo tempo) */}
           <fieldset className="mt-7">
             <legend className="flex w-full items-center justify-between text-lg font-bold text-stone-900">
@@ -785,6 +822,8 @@ export function BuscaImoveis({
               </div>
             </div>
           </div>
+            </div>
+          </div>
 
           {/* O que foi escolhido (toque no X para tirar) */}
           {resumo.length > 0 && (
@@ -869,8 +908,7 @@ export function BuscaImoveis({
             </p>
           )}
         </div>
-      </form>
-    </section>
+    </form>
   );
 }
 

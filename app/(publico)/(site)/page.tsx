@@ -1,11 +1,9 @@
 import Link from "next/link";
 import { Building2, CalendarDays, KeyRound, MessageCircle } from "lucide-react";
-import { BuscaImoveis } from "@/components/site/busca-imoveis";
-import { BuscaPerfil } from "@/components/site/busca-perfil";
+import { BuscaSite } from "@/components/site/busca-site";
 import { ContadorAnimado } from "@/components/site/contador-animado";
 import { ImovelCard, type SiteProperty } from "@/components/site/imovel-card";
 import { RevelaAoRolar } from "@/components/site/revela-ao-rolar";
-import { Logo } from "@/components/ui/logo";
 import {
   SITE_BASE_WHERE,
   TIPOS_COMERCIAIS,
@@ -80,9 +78,9 @@ export default async function SiteHomePage({
           transparente no topo da página inicial — components/site/public-nav);
           92px/110px é a altura do cabeçalho (logo h-16/h-20 + py-2 + borda),
           compensada no padding do conteúdo logo abaixo.
-          Abertura CINEMATOGRÁFICA (pedido da dona, nov/2026): o logo completo
-          entra grande e brilhando sobre o vídeo, e os textos surgem em seguida
-          (classes anim-logo-abertura/anim-surge no globals.css). */}
+          SEM logo no meio do vídeo (pedido da dona, nov/2026 — o logo fica só
+          no cabeçalho): os textos surgem um a um (anim-surge no globals.css)
+          e o banner ficou mais baixo para a busca e os imóveis aparecerem logo. */}
       <section className="relative -mt-[92px] overflow-hidden bg-brand-950 text-white sm:-mt-[110px]">
         {/* Vídeo direto em HTML: o React não escreve o atributo "muted" no
             HTML do servidor, e sem ele o autoplay falha no celular.
@@ -99,38 +97,31 @@ export default async function SiteHomePage({
           className="absolute inset-0 bg-gradient-to-b from-brand-950/50 via-brand-950/25 to-brand-950/65"
           aria-hidden="true"
         />
-        <div className="relative mx-auto max-w-6xl px-4 pb-10 pt-[118px] text-center sm:px-6 sm:pt-[142px]">
-          {/* O logo da FC em destaque: entra em cena e fica "respirando" */}
-          <div className="anim-logo-abertura mx-auto w-fit">
-            <Logo className="logo-brilho mx-auto h-40 sm:h-56" />
-          </div>
-          <p
-            className="anim-surge sombra-texto mt-6 text-sm font-bold uppercase tracking-[0.22em] text-gold-300"
-            style={{ animationDelay: "700ms" }}
-          >
+        <div className="relative mx-auto max-w-6xl px-4 pb-10 pt-[118px] text-center sm:px-6 sm:pt-[134px]">
+          <p className="anim-surge sombra-texto text-sm font-bold uppercase tracking-[0.22em] text-gold-300">
             Imobiliária em Bragança Paulista · SP
           </p>
           <h1
             className="anim-surge sombra-texto mx-auto mt-3 max-w-3xl font-display text-4xl font-bold leading-tight sm:text-6xl"
-            style={{ animationDelay: "850ms" }}
+            style={{ animationDelay: "150ms" }}
           >
             Seu próximo endereço está em Bragança Paulista
           </h1>
           <div
             className="anim-surge mx-auto mt-6 h-0.5 w-16 bg-gold-400"
-            style={{ animationDelay: "1000ms" }}
+            style={{ animationDelay: "300ms" }}
             aria-hidden="true"
           />
           <p
-            className="anim-surge sombra-texto mx-auto mt-6 max-w-2xl text-lg text-white sm:text-xl"
-            style={{ animationDelay: "1100ms" }}
+            className="anim-surge sombra-texto mx-auto mt-5 max-w-2xl text-lg text-white sm:text-xl"
+            style={{ animationDelay: "450ms" }}
           >
             Casas, apartamentos, chácaras e terrenos escolhidos a dedo, com o
             atendimento próximo de quem conhece cada rua da cidade.
           </p>
           <div
             className="anim-surge mt-8 flex flex-wrap items-center justify-center gap-3"
-            style={{ animationDelay: "1250ms" }}
+            style={{ animationDelay: "600ms" }}
           >
             <a
               href="#imoveis"
@@ -176,23 +167,22 @@ export default async function SiteHomePage({
         </div>
       </section>
 
-      {/* ===== Busca (logo abaixo do banner) ===== */}
-      <BuscaImoveis
+      {/* ===== Busca compacta (logo abaixo do banner): duas opções lado a
+          lado — a busca com filtros e a "Conte como você mora" — que vão se
+          abrindo conforme a pessoa interage. Os imóveis vêm logo em seguida. ===== */}
+      <BuscaSite
         key={paraQuery(busca)}
         itens={itens}
         inicial={busca}
         whatsapp={settings.whatsapp}
       />
 
-      {/* ===== Busca personalizada: o cliente conta como mora ===== */}
-      <BuscaPerfil itens={itens} />
-
-      {/* ===== Vitrine / resultado da busca ===== */}
-      <section id="imoveis" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-12 sm:px-6">
+      {/* ===== Vitrine / resultado da busca (a estrela da página) ===== */}
+      <section id="imoveis" className="mx-auto max-w-6xl scroll-mt-24 px-4 pb-14 pt-10 sm:px-6">
         <p className="text-sm font-bold uppercase tracking-[0.22em] text-gold-700">
           {pesquisando ? "Resultado da busca" : "Vitrine"}
         </p>
-        <h2 className="mt-1 font-display text-3xl font-bold text-stone-900 sm:text-4xl">
+        <h2 className="mt-1 font-display text-4xl font-bold text-stone-900 sm:text-5xl">
           {pesquisando
             ? `${encontrados.length} ${encontrados.length === 1 ? "imóvel encontrado" : "imóveis encontrados"}`
             : "Imóveis em destaque"}
